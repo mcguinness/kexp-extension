@@ -1,0 +1,17 @@
+<% if (!AirBreak) { %>
+  <p>
+    <span class="artist"><%- Artist %></span>
+    <span class="song-title"><%- SongTitle %></span>
+  </p>
+  <p>
+    <span class="album"><%- Album %><% if (ReleaseYear) { %> (<%- ReleaseYear %>) <% } %></span>
+    <span class="label-title"><%- LabelName %></span>
+  </p>
+  <% if (Comments) { %>
+  <blockquote class="comment"><%= Comments %></blockquote>
+  <% } %>
+  <p class="bottom"><span class="timeplayed">► <%- TimePlayed %></span></p>
+<% } else { %>
+  <p><span class="artist">Air Break</span></p>
+  <p><span class="timestamp">@<%- TimePlayed %></span></p>
+<% } %>

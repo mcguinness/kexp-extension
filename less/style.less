@@ -1,0 +1,543 @@
+//simpless:!minify
+
+@import "variables.less";
+@import "bootstrap.less";
+
+@viewContentMarginHeight: 15px;
+
+body {
+  margin-top: @navbarHeight + @viewContentMarginHeight;
+  //padding-bottom: 10px;
+  max-height: 960px;
+}
+
+.navbar {
+  margin-bottom: @viewContentMarginHeight;
+}
+
+// Bootstrap Color Overrides
+.badge {
+    background-color: @kexpOrange;
+}
+
+// Missing from bootstrap for some reason
+button.close {
+  padding: 0;
+  cursor: pointer;
+  background: transparent;
+  border: 0;
+  -webkit-appearance: none;
+}
+
+// Animation Styles
+@-webkit-keyframes rotate {
+  from {
+    -webkit-transform: rotate(0deg);
+    transform: rotate(0deg);
+  }
+  to {
+    -webkit-transform: rotate(360deg);
+    transform: rotate(360deg);
+  }
+}
+
+/////////////////////////////////////////////
+// Kexp Styles
+/////////////////////////////////////////////
+.logo {
+  float: left;
+  display: block;
+  margin: 0px 15px 0px 5px;
+}
+
+.hr-stripes {
+  display: block;
+  height: 20px;
+  background-image: url("../img/graystripe-15x17.gif");
+  background-repeat: repeat-x;
+}
+
+.container-contrast-light {
+  background-image: url("../img/ltgray_strp-16x5.gif");
+  background-repeat: repeat;
+}
+
+.kexp-alert {
+  .center-block();
+  display: block;
+}
+
+.kexp-box {
+  background-color: @white;
+  border: 10px solid @grayLighter;
+}
+
+.kexp-box-small {
+  border: 5px solid @grayLighter;
+}
+
+.kexp-box-striped {
+  background-color: @white;
+}
+
+.kexp-error {
+  margin-bottom: 10px;
+}
+
+.kexp-box-striped>div {
+    background-color: @white;
+    background: url("../img/ltgray_strp-16x5.gif") left top repeat-x,  url("../img/ltgray_strp-16x5.gif") left bottom repeat-x;
+    padding: 25px 10px;
+    .clearfix;
+}
+
+.btn-kexp-nohover {
+  .btn-mini;
+  .gradientBar(@btnInverseBackground, @btnInverseBackgroundHighlight);
+  .border-radius(4px);
+  color: @white;
+  .prefix-accent {
+    color: @kexpOrange;
+  }
+}
+
+.btn-kexp-inverse {
+  &:hover {
+    background: @linkColorHover;
+    color: @white;
+    span.prefix-accent {
+      color: @kexpDark;
+    }
+  }
+  span.prefix-accent {
+    color: @kexpOrange;
+  }
+}
+
+/////////////////////////////////////////////
+// last.fm Styles
+/////////////////////////////////////////////
+
+.lastfm-logo {
+  background-color: transparent;
+  background-image: url("../img/lastfm_logo_white.png");
+  background-repeat: no-repeat;
+  width: 47px;
+  height: 14px;
+  padding: 0px 0px;
+  .center-block();
+  background-origin:content-box;
+}
+
+.btn-lastfm {
+  margin-left: 10px;
+  width: 60px;
+  height: 20px;
+  padding: 0px 0px;
+
+  .gradientBar(@btnInverseBackground, @btnInverseBackgroundHighlight);
+  &:hover, &:active, &.active {
+    .gradientBar(#de4941, #D51007);
+    background-position: left top;
+    .transition(0);
+  }
+}
+
+/////////////////////////////////////////////
+// Spotify Styles
+/////////////////////////////////////////////
+
+
+.spotify-logo {
+  background-color: transparent;
+  background-image: url("../img/spotify_logo_white.png");
+  background-repeat: no-repeat;
+  width: 37px;
+  height: 14px;
+  padding: 2px 0px 0px 2px;
+  .center-block();
+  background-origin:content-box;
+}
+
+.btn-spotify {
+  margin-left: 20px;
+  width: 60px;
+  height: 18px;
+  padding: 0px 0px;
+
+  .gradientBar(@btnInverseBackground, @btnInverseBackgroundHighlight);
+  &:hover, &:active, &.active {
+    .gradientBar(#81bd1e, #6eb11b);
+    background-position: left top;
+    .transition(0);
+  }
+}
+
+
+/////////////////////////////////////////////
+// Nav Region Styles
+/////////////////////////////////////////////
+
+.navbar .nav > li > a {
+  padding: 15px 10px 15px;
+  outline-style: none;
+}
+
+.navbar .nav > li > a > i {
+  vertical-align: text-middle;
+}
+
+/////////////////////////////////////////////
+// PlayerView Styles
+/////////////////////////////////////////////
+
+.player {
+  width: 210px;
+  .center-block();
+  margin-top: 10px;
+  margin-bottom: 10px;
+  //border: 10px solid @grayLighter;
+  #gradient > .vertical-three-colors(@kexpOrange, @kexpOrange, 33%, darken(@kexpOrange, 8%));
+  .clearfix;
+  
+  input,
+  button {
+    width: 70px;
+  }
+  .wrap {
+    border: 4px solid rgba(0,0,0,.05);
+    .border-radius(4px);
+    .box-shadow(inset 0 1px 1px rgba(0,0,0,.05));
+    padding: 5px;
+    .clearfix;
+  }
+  .slider-volume {
+    -webkit-appearance: none !important;
+    width: 100px;
+    height: 6px;
+    // override bootstrap input default
+    margin-bottom: 0; 
+    #gradient > .horizontal(@grayLighter, @btnInverseBackground);
+    &::-webkit-slider-thumb {
+      -webkit-appearance: none !important;
+      width: 5px;
+      height: 20px;
+      .buttonBackground(@btnInverseBackground, @btnInverseBackgroundHighlight);
+    }
+  }
+  i.icon-volume-off,
+  i.icon-volume-up {
+    vertical-align: middle;
+  }
+  .player-title {
+    clear: both;
+    display: inline-block;
+    float: right;
+    font-weight: bold;
+    .clearfix;
+  }
+  .prefix-accent {
+    color: @kexpDark;
+  }
+}
+
+/////////////////////////////////////////////
+// NowPlaying Layout Styles
+/////////////////////////////////////////////
+
+// Manually override bootstrap grid system for the view to optimize sizes
+.span-song {
+  width: 367px;
+  //margin-bottom: 10px;
+}
+
+.span-meta {
+  width: 210px;
+  margin-left: 15px;
+}
+
+
+.btn-refresh {
+  display: inline-block;
+  float:right;
+  vertical-align: text-bottom;
+  .clearfix;
+  .rotate {
+    -webkit-animation: rotate 3s linear;
+  }
+}
+
+/////////////////////////////////////////////
+// NowPlayingSongView Styles
+/////////////////////////////////////////////
+
+.song {
+  min-height: 210px;
+  //position:relative;
+  .clearfix;
+  span {
+      display: block;
+  }
+  .artist {
+    #font > .shorthand(@baseFontSize + 10, bold, @baseLineHeight + 10);
+    color: @kexpOrange;
+  }
+  .song-title {
+    #font > .shorthand(@baseFontSize + 6, bold, @baseLineHeight + 6);
+  }
+  .album {
+    #font > .shorthand(@baseFontSize + 4, normal, @baseLineHeight + 4);
+  }
+  .label-title{
+    #font > .shorthand(@baseFontSize + 4, normal, @baseLineHeight + 4);
+    font-style: italic;
+  }
+  .comment {
+    margin-top: 10px;
+    margin-bottom: 10px;
+  }
+  .timeplayed {
+    #font > .shorthand(@baseFontSize + 2, bold, @baseLineHeight + 2);
+  }
+}
+
+/////////////////////////////////////////////
+// NowPlayingFooterView Styles
+/////////////////////////////////////////////
+
+.song-footer {
+  .clearfix;
+  .badge {
+    float: left;
+    margin-left: 5px;
+    background-color: @linkColorHover;
+    //padding-bottom: 1px;
+    &:hover {
+     cursor: default;
+    }
+    &.badge-zero {
+      background-color: @textColor;
+    }
+  }
+  .btn-like {
+    float: left;
+    height: 20px;
+    #font > #family .sans-serif();
+  }
+  .btn-spotify {
+    float: left;
+  }
+  .btn-lastfm {
+    float: left;
+  }
+  &.fade {
+    .transition(opacity .75s ease);
+    // opacity: 0;
+    // &.in {
+    //   opacity: 1;
+    // }
+  }
+}
+
+/////////////////////////////////////////////
+// LastFmMetaView Styles
+/////////////////////////////////////////////
+
+.meta-image {
+  //-webkit-perspective: 500px;
+  margin-top: 12px;
+  
+  img {
+    display: block;
+    max-height: 174px;
+    max-width: 174px;
+    margin: 0 auto 0 auto;
+    // -webkit-transform: rotateY(-25deg);
+    // -webkit-box-reflect: below 0px -webkit-gradient(linear, left top, left bottom, 
+    //   from( transparent ), 
+    //   color-stop(0.6, transparent), 
+    //   to( rgba(50,50,50,0.7) ) );
+    }
+}
+
+@media all and (-webkit-transform-3d)  {
+  /* Use the media query to determine if 3D transforms are supported */
+  .meta-image {
+    -webkit-perspective: 500px;
+    img {
+      -webkit-transform: rotateY(-25deg);
+      -webkit-box-reflect: below 0px -webkit-gradient(linear, left top, left bottom, 
+        from( transparent ), 
+        color-stop(0.6, transparent), 
+        to( rgba(50,50,50,0.7) ) );
+      }
+  }
+}
+
+
+/////////////////////////////////////////////
+// LastFmPopoverView Styles
+/////////////////////////////////////////////
+
+.popover.popover-lastfm {
+
+  .arrow {
+    left: 17%;
+    border-bottom-color: rgba(0, 0, 0, 0.8);
+  }
+  .kexp-box-striped {
+    background-color: rgba(255,255,255, .8);
+  }
+
+  .popover-wrap {
+    border: 3px solid rgba(0, 0, 0, 0.8);
+    background-color: transparent;
+    .border-radius(6px);
+    .box-shadow(0 3px 7px rgba(0,0,0,0.3));
+  }
+  .popover-inner {
+    max-width: 420px;
+    width: auto;
+    background-color: transparent;
+    padding: 0px;
+    .border-radius(0px);
+    .box-shadow(0);
+
+  }
+  .popover-logo {
+    padding: 5px 5px;
+    background-color: rgba(0, 0, 0, 0.8);
+    .border-radius(3px 3px 0 0);
+  }
+  .close {
+    color: @white;
+    opacity: 1;
+    &:hover {
+      opacity: 1;
+    }
+  }
+  .popover-content {
+    //background-color: @grayLighter;
+    background-color: rgba(238,238,238,.8);
+
+    .entities {
+      text-align: center;
+    }
+    .entity {
+      display: inline-block;
+      max-width: 175px;
+      vertical-align: top;
+      .clearfix;
+      &.odd {
+        margin-right: 5px;
+      }
+      &.even {
+        margin-left: 5px;
+      }
+      .entity-type {
+        margin-bottom: 5px;
+      }
+      a {
+        //text-align: center;
+        word-wrap: break-word;
+      }
+      img {
+        float: left;
+        max-width: 64px;
+        margin-right: 10px;
+        .transition(opacity .15s linear);
+        opacity: 1;
+        &:focus,
+        &:hover {
+          .transition(opacity .15s linear);
+          opacity: .5;
+        }
+      }
+    }
+    .summary {
+      #font > .shorthand(@baseFontSize - 2, normal, @baseLineHeight - 2);
+      margin-top: 10px;
+      text-align: justify;
+    }
+  }
+}
+
+/////////////////////////////////////////////
+// LikedSongListView Styles
+/////////////////////////////////////////////
+
+// Custom Table Styles
+.table-header-nofocus th:focus {
+  outline: 0;
+}
+
+.table-removable {
+  tbody tr {
+    td.cell-remove-action {
+      width: 22px;
+      padding-left: 8px;
+      padding-right: 0px;
+      i.icon-remove {
+          display: none;
+          vertical-align: text-bottom;
+      }
+    }
+    &:hover {
+      td.cell-remove-action i.icon-remove {
+          display: inline-block;
+      }
+    }
+  }
+}
+
+.table-infoable {
+  tbody tr {
+    td.cell-info-action {
+      width: 22px;
+      padding-left: 8px;
+      padding-right: 0px;
+      i {
+          display: none;
+          vertical-align: text-bottom;
+      }
+    }
+    &:hover {
+      td.cell-info-action i {
+          display: inline-block;
+      }
+    }
+  }
+}
+
+.column-sortable {
+  text-decoration: none;
+  cursor: pointer;
+}
+
+#table-liked  {
+  .badge:hover {
+       cursor: default;
+  }
+}
+
+.twitter-mention-button {
+  vertical-align: bottom;
+  position: relative;
+  .mention-label {
+    padding: 0 3px 0 14px;
+    white-space: nowrap;
+    display: inline-block;
+    vertical-align: top;
+    text-align: left;
+    font-weight: bold;
+  }
+  i {
+    position: absolute;
+    top: 50%;
+    left: 2px;
+    margin-top: -6px;
+    width: 16px;
+    height: 12px;
+    background-image: url(data:image/png;base64,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);
+  }
+}

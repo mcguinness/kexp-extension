@@ -1,0 +1,35 @@
+<!doctype html>
+<html class="no-js" lang="en">
+<head>
+	<meta charset="utf-8">
+	<title>KEXP Streaming Player (Unsanctioned Edition)</title>
+	<meta name="description" content="HTML5 background kexp.org streaming audio player.">
+	<meta name="author" content="Karl McGuinness">
+	<meta name="viewport" content="width=device-width">
+	<link rel="stylesheet" href="less/style.css">
+  <script data-main="js/main" src="js/libs/require.js"></script>
+</head>
+<body>
+  <div id="navbar-top" class="navbar navbar-fixed-top">
+    <div class="navbar-inner">
+      <div class="container">
+        <a href="http://kexp.org/" data-chrometab="active"><img alt="KEXP Logo" class="logo" src="../img/kexp_logo.png"></img></a>
+        <ul class="nav">
+          <li class="active"><a href="#nowplaying"><i class="icon-music icon-white"></i> Now Playing</a></li>
+          <li><a href="#likes"><i class="icon-star"></i> Likes</a></li>
+          <li><a href="http://kexp.org/about/email.asp?email=dj" data-chrometab="active"><i class="icon-question-sign"></i> DJ Request</a></li>
+          <li><a href="http://kexp.org/donate/" data-chrometab="active"><i class="icon-gift"></i> Donate</a></li>
+          <li><a href="#about"><i class="icon-info-sign"></i> About</a></li>
+        </ul>
+      </div>
+    </div>
+  </div>
+  <div class="container">
+    <div id="view-content"></div>
+    <div class="row">
+      <div class="span12 hr-stripes"></div>
+    </div>
+    <div id="view-player" class="container-contrast-light"></div>
+  </div> <!-- /container -->
+</body>
+</html>
