@@ -1,0 +1,52 @@
+<div>
+  <h3>Last.fm</h3>
+  <div class="control-group">
+    <label class="control-label" for="btn-lastfm-service">Connected Profile:</label>
+    <div id="ctrls-lastfm-service" class="controls">
+      <label>
+        <button id="btn-lastfm-service" class="btn btn-kexp-toggle <%= _.isEmpty(model.sessionKey) ? '' : 'active' %>" 
+          type="button">
+            <%= _.isEmpty(model.sessionKey) ? '<i class="icon-user icon-white"></i> Disabled' : '<i class="icon-user"></i> Enabled' %>
+        </button>
+      </label>
+      <p class="help-block"><em>Allows this extension to access your Last.fm profile</em></p>
+    </div>
+    <label class="control-label" for="check-lastfm-sync">Share:</label>
+    <div class="controls">
+      <label class="checkbox">
+        <input type="checkbox" id="check-lastfm-sync-like"
+        <%= model.likeSyncEnabled ? "checked='checked'" : '' %>
+        <%= _.isEmpty(model.sessionKey) ? "disabled='disabled'" : '' %>>
+        <i class="icon-share"></i> Share likes with my Last.fm profile (loves)
+      </label>
+      <p class="help-block"><strong>Note:</strong> Requires Last.fm app authorization.</p>
+    </div>
+  </div>
+<div>
+<div class="modal modal-lastfm-authorize hide fade" id="modal-lastfm-authorize">
+  <div class="modal-header">
+    <img src="../img/lastfm_logo_white_large.png">
+    <button class="close" data-dismiss="modal">×</button>
+  </div>
+  <div class="modal-body">
+    <p>
+      In a few seconds the <strong>Last.fm Connect Application</strong> page will launch.
+    </p>
+    <p>
+      This extension requires permission to access your Last.fm account.
+      <br>After you have accepted the permission request, <strong>return</strong> to this 
+      options page and click <strong>Complete</strong>.
+    </p>
+    <p>
+      <strong>Note:</strong> You can revoke this permission from your last.fm account options at any time.
+    </p>
+    <p>
+      If the <strong>Last.fm Connect Application</strong> does not launch, you can always click 
+      <a id="link-redirect-authorize">here</a>.
+    </p>
+  </div>
+  <div class="modal-footer">
+    <button class="btn btn-inverse btn-kexp-inverse" data-dismiss="modal">Cancel</button>
+    <button class="btn btn-primary btn-inverse btn-kexp-inverse accept" data-dismiss="modal">Complete</button>
+  </div>
+</div>

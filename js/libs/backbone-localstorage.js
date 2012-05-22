@@ -2,6 +2,8 @@
 // persistence. Models are given GUIDS, and saved into a JSON object. Simple
 // as that.
 
+// KSM - modified to remove global settings of store and sync function of store
+
 (function(root, factory) {
   // Set up Backbone appropriately for the environment.
   if (typeof define === 'function' && define.amd) {
@@ -73,31 +75,25 @@
             delete this.data[model.id];
             this.save();
             return model;
-        }
+        },
+        sync: function(method, model, options) {
+            var resp;
+            var store = model.localStorage || model.collection.localStorage;
 
+            switch (method) {
+                case "read":    resp = model.id ? store.find(model) : store.findAll(); break;
+                case "create":  resp = store.create(model);                            break;
+                case "update":  resp = store.update(model);                            break;
+                case "delete":  resp = store.destroy(model);                           break;
+            }
+
+            if (resp) {
+                options.success(resp);
+            } else {
+                options.error("Record not found");
+            }
+        }
     });
-
-    // Override `Backbone.sync` to use delegate to the model or collection's
-    // *localStorage* property, which should be an instance of `Store`.
-    Backbone.sync = function(method, model, options) {
-
-        var resp;
-        var store = model.localStorage || model.collection.localStorage;
-
-        switch (method) {
-            case "read":    resp = model.id ? store.find(model) : store.findAll(); break;
-            case "create":  resp = store.create(model);                            break;
-            case "update":  resp = store.update(model);                            break;
-            case "delete":  resp = store.destroy(model);                           break;
-        }
-
-        if (resp) {
-            options.success(resp);
-        } else {
-            options.error("Record not found");
-        }
-    };
-
 
     return Store;
 }));

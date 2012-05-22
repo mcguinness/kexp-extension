@@ -2,9 +2,8 @@ define([
   "jquery",
   "backbone",
   "underscore",
-  "marionette",
-  "gaq"
-  ], function($, Backbone, _, Marionette, _gaq) {
+  "marionette"
+  ], function($, Backbone, _, Marionette) {
   
   var NavRegionView = Backbone.Marionette.Region.extend({
     el: "#navbar-top",
@@ -23,7 +22,8 @@ define([
       }
     },
     updateNav: function() {
-      _gaq.push(["_trackEvent", "Nav", window.location.hash]);
+      // TODO: Pass vent as init option
+      window.KexpApp.vent.trigger("analytics:trackevent", "Navigation", "Route", window.location.hash);
 
       var $activeNav = $("ul.nav", this.el).children().filter(".active");
       $activeNav.toggleClass("active", false);

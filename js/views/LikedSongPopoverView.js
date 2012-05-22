@@ -5,18 +5,13 @@ define([
   "marionette",
   "text!templates/likedsong-popover.html",
   "text!templates/likedsong-popover-info.html",
-  "gaq",
   "bootstrap" // no need for arg
-  ], function($, Backbone, _, Marionette, PopoverTemplate, PopoverContentTemplate, _gaq) {
+  ], function($, Backbone, _, Marionette, PopoverTemplate, PopoverContentTemplate) {
 
   var LikedSongPopoverView = Backbone.Marionette.ItemView.extend({
 
     template: PopoverContentTemplate,
     popoverTemplate: PopoverTemplate,
-
-    initialize: function(options) {
-      this.vent = options.vent;
-    },
     serializeData: function() {
       return { model: this.model.toJSON()};
     },
@@ -45,7 +40,7 @@ define([
       if (popover) {
         $(this.el).popover("toggle");
         if (popover.enabled) {
-          _gaq.push(["_trackEvent", "LikedSongInfo", "click"]);
+          this.vent.trigger("analytics:trackevent", "SongCollection", "Popover", "Show");
           popover.$tip.find(".close").click(function() {
             popover.hide();
           });

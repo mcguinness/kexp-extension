@@ -1,15 +1,14 @@
 <div id="song-footer" class="song-footer kexp-box-striped fade">
     <div class="wrap">
-      <button id="button-like" class="btn btn-mini btn-like btn-inverse btn-kexp-inverse" type="button" data-id="<%= PlayID %>">
+      <button id="button-like" class="btn btn-mini btn-like btn-inverse btn-kexp-inverse" type="button" data-id="<%= model.id %>">
         <span class="prefix-accent">\\\</span> LIKE
       </button>
-      <% if (relLiked) { %>
-      <span class="<%= (relLiked.likeCount > 0) ? 'badge' : 'badge badge-zero' %>"><%= relLiked.likeCount %></span>
-      <% } else { %>
-      <span class="badge badge-zero">0</span>
-      <% } %>
+      <span class="<%= (model.likeCount > 0) ? 'badge' : 'badge badge-zero' %>"><%= model.likeCount %></span>
       <a id="button-spotify" class="btn btn-mini btn-spotify" data-chrometab="temp"><span class="spotify-logo"></span></a>
       <button id="button-lastfm" class="btn btn-mini btn-lastfm hide" type="button"><span class="lastfm-logo"></span></button>
       <span id="button-refresh" class="btn-refresh"><i class="icon-refresh"></i></span>
+      <a href="chrome-extension://options.html" data-chrometab="active">
+        <span id="button-share" class="btn-share <%= (model.likeShareEnabled) ? 'active' : '' %>"><i class="icon-share"></i></span>
+      </a>
     </div>
 </div>

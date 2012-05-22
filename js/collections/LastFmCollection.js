@@ -4,12 +4,11 @@ define([
   "underscore",
   "databases/LastFmSync",
   "models/LastFmModel"
-  ], function($, Backbone, _, lastFmSync, LastFmModel) {
+  ], function($, Backbone, _, LastFmSync, LastFmModel) {
   var LastFmCollection = Backbone.Collection.extend({
     model: LastFmModel,
-    sync: lastFmSync,
-    initialize: function() {
-
+    initialize: function(options) {
+      this.sync = new LastFmSync(options).sync;
     },
     url: function() {
       // Replaced by Sync Module but Backbone fetch with throw if empty

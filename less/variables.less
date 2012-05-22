@@ -12,6 +12,7 @@
 @kexpOrange:            #feac31;
 @kexpDark:              #934E1E;
 @kexpGrey:              #E4E4E4;
+@kexpDarkGrey:          #999999;
 
 
 
@@ -72,7 +73,6 @@
 
 // Buttons
 // -------------------------
-
 @btnBackground:                     @white;
 @btnBackgroundHighlight:            darken(@white, 10%);
 @btnBorder:                         darken(@white, 20%);
@@ -173,20 +173,20 @@
 
 // Form states and alerts
 // -------------------------
-@warningText:             #c09853;
-@warningBackground:       #fcf8e3;
+@warningText:             @textColor;
+@warningBackground:       @kexpOrange;
 @warningBorder:           darken(spin(@warningBackground, -10), 3%);
 
-@errorText:               #b94a48;
-@errorBackground:         #f2dede;
+@errorText:               @white;
+@errorBackground:         #BD362F;
 @errorBorder:             darken(spin(@errorBackground, -10), 3%);
 
-@successText:             #468847;
-@successBackground:       #dff0d8;
+@successText:             @white;
+@successBackground:       #51A351;
 @successBorder:           darken(spin(@successBackground, -10), 5%);
 
-@infoText:                #3a87ad;
-@infoBackground:          #d9edf7;
+@infoText:                @textColor;
+@infoBackground:          @grayLighter;
 @infoBorder:              darken(spin(@infoBackground, -10), 7%);
 
 
@@ -198,8 +198,8 @@
 // Default 940px grid
 // -------------------------
 @gridColumns:             12;
-@gridColumnWidth:         36px;
-@gridGutterWidth:         15px;
+@gridColumnWidth:         60px;
+@gridGutterWidth:         20px;
 @gridRowWidth:            (@gridColumns * @gridColumnWidth) + (@gridGutterWidth * (@gridColumns - 1));
 
 

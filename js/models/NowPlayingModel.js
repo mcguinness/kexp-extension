@@ -18,7 +18,7 @@ define([
         key: "relLastFmMeta",
         relatedModel: LastFmModel
       },
-        {
+      {
         type: Backbone.HasOne,
         key: "relLiked",
         relatedModel: LikedSongModel
@@ -115,12 +115,6 @@ define([
       });
 
       return resolveDeferred.promise();
-    },
-    like: function() {
-      var likeCount = this.get("likeCount");
-      this.set({
-        likeCount: ++likeCount
-      });
     },
     toSpotifyUrl: function() {
       return "spotify:search:" + encodeURI('artist:"' + this.get("Artist") + '" album:"' + this.get("Album") + '"');

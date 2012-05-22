@@ -1,21 +1,17 @@
 define([
   "jquery",
-  "backbone",
   "underscore",
-  "marionette",
+  "marionette-extensions",
   "text!templates/nowplaying-popover.html",
   "text!templates/nowplaying-popover-lastfm.html",
-  "bootstrap", // no need for arg
-  "gaq"
-  ], function($, Backbone, _, Marionette, PopoverTemplate, PopoverContentTemplate) {
+  "bootstrap" // no need for arg
+  ], function($, _, Backbone, PopoverTemplate, PopoverContentTemplate) {
 
   var LastFmPopoverView = Backbone.Marionette.ItemView.extend({
 
     template: PopoverContentTemplate,
     popoverTemplate: PopoverTemplate,
-
     initialize: function(options) {
-      this.vent = options.vent;
       this.bindTo(this.vent, "nowplaying:lastfm:popover:toggle", this.toggle, this);
     },
     serializeData: function() {
@@ -81,7 +77,7 @@ define([
       if (popover) {
         $(this.el).popover("toggle");
         if (popover.enabled) {
-          _gaq.push(["_trackEvent", "LastFm", "click"]);
+          this.vent.trigger("analytics:trackevent", "LastFm", "Popover", "Show");
           popover.$tip.find(".close").click(function() {
             popover.hide();
           });
@@ -89,8 +85,8 @@ define([
       }
     },
     close: function() {
-      // Very important we do not delete the views el as we are only touch the popover data blob
-      // We must override other prototype will remove element
+      // Very important we do not delete the view's el as we are only touching the popover data blob
+      // We must override otherwise prototype will remove the popover's element
       
       this.unbindAll();
       this.unbind();

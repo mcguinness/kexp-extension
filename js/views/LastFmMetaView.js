@@ -11,8 +11,12 @@ define([
     tagName: "div",
     className: "meta-image",
     initialize: function(options) {
-      this.vent = options.vent;
       this.popoverEl = options.popoverEl;
+      if (!this.popoverEl) {
+        var err = new Error("A popover 'el' must be specified");
+        err.name = "NoElError";
+        throw err;
+      }
     },
     render: function() {
       var lastFmCollection = this.model.getLastFmCollection(),
@@ -44,15 +48,15 @@ define([
       }
     },
     beforeClose: function() {
-      var $songImage = $("img", this.$el),
+      var $image = $("img", this.$el),
         beforeCloseDfr = $.Deferred();
 
       if (this.popoverView) {
         this.popoverView.close();
       }
 
-      if ($songImage.length > 0) {
-        $songImage.fadeOut(function() {
+      if ($image.length > 0) {
+        $image.fadeOut(function() {
           beforeCloseDfr.resolve();
         });
       } else {

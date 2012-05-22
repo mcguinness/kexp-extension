@@ -1,0 +1,57 @@
+
+@import "variables.less";
+// GRID Overrides
+// --------------------------------------------------
+@gridColumnWidth:         36px;
+@gridGutterWidth:         15px;
+@viewContentMarginHeight: 15px;
+
+@import "bootstrap.less";
+@import "common.less";
+
+body {
+  background-color: @grayLighter;
+  margin-top: 15px;
+}
+
+.btn {
+  i {
+    vertical-align: -15%;
+  }  
+}  
+
+.btn-kexp-toggle {
+  border: 1px solid @kexpDarkGrey;
+  width: 92px;
+}
+
+.logo {
+  width: 557px;
+}
+
+.content {
+  border: 20px solid @kexpDarkGrey;
+  .border-radius(3px);
+  .box-shadow(0 0 12px @kexpDarkGrey);
+}
+
+.section {
+  margin-top: 5px;
+  margin-bottom: 15px;
+}
+
+.alert {
+  margin-top: 5px;
+  i {
+    vertical-align: -15%;
+  }
+}
+
+.modal-lastfm-authorize {
+  border: 5px solid @kexpDarkGrey;
+  .border-radius(3px);
+  .box-shadow(0 0 12px @kexpDarkGrey);
+  .modal-header {
+    background-color: @kexpOrange;
+  }
+}

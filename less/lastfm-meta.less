@@ -1,0 +1,115 @@
+/////////////////////////////////////////////
+// LastFmMetaView Styles
+/////////////////////////////////////////////
+
+.meta-image {
+  margin-top: 12px;
+  img {
+    display: block;
+    max-height: 174px;
+    max-width: 174px;
+    margin: 0 auto 0 auto;
+  }
+}
+
+@media all and (-webkit-transform-3d)  {
+  /* Use the media query to determine if 3D transforms are supported */
+  .meta-image {
+    -webkit-perspective: 500px;
+    img {
+      -webkit-transform: rotateY(-25deg);
+      -webkit-box-reflect: below 0px -webkit-gradient(linear, left top, left bottom, 
+        from( transparent ), 
+        color-stop(0.6, transparent), 
+        to( rgba(50,50,50,0.7) ) );
+      }
+  }
+}
+
+
+/////////////////////////////////////////////
+// LastFmPopoverView Styles
+/////////////////////////////////////////////
+
+.popover.popover-lastfm {
+
+  .arrow {
+    left: 17%;
+    border-bottom-color: rgba(0, 0, 0, 0.8);
+  }
+  .kexp-box-striped {
+    background-color: rgba(255,255,255, .8);
+  }
+
+  .popover-wrap {
+    border: 3px solid rgba(0, 0, 0, 0.8);
+    background-color: transparent;
+    .border-radius(6px);
+    .box-shadow(0 3px 7px rgba(0,0,0,0.3));
+  }
+  .popover-inner {
+    max-width: 420px;
+    width: auto;
+    background-color: transparent;
+    padding: 0px;
+    .border-radius(0px);
+    .box-shadow(0);
+
+  }
+  .popover-logo {
+    padding: 5px 5px;
+    background-color: rgba(0, 0, 0, 0.8);
+    .border-radius(3px 3px 0 0);
+  }
+  .close {
+    color: @white;
+    opacity: 1;
+    &:hover {
+      opacity: 1;
+    }
+  }
+  .popover-content {
+    //background-color: @grayLighter;
+    background-color: rgba(238,238,238,.8);
+
+    .entities {
+      text-align: center;
+    }
+    .entity {
+      display: inline-block;
+      max-width: 175px;
+      vertical-align: top;
+      .clearfix;
+      &.odd {
+        margin-right: 5px;
+      }
+      &.even {
+        margin-left: 5px;
+      }
+      .entity-type {
+        margin-bottom: 5px;
+      }
+      a {
+        //text-align: center;
+        word-wrap: break-word;
+      }
+      img {
+        float: left;
+        max-width: 64px;
+        margin-right: 10px;
+        .transition(opacity .15s linear);
+        opacity: 1;
+        &:focus,
+        &:hover {
+          .transition(opacity .15s linear);
+          opacity: .5;
+        }
+      }
+    }
+    .summary {
+      #font > .shorthand(@baseFontSize - 2, normal, @baseLineHeight - 2);
+      margin-top: 10px;
+      text-align: justify;
+    }
+  }
+}

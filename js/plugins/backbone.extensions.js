@@ -1,17 +1,7 @@
 define([
-  "backbone",
   "underscore",
-  "htmlencoder"
-	], function(Backbone, _, htmlencoder) {
-
-	Backbone.View.prototype.close = function() {
-		console.log("Closing view %s %s", this.cid, this.$el, this);
-		if (this.beforeClose) {
-			this.beforeClose();
-		}
-		this.remove();
-		this.unbind();
-	};
+  "backbone"
+	], function(_, Backbone) {
 
 	Backbone.Collection.prototype.add = function(models, options) {
     var i, index, length, model, cid, id, cids = {}, ids = {}, dups = [];
@@ -164,7 +154,5 @@ define([
     return fetchDfr.promise();
   };
 
-	Backbone.View.prototype.htmlEncoder = htmlencoder;
-	Backbone.Model.prototype.htmlEncoder = htmlencoder;
-
+  return Backbone;
 });

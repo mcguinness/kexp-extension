@@ -1,4 +1,4 @@
-define(["machina", "underscore"], function(machina, _) {
+define(["jquery", "underscore", "machina", "moment"], function($, _, Machina, moment) {
 
   var PlayerFsm = function(audioElement) {
 
@@ -7,6 +7,7 @@ define(["machina", "underscore"], function(machina, _) {
     }
 
     var audioEl = audioElement;
+    var $audioEl = $(audioEl);
 
     var NetworkStatus = {
       "NetworkEmpty": 0,
@@ -22,21 +23,32 @@ define(["machina", "underscore"], function(machina, _) {
       "HaveEnoughData": 4
     };
 
-    var fsm = new machina.Fsm({
+    var fsm = new Machina.Fsm({
 
       initialState: "uninitialized",
       events: ["Buffering", "Playing", "Paused", "Error"],
       retry: _.once(function() {
-        if (audioEl.networkState === NetworkStatus.NetworkNoSource &&
-          audioEl.readyState === ReadyStatus.HaveEnoughData) {
+        if (!this.hasValidBuffer()) {
           this.transition("playing");
         }
       }),
+      hasValidBuffer: function() {
+        return (audioEl.networkState !== NetworkStatus.NetworkNoSource &&
+              audioEl.networkState !== NetworkStatus.NetworkEmpty && audioEl.readyState !== ReadyStatus.HaveNothing);
+      },
+      hasValidPauseDelta: function() {
+        var pauseISOString = $audioEl.attr("data-pause-time");
+        var pauseMoment = (pauseISOString) ? moment(pauseISOString) : moment();
+        console.log("Pause Time %s", pauseMoment.toString());
+        var pauseDeltaSeconds = moment().diff(pauseMoment, "seconds");
+        console.log("Delta Time %s (seconds)", pauseDeltaSeconds);
+
+        return (pauseDeltaSeconds < 180);
+      },
       states: {
         "uninitialized": {
           "initialize": function() {
-            if (audioEl.paused || audioEl.networkState === NetworkStatus.NetworkNoSource ||
-              audioEl.networkState === NetworkStatus.NetworkEmpty) {
+            if (audioEl.paused || !this.hasValidBuffer()) {
               this.transition("paused");
             } else {
               this.transition("playing");
@@ -47,14 +59,13 @@ define(["machina", "underscore"], function(machina, _) {
           _onEnter: function() {
             console.log("Playing -> NetworkState:%s ReadyState:%s", audioEl.networkState, audioEl.readyState, audioEl);
             
-            if (audioEl.networkState === NetworkStatus.NetworkNoSource ||
-              audioEl.networkState === NetworkStatus.NetworkEmpty ||audioEl.readyState === ReadyStatus.HaveNothing) {
-              
+            if (audioEl.paused && this.hasValidPauseDelta() && this.hasValidBuffer()) {
+              console.log("Playing audio element...", audioEl);
+              audioEl.play();
+            } else {
               this.fireEvent("Buffering");
               console.log("Buffering media for audio element...", audioEl);
               audioEl.load();
-            }
-            if (audioEl.paused) {
               console.log("Playing audio element...", audioEl);
               audioEl.play();
             }
@@ -68,6 +79,8 @@ define(["machina", "underscore"], function(machina, _) {
         "paused": {
           _onEnter: function() {
             console.log("Paused -> NetworkState:%s ReadyState:%s", audioEl.networkState, audioEl.readyState, audioEl);
+            
+            $audioEl.attr("data-pause-time", new Date().toISOString());
             
             if (!audioEl.paused) {
               console.log("Pausing audio element...", audioEl);
@@ -89,8 +102,7 @@ define(["machina", "underscore"], function(machina, _) {
             this.fireEvent("Error");
           },
           "toggle": function() {
-            if (audioEl.paused || audioEl.networkState === NetworkStatus.NetworkNoSource ||
-              audioEl.networkState === NetworkStatus.NetworkEmpty) {
+            if (audioEl.paused || !this.hasValidBuffer()) {
               this.transition("playing");
             } else {
               this.transition("paused");

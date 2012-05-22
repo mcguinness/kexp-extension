@@ -4,13 +4,21 @@ define([
   "underscore",
   "indexeddb",
   "databases/LikedSongDatabase"
-  ], function($, Backbone, _, sync, LikedSongDatabase) {
+  ], function($, Backbone, _, IndexedDBSync, LikedSongDatabase) {
+
+  var LastFmSyncStatusFlags = {
+    None: 0,
+    TrackLove: 1
+    //LibraryAlbum: 2,
+    //LibraryArist: 4,
+    //LibraryTrack: 8
+  };
 
   var LikedSongModel = Backbone.RelationalModel.extend({
 
     database: new LikedSongDatabase(),
     storeName: "songs",
-    sync: sync,
+    sync: IndexedDBSync,
     defaults: {
       artist: "",
       // http://musicbrainz.org/
@@ -27,6 +35,7 @@ define([
       albumLabel: "",
       // reserved
       //labelMbid:"",
+      lastFmSyncStatus: 0,
       likeCount: 0,
       timeCreated: new Date(),
       timeModified: new Date(),
@@ -73,6 +82,19 @@ define([
       this.set({
         likeCount: ++likeCount,
         timeLastLike: new Date()
+      });
+    },
+    hasLastFmSyncStatusTrackLove: function() {
+      return (this.get("lastFmSyncStatus") & LastFmSyncStatusFlags.TrackLove) === LastFmSyncStatusFlags.TrackLove;
+    },
+    setLastFmSyncStatusTrackLove: function() {
+      this.set({
+        lastFmSyncStatus: this.get("lastFmSyncStatus") | LastFmSyncStatusFlags.TrackLove
+      });
+    },
+    unsetLastFmSyncStatusTrackLove: function() {
+      this.set({
+        lastFmSyncStatus: this.get("lastFmSyncStatus") & LastFmSyncStatusFlags.TrackLove
       });
     }
   });

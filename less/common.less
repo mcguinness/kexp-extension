@@ -1,0 +1,219 @@
+/////////////////////////////////////////////
+// Bootstrap Overrides
+/////////////////////////////////////////////
+
+// Bootstrap Color Overrides
+.badge {
+    background-color: @kexpOrange;
+}
+
+// Missing from bootstrap for some reason
+button.close {
+  padding: 0;
+  cursor: pointer;
+  background: transparent;
+  border: 0;
+  -webkit-appearance: none;
+}
+
+
+.alert-error {
+  text-shadow: 0 1px 0 rgba(0, 0, 0, .5);
+}
+
+.alert-success {
+  text-shadow: 0 1px 0 rgba(0, 0, 0, .5);
+}
+
+
+/////////////////////////////////////////////
+// Kexp Styles
+/////////////////////////////////////////////
+
+.hr-stripes {
+  display: block;
+  height: 20px;
+  background-image: url("../img/graystripe-15x17.gif");
+  background-repeat: repeat-x;
+}
+
+.container-contrast-light {
+  background-image: url("../img/ltgray_strp-16x5.gif");
+  background-repeat: repeat;
+}
+
+.kexp-alert {
+  .center-block();
+  display: block;
+}
+
+.kexp-box {
+  background-color: @white;
+  border: 10px solid @grayLighter;
+}
+
+.kexp-box-small {
+  border: 5px solid @grayLighter;
+}
+
+.kexp-box-striped {
+  background-color: @white;
+}
+
+.kexp-error {
+  margin-bottom: 10px;
+}
+
+.kexp-box-striped>div {
+    background-color: @white;
+    background: url("../img/ltgray_strp-16x5.gif") left top repeat-x,  url("../img/ltgray_strp-16x5.gif") left bottom repeat-x;
+    padding: 25px 10px;
+    .clearfix;
+}
+
+.btn-kexp-nohover {
+  .btn-mini;
+  .gradientBar(@btnInverseBackground, @btnInverseBackgroundHighlight);
+  .border-radius(4px);
+  color: @white;
+  .prefix-accent {
+    color: @kexpOrange;
+  }
+}
+
+.btn-kexp-inverse {
+  &:hover {
+    background: @linkColorHover;
+    color: @white;
+    span.prefix-accent {
+      color: @kexpDark;
+    }
+  }
+  span.prefix-accent {
+    color: @kexpOrange;
+  }
+}
+
+.btn-kexp-toggle {
+  .btn-inverse;
+  &:hover {
+    color: @white;
+  }
+  &.active {
+    .buttonBackground(@kexpOrange, darken(@kexpOrange, 10%));
+    color: @textColor;
+    text-shadow: 0 1px 0 rgba(153, 153, 153, .5);
+    span.prefix-accent {
+      color: @kexpDark;
+    }
+  }
+  span.prefix-accent {
+    color: @kexpOrange;
+  }
+}
+
+/////////////////////////////////////////////
+// last.fm Styles
+/////////////////////////////////////////////
+
+.lastfm-logo {
+  background-color: transparent;
+  background-image: url("../img/lastfm_logo_white.png");
+  background-repeat: no-repeat;
+  width: 47px;
+  height: 14px;
+  padding: 0px 0px;
+  .center-block();
+  background-origin:content-box;
+}
+
+.lastfm-bg-color() {
+  .gradientBar(#de4941, #D51007);
+}
+
+.btn-lastfm {
+  margin-left: 10px;
+  width: 60px;
+  height: 20px;
+  padding: 0px 0px;
+
+  .gradientBar(@btnInverseBackground, @btnInverseBackgroundHighlight);
+  &:hover, &:active, &.active {
+    .lastfm-bg-color();
+    background-position: left top;
+    .transition(0);
+  }
+}
+
+/////////////////////////////////////////////
+// Spotify Styles
+/////////////////////////////////////////////
+
+
+.spotify-logo {
+  background-color: transparent;
+  background-image: url("../img/spotify_logo_white.png");
+  background-repeat: no-repeat;
+  width: 37px;
+  height: 14px;
+  padding: 2px 0px 0px 2px;
+  .center-block();
+  background-origin:content-box;
+}
+
+.btn-spotify {
+  margin-left: 20px;
+  width: 60px;
+  height: 18px;
+  padding: 0px 0px;
+
+  .gradientBar(@btnInverseBackground, @btnInverseBackgroundHighlight);
+  &:hover, &:active, &.active {
+    .gradientBar(#81bd1e, #6eb11b);
+    background-position: left top;
+    .transition(0);
+  }
+}
+
+/////////////////////////////////////////////
+// Twitter Styles
+/////////////////////////////////////////////
+
+.twitter-mention-button {
+  vertical-align: bottom;
+  position: relative;
+  .mention-label {
+    padding: 0 3px 0 14px;
+    white-space: nowrap;
+    display: inline-block;
+    vertical-align: top;
+    text-align: left;
+    font-weight: bold;
+  }
+  i {
+    position: absolute;
+    top: 50%;
+    left: 2px;
+    margin-top: -6px;
+    width: 16px;
+    height: 12px;
+    background-image: url(data:image/png;base64,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);
+  }
+}
+
+
+
+/////////////////////////////////////////////
+// Animation Styles
+/////////////////////////////////////////////
+
+@-webkit-keyframes rotate {
+  from {
+    -webkit-transform: rotate(0deg);
+    transform: rotate(0deg);
+  }
+  to {
+    -webkit-transform: rotate(360deg);
+    transform: rotate(360deg);
+  }
+}

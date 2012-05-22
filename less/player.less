@@ -1,0 +1,54 @@
+/////////////////////////////////////////////
+// PlayerView Styles
+/////////////////////////////////////////////
+
+.player {
+  width: 210px;
+  .center-block();
+  margin-top: 10px;
+  margin-bottom: 10px;
+  //border: 10px solid @grayLighter;
+  #gradient > .vertical-three-colors(@kexpOrange, @kexpOrange, 33%, darken(@kexpOrange, 8%));
+  .clearfix;
+  
+  input,
+  button {
+    width: 70px;
+  }
+  .wrap {
+    border: 4px solid rgba(0,0,0,.05);
+    .border-radius(4px);
+    .box-shadow(inset 0 1px 1px rgba(0,0,0,.05));
+    padding: 5px;
+    .clearfix;
+  }
+  .slider-volume {
+    -webkit-appearance: none !important;
+    width: 100px;
+    height: 6px;
+    // override bootstrap input default
+    margin-bottom: 0;
+    padding: 0 0 0 0;
+    #gradient > .horizontal(@grayLighter, @btnInverseBackground);
+    &::-webkit-slider-thumb {
+      -webkit-appearance: none !important;
+      width: 5px;
+      height: 20px;
+      .buttonBackground(@btnInverseBackground, @btnInverseBackgroundHighlight);
+    }
+  }
+  i.icon-volume-off,
+  i.icon-volume-up {
+    vertical-align: middle;
+  }
+  .player-title {
+    clear: both;
+    display: inline-block;
+    float: right;
+    font-weight: bold;
+    .clearfix;
+  }
+  .prefix-accent {
+    color: @kexpDark;
+  }
+}

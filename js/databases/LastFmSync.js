@@ -1,49 +1,14 @@
-define([
-  "jquery",
-  "backbone",
-  "underscore",
-  "gaq"
-  ], function($, Backbone, _) {
+define(["jquery", "underscore"], function($, _) {
 
-  var LastFmApi = function(apiKey) {
-    this.apiKey = apiKey || "10fc31f4ac0c2a4453cab6d75b526c67";
+  var LastFmSync = function(options) {
+    var appConfig = (options && options.appConfig) ? options.appConfig : window.KexpApp.appConfig;
+    _.extend(this, appConfig.getLastFm().getApi());
+    // Backbone Fetch overwrites context, so we need to rebind here
+    this.sync = _.bind(this.sync, this);
   };
 
-  _.extend(LastFmApi.prototype, {
-    apiUrl: "http://ws.audioscrobbler.com/2.0/",
-    apiCall: function(queryParams, options) {
+  _.extend(LastFmSync.prototype, {
 
-      var dataParams = {
-        api_key: this.apiKey,
-        format: "json"
-      };
-      _.extend(dataParams, queryParams);
-
-      options.success = _.wrap(options.success, function(callerSuccess, resp, status, xhr) {
-        if (!_.isEmpty(resp) && resp["error"]) {
-          if (resp.error !== 6) {
-            _gaq.push(["_trackEvent", "LastFmApi", "error", resp.message, resp.error]);
-          }
-
-          if (options.error) {
-            options.error(resp, "apierror");
-            return;
-          }
-        }
-
-        if (callerSuccess) {
-          callerSuccess(resp, status, xhr);
-        }
-      });
-
-      $.ajax(_.extend(options, {
-        type: "GET",
-        url: this.apiUrl,
-        //dataType: "jsonp",
-        timeout: 4000,
-        data: dataParams
-      }));
-    },
     query: function(options) {
 
       if (options.conditions === undefined) {
@@ -67,7 +32,7 @@ define([
           break;
         }
 
-        this.apiCall({
+        this.callbackApiCall({
           method: "album.getInfo",
           artist: options.conditions.artist,
           album: options.conditions.album,
@@ -79,7 +44,7 @@ define([
           options.error("Album query requires an artist condition [artist: name]", "invalidoption");
           break;
         }
-        this.apiCall({
+        this.callbackApiCall({
           method: "artist.getInfo",
           artist: options.conditions.artist,
           autocorrect: 1
@@ -113,7 +78,7 @@ define([
           if (model && model.id) {
             throw new Error("Model fetch by id not supported yet");
           } else {
-            api.query(options); // It's a collection
+            this.query(options); // It's a collection
           }
           break;
         default:
@@ -123,6 +88,7 @@ define([
     }
   });
 
-  var api = new LastFmApi();
-  return api.sync;
+  
+
+  return LastFmSync;
 });

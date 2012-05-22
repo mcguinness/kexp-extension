@@ -1,28 +1,27 @@
 define([
   "jquery",
-  "backbone",
   "underscore",
-  "marionette",
+  "marionette-extensions",
   "views/NowPlayingFsm",
   "views/NowPlayingSongView",
   "views/NowPlayingFooterView",
   "views/LastFmMetaView",
   "views/NowPlayingErrorView",
   "collections/NowPlayingCollection",
-  "text!templates/nowplaying.html",
-  "gaq"
-  ], function($, Backbone, _, Marionette, NowPlayingFsm, NowPlayingSongView, NowPlayingFooterView,
-    LastFmMetaView, NowPlayingErrorView, NowPlayingCollection, LayoutTemplate, _gaq) {
+  "text!templates/nowplaying.html"
+  ], function($, _, Backbone, NowPlayingFsm, NowPlayingSongView, NowPlayingFooterView,
+    LastFmMetaView, NowPlayingErrorView, NowPlayingCollection, LayoutTemplate) {
 
   var NowPlayingLayout = Backbone.Marionette.Layout.extend({
 
     template: LayoutTemplate,
     regions: {
-      song: "#region-song",
-      meta: "#region-meta",
-      footer: "#region-footer"
+      song: "#region-nowplaying-song",
+      meta: "#region-nowplaying-meta",
+      footer: "#region-nowplaying-footer"
     },
-    initialize: function() {
+    initialize: function(options) {
+      
       if (this.collection === undefined) {
         this.collection = new NowPlayingCollection();
       }
@@ -58,7 +57,7 @@ define([
         loaderDfr.resolve(nowPlayingModel);
       });
       loader.on("error", function(error) {
-        _gaq.push(["_trackEvent", "NowPlaying", "error"]);
+        this.vent.trigger("analytics:trackevent", "NowPlaying", "Error", error);
         layout.showErrorView();
         loaderDfr.reject(nowPlayingModel, error);
       });
@@ -74,30 +73,25 @@ define([
     },
     showSongView: function(nowPlayingModel) {
       var songView = new NowPlayingSongView({
-        model: nowPlayingModel,
-        vent: this.vent
+        model: nowPlayingModel
       });
       return this.song.show(songView, "append");
     },
     showFooterView: function(nowPlayingModel) {
       var footerView = new NowPlayingFooterView({
-        model: nowPlayingModel,
-        vent: this.vent
+        model: nowPlayingModel
       });
       return this.footer.show(footerView, "append");
     },
     showMetaView: function(nowPlayingModel) {
       var metaView = new LastFmMetaView({
         model: nowPlayingModel,
-        vent: this.vent,
         popoverEl: "#navbar-top"
       });
       return this.meta.show(metaView, "append");
     },
     showErrorView: function(nowPlayingModel) {
-      var errorView = new NowPlayingErrorView({
-        vent: this.vent
-      });
+      var errorView = new NowPlayingErrorView();
       return this.song.show(errorView, "append");
     },
     disablePoll: function() {
@@ -118,9 +112,9 @@ define([
       var collection = (event instanceof Backbone.Collection) ? event : this.collection;
       collection.fetch({upsert: true});
     },
-    handleError: function() {
-      console.debug("[Error NowPlaying] - Added adding new new playing to view collection", this.collection);
-      _gaq.push(["_trackEvent", "NowPlaying", "error"]);
+    handleError: function(model, collection) {
+      console.debug("[Error NowPlaying] - Added adding new new playing to view collection", model, collection);
+      this.vent.trigger("analytics:trackevent", "NowPlaying", "Error", model.toDebugString());
       this.showErrorView();
     },
     handleNewSong: function(model, collection) {

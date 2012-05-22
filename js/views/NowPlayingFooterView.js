@@ -1,20 +1,18 @@
 define([
   "jquery",
-  "backbone",
   "underscore",
-  "marionette",
+  "marionette-extensions",
   "text!templates/nowplaying-footer.html",
-  "gaq",
   "jquery-ui", // no need for arg
   "jquery-kexp", // no need for arg
   "bootstrap" // no need for arg
-  ], function($, Backbone, _, Marionette, ViewTemplate, _gaq) {
+  ], function($, _, Backbone, ViewTemplate) {
   
   var NowPlayingFooterView = Backbone.Marionette.ItemView.extend({
     template: ViewTemplate,
     initialize: function(options) {
-      this.vent = options.vent;
       this.collection = this.model.collection;
+      
       this.bindTo(this.vent, "nowplaying:lastfm:popover:enabled", this.showLastFmButton, this);
       this.bindTo(this.vent, "nowplaying:refresh:background", this.handleBackgroundRefresh, this);
     },
@@ -23,8 +21,21 @@ define([
       "click #button-lastfm": "handleLastFmPopoverToggle",
       "click #button-refresh": "handleRefresh"
     },
+    serializeData: function() {
+      var likedSong = this.model.getLikedSong();
+      var lastFmConfig = this.appConfig.getLastFm();
+
+      return {
+        model: {
+          id: this.model.id,
+          likeCount: likedSong ? likedSong.get("likeCount") : 0,
+          likeShareEnabled: lastFmConfig.isLikeShareEnabled()
+        }
+      };
+    },
     onRender: function() {
-      self = this;
+      var self = this;
+      var lastFmConfig = this.appConfig.getLastFm();
 
       $(this.el)
         .find("#button-spotify")
@@ -41,6 +52,16 @@ define([
               return "Last Update: " + self.model.get("LastUpdate");
             }
           });
+      $(this.el)
+        .find("#button-share")
+          .tooltip({
+            placement: "top",
+            title: function() {
+              return lastFmConfig.isLikeShareEnabled() ?
+              "<strong>Last.fm Sharing Enabled</strong> - Likes will be shared to your Last.fm profile as 'loves' (See Options)" :
+              "<strong>Last.fm Sharing Disabled</strong> - Likes will only be locally stored and not shared with your Last.fm profile (See Options)";
+            }
+          });
 
     },
     onShow: function() {
@@ -51,7 +72,7 @@ define([
 
     },
     showRefreshAnimation: function() {
-      var $icon = $("#button-refresh i", this.el).removeClass("rotate");
+      var $icon = $("#button-refresh i", this.$el).removeClass("rotate");
       _.delay(function() {
         $icon.addClass("rotate");
       });
@@ -67,11 +88,7 @@ define([
         targetModel = this.collection.get(modelId),
         likedSong;
 
-      if (_.isUndefined(targetModel)) {
-        return;
-      }
-
-      _gaq.push(["_trackEvent", "Like", "click"]);
+      if (_.isUndefined(targetModel)) return;
 
       likedSong = targetModel.getLikedSong() || targetModel.toSong();
       likedSong.like();
@@ -85,15 +102,19 @@ define([
         likedSong.save();
       }
 
+      this.vent.trigger("analytics:trackevent", "NowPlaying", "Like", targetModel.toDebugString(), likedSong.get("likeCount"));
+
       $(".badge", this.$el).toggleClass("badge-zero", false).text(likedSong.get("likeCount"));
+      this.vent.trigger("nowplaying:like", targetModel);
     },
     handleBackgroundRefresh: function() {
       $("#button-refresh", this.$el).tooltip("hide");
       this.showRefreshAnimation();
     },
     handleRefresh: function(event) {
-      _gaq.push(["_trackEvent", "Refresh", "click"]);
+      this.vent.trigger("analytics:trackevent", "NowPlaying", "Refresh", "Manual");
       this.handleBackgroundRefresh();
+      
       this.vent.trigger("nowplaying:refresh:manual");
     },
     handleLastFmPopoverToggle: function() {

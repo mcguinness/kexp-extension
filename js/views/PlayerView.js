@@ -5,9 +5,8 @@ define([
 	"marionette",
 	"models/PlayerModel",
 	"views/PlayerFsm",
-	"text!templates/player.html",
-	"gaq"
-	], function($, Backbone, _, Marionette, PlayerModel, PlayerFsm, ViewTemplate, _gaq) {
+	"text!templates/player.html"
+	], function($, Backbone, _, Marionette, PlayerModel, PlayerFsm, ViewTemplate) {
 	
 	var PlayerView = Backbone.Marionette.ItemView.extend({
 		template: ViewTemplate,
@@ -37,7 +36,7 @@ define([
 					}
 				}
 				console.warn("Player: Error %s occurred with stream.", errorMessage, self.audioEl);
-				_gaq.push(["_trackEvent", "Audio", "error", errorMessage]);
+				self.vent.trigger("analytics:trackevent", "LiveStream", "error", errorMessage);
 			});
 
 
@@ -111,7 +110,7 @@ define([
 		},
 		handleTogglePlay: function() {
 			this.playerFsm.handle("toggle");
-			_gaq.push(["_trackEvent", "Audio", "click", this.playerFsm.state]);
+			this.vent.trigger("analytics:trackevent", "LiveStream", "PlayToggle", this.playerFsm.state);
 		},
 		handleChangeVolume: function() {
 			var currentVolume = $("#player-volume").val();
@@ -123,7 +122,7 @@ define([
 			this.model.set({volume: calcVolume});
 		},
 		handleToggleMute: function() {
-			_gaq.push(["_trackEvent", "Audio", "mute"]);
+			this.vent.trigger("analytics:trackevent", "LiveStream", "Mute", !this.audioEl.muted);
 			this.audioEl.muted = !this.audioEl.muted;
 			this.model.set({muted: this.audioEl.muted});
 		},

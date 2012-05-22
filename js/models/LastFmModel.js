@@ -3,10 +3,13 @@ define([
   "backbone-relational",
   "underscore",
   "databases/LastFmSync"
-  ], function($, Backbone, _, lastFmSync) {
+  ], function($, Backbone, _, LastFmSync) {
 
   var LastFmModel = Backbone.RelationalModel.extend({
-    sync: lastFmSync,
+    
+    initialize: function(options) {
+      this.sync = new LastFmSync(options).sync;
+    },
     parseEntity: function(entity) {
       var result = {
         mbid: entity.mbid || "",

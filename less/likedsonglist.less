@@ -1,0 +1,57 @@
+/////////////////////////////////////////////
+// LikedSongListView Styles
+/////////////////////////////////////////////
+
+// Custom Table Styles
+.table-header-nofocus th:focus {
+  outline: 0;
+}
+
+.table-removable {
+  tbody tr {
+    td.cell-remove-action {
+      width: 22px;
+      padding-left: 8px;
+      padding-right: 0px;
+      i.icon-remove {
+          display: none;
+          vertical-align: text-bottom;
+      }
+    }
+    &:hover {
+      td.cell-remove-action i.icon-remove {
+          display: inline-block;
+      }
+    }
+  }
+}
+
+.table-infoable {
+  tbody tr {
+    td.cell-info-action {
+      width: 22px;
+      padding-left: 8px;
+      padding-right: 0px;
+      i {
+          display: none;
+          vertical-align: text-bottom;
+      }
+    }
+    &:hover {
+      td.cell-info-action i {
+          display: inline-block;
+      }
+    }
+  }
+}
+
+.column-sortable {
+  text-decoration: none;
+  cursor: pointer;
+}
+
+#table-liked  {
+  .badge:hover {
+       cursor: default;
+  }
+}

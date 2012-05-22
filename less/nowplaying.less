@@ -1,0 +1,110 @@
+/////////////////////////////////////////////
+// NowPlaying Layout Styles
+/////////////////////////////////////////////
+
+// Manually override bootstrap grid system for the view to optimize sizes
+.span-nowplaying-content {
+  width: 367px;
+  //margin-bottom: 10px;
+}
+
+.span-nowplaying-meta {
+  width: 210px;
+  margin-left: 15px;
+}
+
+
+.btn-refresh {
+  display: inline-block;
+  float: right;
+  //.clearfix;
+  .rotate {
+    -webkit-animation: rotate 3s linear;
+  }
+  i {
+    vertical-align: middle;
+  }
+}
+
+/////////////////////////////////////////////
+// NowPlayingSongView Styles
+/////////////////////////////////////////////
+
+.song {
+  min-height: 210px;
+  //position:relative;
+  .clearfix;
+  span {
+      display: block;
+  }
+  .artist {
+    #font > .shorthand(@baseFontSize + 10, bold, @baseLineHeight + 10);
+    color: @kexpOrange;
+  }
+  .song-title {
+    #font > .shorthand(@baseFontSize + 6, bold, @baseLineHeight + 6);
+  }
+  .album {
+    #font > .shorthand(@baseFontSize + 4, normal, @baseLineHeight + 4);
+  }
+  .label-title{
+    #font > .shorthand(@baseFontSize + 4, normal, @baseLineHeight + 4);
+    font-style: italic;
+  }
+  .comment {
+    margin-top: 10px;
+    margin-bottom: 10px;
+  }
+  .timeplayed {
+    #font > .shorthand(@baseFontSize + 2, bold, @baseLineHeight + 2);
+  }
+}
+
+/////////////////////////////////////////////
+// NowPlayingFooterView Styles
+/////////////////////////////////////////////
+
+.song-footer {
+  .clearfix;
+  .badge {
+    float: left;
+    margin-left: 5px;
+    background-color: @linkColorHover;
+    //padding-bottom: 1px;
+    &:hover {
+     cursor: default;
+    }
+    &.badge-zero {
+      background-color: @textColor;
+    }
+  }
+  .btn-like {
+    float: left;
+    height: 20px;
+    #font > #family .sans-serif();
+  }
+  .btn-spotify {
+    float: left;
+  }
+  .btn-lastfm {
+    float: left;
+  }
+  .btn-share {
+    float: right;
+    margin-right: 10px;
+    .opacity(50);
+    &.active {
+      .opacity(100);
+    }
+    i {
+      vertical-align: middle;
+    }
+  }
+  &.fade {
+    .transition(opacity .75s ease);
+    // opacity: 0;
+    // &.in {
+    //   opacity: 1;
+    // }
+  }
+}

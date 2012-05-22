@@ -6,7 +6,7 @@
 	<meta name="description" content="HTML5 background kexp.org streaming audio player.">
 	<meta name="author" content="Karl McGuinness">
 	<meta name="viewport" content="width=device-width">
-	<link rel="stylesheet" href="less/style.css">
+	<link rel="stylesheet" href="less/popup.css">
   <script data-main="js/main" src="js/libs/require.js"></script>
 </head>
 <body>
@@ -19,17 +19,19 @@
           <li><a href="#likes"><i class="icon-star"></i> Likes</a></li>
           <li><a href="http://kexp.org/about/email.asp?email=dj" data-chrometab="active"><i class="icon-question-sign"></i> DJ Request</a></li>
           <li><a href="http://kexp.org/donate/" data-chrometab="active"><i class="icon-gift"></i> Donate</a></li>
-          <li><a href="#about"><i class="icon-info-sign"></i> About</a></li>
+          <li><a href="chrome-extension://options.html" data-chrometab="active"><i class="icon-cog"></i> Options</a></li>
         </ul>
       </div>
     </div>
   </div>
   <div class="container">
-    <div id="view-content"></div>
+    <div id="region-content"></div>
     <div class="row">
       <div class="span12 hr-stripes"></div>
     </div>
-    <div id="view-player" class="container-contrast-light"></div>
+    <div id="footer" class="container-contrast-light">
+      <div id="region-player"></div>
+    </div>
   </div> <!-- /container -->
 </body>
 </html>

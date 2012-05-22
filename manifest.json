@@ -1,21 +1,24 @@
 {
-    "name": "KEXP Streaming Player (Unsanctioned)",
-    "version": "1.0.3",
-    "description": "background kexp.org streaming audio player with now playing info and likes.",
-    "background": {
-        "page": "background.html"
-    },
-    "browser_action": {
-        "default_icon": "img/favicon.ico",
-        "default_title": "Now Playing on KEXP",
-        "popup": "popup.html"
-    },
-    "icons": { "16": "img/icon16.png",
-           "48": "img/icon48.png",
-          "128": "img/icon128.png" },
-    "permissions": [
-        "*://*.kexp.org/",
-        "*://*.audioscrobbler.com/"
-    ],
-    "content_security_policy": "script-src 'self' 'unsafe-eval' https://ssl.google-analytics.com https://platform.twitter.com; object-src 'self'"
+  "name": "KEXP Streaming Player (Unsanctioned)",
+  "version": "1.0.3",
+  "description": "background kexp.org streaming audio player with now playing info and likes.",
+  "background": {
+    "page": "background.html"
+  },
+  "options_page": "options.html",
+  "browser_action": {
+    "default_icon": "img/favicon.ico",
+    "default_title": "Now Playing on KEXP",
+    "popup": "popup.html"
+  },
+  "icons": { 
+    "16": "img/icon16.png",
+    "48": "img/icon48.png",
+    "128": "img/icon128.png" 
+  },
+  "permissions": [
+    "*://*.kexp.org/",
+    "*://*.audioscrobbler.com/"
+  ],
+  "content_security_policy": "script-src 'self' 'unsafe-eval' https://ssl.google-analytics.com https://platform.twitter.com; object-src 'self'"
 }

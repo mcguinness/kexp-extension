@@ -1,9 +1,9 @@
 define([
   "jquery",
-  "backbone",
   "underscore",
+  "backbone",
   "marionette"
-  ], function($, Backbone, _, Marionette) {
+  ], function($, _, Backbone, Marionette) {
 
   // Enable Require.js Template Cache
   Backbone.Marionette.TemplateCache.loadTemplate = function(template, callback) {
@@ -17,6 +17,30 @@ define([
     // we only need to execute the template with the data
     return template(data);
   };
+
+  // Add Services to Application
+  _.extend(Backbone.Marionette.Application.prototype, {
+    services: [],
+    addService: function(service) {
+      this.addInitializer(function(options) {
+        this.services.push(service);
+        service.start(options);
+      });
+    },
+    close: function() {
+      _.each(_.values(this), function(region) {
+        if (region instanceof Backbone.Marionette.Region && _.isFunction(region.close)) {
+          console.debug("Closing region {%s}", region.el, region);
+          region.close();
+        }
+      });
+
+      _.each(this.services, function(service) {
+        console.debug("Stopping service", service);
+        service.stop();
+      });
+    }
+  });
 
 
   Backbone.Marionette.Region.prototype.show = function(view, appendMethod) {
@@ -83,5 +107,7 @@ define([
 
     return deferredClose.promise();
   };
+
+  return Backbone;
   
 });

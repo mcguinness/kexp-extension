@@ -10,9 +10,6 @@ define([
   var NowPlayingErrorView = Backbone.Marionette.ItemView.extend({
     template: ViewTemplate,
     className: "kexp-error kexp-box-striped",
-    initialize: function(options) {
-      this.vent = options.vent;
-    },
     events: {
       "click #button-refresh": "handleRefresh"
     },

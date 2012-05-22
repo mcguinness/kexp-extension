@@ -1,11 +1,10 @@
 define([
     "jquery",
-    "backbone",
     "underscore",
-    "marionette",
+    "marionette-extensions",
     "linkify",
     "text!templates/nowplaying-song.html"
-    ], function($, Backbone, _, Marionette, linkify, ViewTemplate) {
+    ], function($, _, Backbone, linkify, ViewTemplate) {
     
     var NowPlayingSongView = Backbone.Marionette.ItemView.extend({
         template: ViewTemplate,
@@ -21,7 +20,7 @@ define([
                     }
                 });
             }
-            return json;
+            return {model: json};
         },
         onRender: function() {
             this.$el.hide();

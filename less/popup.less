@@ -1,0 +1,114 @@
+//simpless:!minify
+
+@import "variables.less";
+// GRID Overrides
+// --------------------------------------------------
+@gridColumnWidth:         36px;
+@gridGutterWidth:         15px;
+@viewContentMarginHeight: 15px;
+
+@import "bootstrap.less";
+@import "common.less";
+
+/////////////////////////////////////////////
+// Structure
+/////////////////////////////////////////////
+
+body {
+  margin-top: @navbarHeight + @viewContentMarginHeight;
+  //padding-bottom: 10px;
+  max-height: 960px;
+}
+
+/////////////////////////////////////////////
+// Nav Region Styles
+/////////////////////////////////////////////
+
+.navbar {
+  margin-bottom: @viewContentMarginHeight;
+}
+
+.navbar .nav > li > a {
+  padding: 15px 10px 15px;
+  outline-style: none;
+}
+
+.navbar .nav > li > a > i {
+  vertical-align: text-middle;
+}
+
+.navbar .logo {
+  float: left;
+  display: block;
+  margin: 0px 15px 0px 5px;
+}
+
+
+/////////////////////////////////////////////
+// Notification Styles
+/////////////////////////////////////////////
+
+.toast-title {
+  font-weight: bold;
+}
+
+.toast {
+  position: absolute;
+  bottom: 40px;
+  width: @gridRowWidth - 25px;
+  z-index: 9999;
+  background-color: #FFFFFF;
+  border: 3px solid #feac31;
+  .border-radius(3px);
+  .box-shadow(0 0 12px #999999);
+  padding: 2px 5px;
+  margin: 2px 5px 0px 5px;
+  .opacity(80);
+  &:hover {
+    .opacity(100);
+    cursor: pointer;
+  }
+  i {
+    vertical-align: -15%;
+  }
+}
+
+.toast-success{
+  border-color: #0C4900;
+  //border-color: @successBorder;
+}
+
+.toast-error{
+  border-color: #BD362F;
+  //border-color: @errorBorder;
+}
+
+.toast-info{
+  border-color: @grayDark;
+}
+
+.toast-warning{
+  border-color: @kexpOrange;
+}
+
+/////////////////////////////////////////////
+// App View Styles
+/////////////////////////////////////////////
+
+@import "player.less";
+@import "nowplaying.less";
+@import "lastfm-meta.less";
+@import "likedsonglist.less";
+
+
+
+
+
+
+
+
+
+
+
+
+
