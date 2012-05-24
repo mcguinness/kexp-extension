@@ -55,7 +55,7 @@ require(["jquery", "underscore", "KexpApp", "gaq"], function($, _, KexpApp) {
       href = $link.attr("href"),
       chromeMatches = href.match(/(chrome-extension):\/\/([\w\.?=%&=\-@\/$,]+)/);
 
-      if (chromeMatches.length == 3) {
+      if (chromeMatches && chromeMatches.length == 3) {
         href = chrome.extension.getURL(chromeMatches[2]);
       }
 

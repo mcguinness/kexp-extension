@@ -10,7 +10,7 @@ define([
   ], function($, Backbone, _, moment, LastFmModel, LikedSongModel, LikedSongCollection, LastFmCollection) {
   
   var NowPlayingModel = Backbone.RelationalModel.extend({
-    idAttribute: "PlayID",
+    //idAttribute: "PlayID",
     relations: [
       {
         type: Backbone.HasMany,
@@ -27,13 +27,47 @@ define([
     intialize: function() {
 
     },
+    toJSON: function() {
+      var json = Backbone.Model.prototype.toJSON.call(this);
+      json.timePlayed = this.get("timePlayed").toISOString();
+      json.timeLastUpdate = this.get("timeLastUpdate").toISOString();
+      return json;
+    },
     parse: function(resp, xhr) {
 
-      var parsedModel = _.clone(resp);
-      var self = this;
+      var parsedModel = {
+          id: resp.PlayID,
+          airBreak: resp.AirBreak || false,
+          songTitle: resp.SongTitle,
+          artist: resp.Artist,
+          album: resp.Album || "",
+          albumYear: resp.ReleaseYear || "",
+          albumLabel: resp.LabelName || "",
+          comments: resp.Comments || "",
+          timePlayed: resp.TimePlayed,
+          timeLastUpdate: resp.LastUpdate
+        },
+        key, value, self = this, nowUtc = moment.utc();
 
+
+      if (parsedModel.timePlayed && !_.isEmpty(parsedModel.timePlayed)) {
+        value = moment(parsedModel.timePlayed + "-08:00", "h:mmAZ").utc();
+        value.month(nowUtc.month());
+        value.date(nowUtc.date());
+        value.year(nowUtc.year());
+        // Can't figure out why time is 1 hour off, so hack -1 hour until I figure it out..DST???
+        value.subtract("hours", 1);
+        parsedModel.timePlayed = value.toDate();
+      }
+
+      if (parsedModel.timeLastUpdate && !_.isEmpty(parsedModel.timeLastUpdate)) {
+        // Can't figure out why time is 1 hour off, so hack -1 hour until I figure it out..DST???
+        parsedModel.timeLastUpdate = moment(parsedModel.timeLastUpdate + "-08:00", "M/D/YYYY h:mm:ss AZ").subtract("hours", 1).utc().toDate();
+      }
+      
       // Feed sometimes encodes some values...its hard to determine when
-      _.each(resp, function(value, key, list) {
+      _.each(["songTitle", "artist", "album", "albumLabel", "comments"], function(key) {
+        value = parsedModel[key];
         if (!_.isEmpty(value) && _.isString(value)) {
           parsedModel[key] = self.htmlEncoder.htmlDecode(value);
           if (!_.isEqual(parsedModel[key], value)) {
@@ -42,14 +76,6 @@ define([
         }
       });
 
-      if (parsedModel.TimePlayed && !_.isEmpty(parsedModel.TimePlayed)) {
-        parsedModel.TimePlayed = moment(parsedModel.TimePlayed + "-08:00", "h:mmAZ").local().format("h:mm A");
-      }
-
-      if (parsedModel.LastUpdate && !_.isEmpty(parsedModel.LastUpdate)) {
-        // Can't figure out why time is 1 hour off, so hack -1 hour until I figure it out
-        parsedModel.LastUpdate = moment(parsedModel.LastUpdate + "-08:00", "M/D/YYYY h:mm:ss AZ").local().subtract("hours", 1).format("M/D/YYYY h:mm:ss A");
-      }
 
       console.debug("NowPlayingModel Parse Result", parsedModel, resp);
       return parsedModel;
@@ -58,29 +84,11 @@ define([
       return "http://www.kexp.org/s/s.aspx?x=3";
     },
     validate: function(attributes) {
-      if (attributes.LastUpdate === undefined || attributes.LastUpdate === null) {
-        return "LastUpdate attribute is missing or null";
+      if (attributes.timeLastUpdate === undefined || attributes.timeLastUpdate === null) {
+        return "timeLastUpdate attribute is missing or null";
       }
-      if (attributes.PlayID === undefined || attributes.PlayID === null) {
-        return "PlayID attribute is missing or null";
-      }
-      if (attributes.AirBreak === undefined || attributes.AirBreak === null) {
-        return "AirBreak attribute is missing or null";
-      }
-      if (attributes.Artist === undefined || attributes.Artist === null) {
-        return "Artist attribute is missing or null";
-      }
-      if (attributes.SongTitle === undefined || attributes.SongTitle === null) {
-        return "SongTitle attribute is missing or null";
-      }
-      if (attributes.Album === undefined || attributes.Album === null) {
-        return "Album attribute is missing or null";
-      }
-      if (attributes.ReleaseYear === undefined || attributes.ReleaseYear === null) {
-        return "ReleaseYear attribute is missing or null";
-      }
-      if (attributes.LabelName === undefined || attributes.LabelName === null) {
-        return "LabelName attribute is missing or null";
+      if (attributes.id === undefined || attributes.id === null) {
+        return "id attribute is missing or null";
       }
     },
     getLikedSong: function() {
@@ -98,7 +106,7 @@ define([
         resolveDeferred = $.Deferred(),
         likedSong;
 
-      songCollection.fetchSong(this.get("SongTitle"), this.get("Artist"), this.get("Album"), {
+      songCollection.fetchSong(this.get("songTitle"), this.get("artist"), this.get("album"), {
         success: function(collection, resp) {
           likedSong = collection.first();
           if (likedSong) {
@@ -117,20 +125,20 @@ define([
       return resolveDeferred.promise();
     },
     toSpotifyUrl: function() {
-      return "spotify:search:" + encodeURI('artist:"' + this.get("Artist") + '" album:"' + this.get("Album") + '"');
+      return "spotify:search:" + encodeURI('artist:"' + this.get("artist") + '" album:"' + this.get("album") + '"');
     },
     toDebugString: function() {
-      return "NowPlaying {" + this.id + "} - Artist: {" + this.get("Artist") + "} Album: {" +
-      this.get("Album") + "} Song: {" + this.get("SongTitle") + "}";
+      return "NowPlaying {" + this.id + "} - Artist: {" + this.get("artist") + "} Album: {" +
+      this.get("album") + "} Song: {" + this.get("songTitle") + "}";
     },
     toSong: function() {
 
       var song = {
-        artist: this.get("Artist"),
-        songTitle: this.get("SongTitle"),
-        album: this.get("Album"),
-        albumYear: this.get("ReleaseYear"),
-        albumLabel: this.get("LabelName")
+        artist: this.get("artist"),
+        songTitle: this.get("songTitle"),
+        album: this.get("album"),
+        albumYear: this.get("albumYear"),
+        albumLabel: this.get("albumLabel")
       };
 
       _.each(this.getLastFmCollection().models, function(lastfmModel) {

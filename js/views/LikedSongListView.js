@@ -1,29 +1,25 @@
 define([
   "jquery",
-  "backbone",
   "underscore",
-  "marionette",
+  "marionette-extensions",
   "models/LikedSongModel",
   "collections/LikedSongCollection",
+  "views/LikedSongPopoverView",
   "text!templates/likedsonglist.html",
   "text!templates/likedsonglist-empty.html",
-  "text!templates/likedsong-popover.html",
-  "text!templates/likedsong-popover-info.html",
   "moment", // no need for arg
   // Must be last as script is not a AMD module
   "bootstrap",
   "jquery.dataTables",
   "jquery.dataTables.sort"
-  ], function($, Backbone, _, Marionette, LikedSongModel, LikedSongCollection,
-    ViewTemplate, EmptyTemplate, PopoverTemplate, PopoverContentTemplate) {
+  ], function($, _, Backbone, LikedSongModel, LikedSongCollection,
+    LikedSongPopoverView, ViewTemplate, EmptyTemplate) {
 
   var LikedSongListView = Backbone.Marionette.ItemView.extend({
 
     tagName: "div",
     template: ViewTemplate,
     emptyTemplate: EmptyTemplate,
-    popoverTemplate: PopoverTemplate,
-    popoverContentTemplate: PopoverContentTemplate,
 
     initialize: function(options) {
       if (this.collection === undefined) {
@@ -31,8 +27,8 @@ define([
       }
     },
     events: {
-      "click #table-liked i.icon-remove:hover": "removeLike"
-      //"click #table-liked i.icon-info-sign:hover": "showInfoPopover"
+      "click #table-liked i.icon-remove:hover": "removeLike",
+      "click #table-liked i.icon-info-sign:hover": "showInfoPopover"
     },
     getTemplateSelector: function() {
       return (this.collection.length > 0) ? this.template : this.emptyTemplate;
@@ -61,16 +57,18 @@ define([
           "bDeferRender": true,
           "aoColumns": [
             null,
-          {
-            "sType": "num-html"
-          },
-            null,
-            null,
-            null,
-          {
-            "mDataProp": this.formatDateColumn(5)
-          }
-          ]
+            {
+              "sType": "num-html"
+            },
+              null,
+              null,
+              null,
+            {
+              "mDataProp": this.formatDateColumn(5)
+            },
+            null
+          ],
+          "aaSorting": [ [1,'desc'], [5,'desc'] ]
         });
       }
     },
@@ -96,27 +94,22 @@ define([
       };
     },
     showInfoPopover: function(event) {
+      if (this.popoverView) this.popoverView.close();
+
       var self = this;
       var songId = $(event.currentTarget).parentsUntil("tbody", "[data-id]").attr("data-id");
-      var song = this.collection.get(songId);
-      var songJson = song.toJSON();
-      var popover;
-
-      $.when(Backbone.Marionette.Renderer.render(self.popoverContentTemplate, {
-        model: songJson
-      })).then(function(html) {
-        $(event.currentTarget).popover({
-          content: html,
-          title: song.get("songTitle"),
-          placement: "right",
-          trigger: "manual"
-        }).popover("show");
-
-        popover = $(event.currentTarget).data("popover");
-        popover.$tip.mouseout(function() {
-          popover.hide();
+      if (_.isEmpty(songId)) return;
+      var model = this.collection.get(songId);
+      if (_.isUndefined(model)) return;
+     
+      this.popoverView = new LikedSongPopoverView({
+          el: "#navbar-top",
+          model: model,
+          vent: this.vent,
+          appConfig: this.appConfig
         });
-      });
+      this.popoverView.render();
+      this.popoverView.toggle();
     },
     removeLike: function(event) {
       var self = this;
@@ -148,6 +141,11 @@ define([
           self.render();
         }
       });
+    },
+    beforeClose: function() {
+      if (this.popoverView) {
+        this.popoverView.close();
+      }
     }
   });
 

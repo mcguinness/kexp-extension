@@ -1,5 +1,5 @@
 <div>
-  <h3>Last.fm</h3>
+  <img class="img-header" title="Last.fm" src="./img/lastfm_logo_black_large.png">
   <div class="control-group">
     <label class="control-label" for="btn-lastfm-service">Connected Profile:</label>
     <div id="ctrls-lastfm-service" class="controls">
@@ -11,13 +11,19 @@
       </label>
       <p class="help-block"><em>Allows this extension to access your Last.fm profile</em></p>
     </div>
-    <label class="control-label" for="check-lastfm-sync">Share:</label>
+    <label class="control-label" for="check-lastfm-sync">Share <i class="icon-share"></i>:</label>
     <div class="controls">
       <label class="checkbox">
-        <input type="checkbox" id="check-lastfm-sync-like"
-        <%= model.likeSyncEnabled ? "checked='checked'" : '' %>
+        <input type="checkbox" id="chkbx-lastfm-share-like"
+        <%= model.likeShareEnabled ? "checked='checked'" : '' %>
         <%= _.isEmpty(model.sessionKey) ? "disabled='disabled'" : '' %>>
-        <i class="icon-share"></i> Share likes with my Last.fm profile (loves)
+        Share likes with my Last.fm profile (Loves)
+      </label>
+      <label class="checkbox">
+        <input type="checkbox" id="chkbx-lastfm-scrobble-like"
+        <%= model.likeScrobbleEnabled ? "checked='checked'" : '' %>
+        <%= _.isEmpty(model.sessionKey) ? "disabled='disabled'" : '' %>>
+        Scrobble likes with my Last.fm profile (Plays)
       </label>
       <p class="help-block"><strong>Note:</strong> Requires Last.fm app authorization.</p>
     </div>

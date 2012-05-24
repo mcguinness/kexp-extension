@@ -28,9 +28,9 @@ define([
 
       _.bindAll(this, "showNowPlaying", "disablePoll", "enablePoll", "pollNowPlaying");
 
-      this.collection.bind("add", this.handleNewSong, this);
-      this.collection.bind("change", this.handleUpdatedSong, this);
-      this.collection.bind("error", this.handleError, this);
+      this.bindTo(this.collection, "add", this.handleNewSong, this);
+      this.bindTo(this.collection, "change", this.handleUpdatedSong, this);
+      this.bindTo(this.collection, "error", this.handleError, this);
 
       this.bindTo(this.vent, "nowplaying:refresh:manual", this.pollNowPlaying, this);
     },
@@ -112,7 +112,7 @@ define([
       var collection = (event instanceof Backbone.Collection) ? event : this.collection;
       collection.fetch({upsert: true});
     },
-    handleError: function(model, collection) {
+    handleError: function(collection, model) {
       console.debug("[Error NowPlaying] - Added adding new new playing to view collection", model, collection);
       this.vent.trigger("analytics:trackevent", "NowPlaying", "Error", model.toDebugString());
       this.showErrorView();
@@ -125,10 +125,10 @@ define([
       console.debug("[Updated NowPlaying] - Attributes changed for %s", model.toDebugString(), model);
 
       var identityChange = _.any(Object.keys(model.changed), function(key) {
-        return (key === ("Album" || "Artist" || "SongTitle"));
+        return (key === ("album" || "artist" || "songTitle"));
       });
       var songChange = _.any(Object.keys(model.changed), function(key) {
-        return (key === ("ReleaseYear" || "LabelName" || "Comments" || "TimePlayed"));
+        return (key === ("albumYear" || "albumLabel" || "comments" || "timePlayed"));
       });
 
       if (identityChange) {

@@ -2,7 +2,8 @@ define([
   "jquery",
   "underscore",
   "backbone",
-  "md5"
+  "md5",
+  "moment" // Global, no need for arg
   ], function($, _, Backbone, MD5) {
 
   var LastFmApi = function(options) {
@@ -70,8 +71,18 @@ define([
           }
           return apiDfr.promise();
         }, function(xhr, textStatus, errorThrown) {
+          var apiDfr = $.Deferred();
           console.log("LastFm API Ajax Error: %s", textStatus, xhr, errorThrown);
           self.trigger("lastfm:api:error:ajax", textStatus, xhr, errorThrown);
+          return apiDfr.reject(
+            {
+              error: xhr.status,
+              message: xhr.statusText
+            },
+            errorThrown,
+            options
+          ).promise();
+
         });
     },
     callbackApiCall: function(dataParams, options) {
@@ -126,6 +137,9 @@ define([
       return this.deferredApiCall(dataParams, options);
     },
     getAuthSession: function(token) {
+      if (_.isEmpty(token)) {
+        throw new Error("Token is required.");
+      }
       var dataParams = {
         method: "auth.getSession",
         token: token
@@ -139,12 +153,44 @@ define([
       return this.deferredApiCall(dataParams, options);
     },
     loveTrack: function(track, artist) {
-
+      if (_.isEmpty(track)) {
+        throw new Error("Track name is required.");
+      }
+      if (_.isEmpty(artist)) {
+        throw new Error("Artist name is required.");
+      }
       var dataParams = {
         method: "track.love",
         track: track,
         artist: artist
       };
+      var options = {
+        type: "POST",
+        authRequired: true,
+        signatureRequired: true
+      };
+
+      return this.deferredApiCall(dataParams, options);
+    },
+    scrobbleTrack: function(track, artist, album, chosenByUser, timestampUtc) {
+      if (_.isEmpty(track)) {
+        throw new Error("Track name is required.");
+      }
+      if (_.isEmpty(artist)) {
+        throw new Error("Artist name is required.");
+      }
+      if (_.isEmpty(album)) {
+        throw new Error("Album name is required.");
+      }
+      var dataParams = {
+        method: "track.scrobble",
+        track: track,
+        artist: artist,
+        album: album,
+        chosenByUser: (chosenByUser ? 1 : 0),
+        timestamp: (timestampUtc ? moment.utc(timestampUtc).unix() : moment.utc().unix())
+      };
+
       var options = {
         type: "POST",
         authRequired: true,

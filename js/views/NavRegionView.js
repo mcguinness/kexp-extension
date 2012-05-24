@@ -25,6 +25,14 @@ define([
       // TODO: Pass vent as init option
       window.KexpApp.vent.trigger("analytics:trackevent", "Navigation", "Route", window.location.hash);
 
+      // Nasty Hack: Since we have very limited screen size w/popups, we use the nav bar to bind a popup on bottom.
+      // Cleanup any open popups on navigate;
+      var data = $(this.el).data();
+      if (data && data.popover) {
+        data.popover.hide();
+        delete data.popover;
+      }
+
       var $activeNav = $("ul.nav", this.el).children().filter(".active");
       $activeNav.toggleClass("active", false);
       $activeNav.find("i").toggleClass("icon-white", false);

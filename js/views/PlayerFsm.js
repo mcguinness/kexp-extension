@@ -29,6 +29,7 @@ define(["jquery", "underscore", "machina", "moment"], function($, _, Machina, mo
       events: ["Buffering", "Playing", "Paused", "Error"],
       retry: _.once(function() {
         if (!this.hasValidBuffer()) {
+          console.log("[Player Error:Retry]");
           this.transition("playing");
         }
       }),
@@ -39,9 +40,9 @@ define(["jquery", "underscore", "machina", "moment"], function($, _, Machina, mo
       hasValidPauseDelta: function() {
         var pauseISOString = $audioEl.attr("data-pause-time");
         var pauseMoment = (pauseISOString) ? moment(pauseISOString) : moment();
-        console.log("Pause Time %s", pauseMoment.toString());
+        console.log("Stream Pause Time: %s", pauseMoment.toString());
         var pauseDeltaSeconds = moment().diff(pauseMoment, "seconds");
-        console.log("Delta Time %s (seconds)", pauseDeltaSeconds);
+        console.log("Stream Pause Delta Time: %s (seconds)", pauseDeltaSeconds);
 
         return (pauseDeltaSeconds < 180);
       },
@@ -57,16 +58,16 @@ define(["jquery", "underscore", "machina", "moment"], function($, _, Machina, mo
         },
         "playing": {
           _onEnter: function() {
-            console.log("Playing -> NetworkState:%s ReadyState:%s", audioEl.networkState, audioEl.readyState, audioEl);
+            console.log("[Player State:Playing] NetworkState:%s ReadyState:%s", audioEl.networkState, audioEl.readyState, audioEl);
             
             if (audioEl.paused && this.hasValidPauseDelta() && this.hasValidBuffer()) {
-              console.log("Playing audio element...", audioEl);
+              console.log("[Player Action:Play]");
               audioEl.play();
-            } else {
+            } else if (audioEl.paused) {
               this.fireEvent("Buffering");
-              console.log("Buffering media for audio element...", audioEl);
+              console.log("[Player Action:Load]");
               audioEl.load();
-              console.log("Playing audio element...", audioEl);
+              console.log("[Player Action:Play]");
               audioEl.play();
             }
             this.fireEvent("Playing");
@@ -78,12 +79,12 @@ define(["jquery", "underscore", "machina", "moment"], function($, _, Machina, mo
         },
         "paused": {
           _onEnter: function() {
-            console.log("Paused -> NetworkState:%s ReadyState:%s", audioEl.networkState, audioEl.readyState, audioEl);
+            console.log("[Player State:Paused] NetworkState:%s ReadyState:%s", audioEl.networkState, audioEl.readyState, audioEl);
             
             $audioEl.attr("data-pause-time", new Date().toISOString());
             
             if (!audioEl.paused) {
-              console.log("Pausing audio element...", audioEl);
+              console.log("[Player Action:Pause]");
               audioEl.pause();
             }
             this.fireEvent("Paused");
@@ -96,7 +97,7 @@ define(["jquery", "underscore", "machina", "moment"], function($, _, Machina, mo
         },
         "error": {
           _onEnter: function() {
-            console.log("Error -> NetworkState:%s ReadyState:%s", audioEl.networkState, audioEl.readyState, audioEl);
+            console.log("[Player State:Error] -> NetworkState:%s ReadyState:%s", audioEl.networkState, audioEl.readyState, audioEl);
             //Attemp retry once, if success state will transition, otherwise fire error.
             this.retry();
             this.fireEvent("Error");

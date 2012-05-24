@@ -2,12 +2,12 @@ define([
   "jquery",
   "underscore",
   "marionette-extensions",
+  "views/PopoverView",
   "text!templates/nowplaying-popover.html",
-  "text!templates/nowplaying-popover-lastfm.html",
-  "bootstrap" // no need for arg
-  ], function($, _, Backbone, PopoverTemplate, PopoverContentTemplate) {
+  "text!templates/nowplaying-popover-lastfm.html"
+  ], function($, _, Backbone, PopoverView, PopoverTemplate, PopoverContentTemplate) {
 
-  var LastFmPopoverView = Backbone.Marionette.ItemView.extend({
+  var LastFmPopoverView = PopoverView.extend({
 
     template: PopoverContentTemplate,
     popoverTemplate: PopoverTemplate,
@@ -40,49 +40,14 @@ define([
     renderHtml: function(json) {
       return Backbone.Marionette.Renderer.render(this.template, {model: json});
     },
-    render: function() {
-      var $targetEl = $(this.el),
-        json = this.serializeData(),
-        self = this,
-        popover;
-
-      if (_.isArray(json) && json.length > 0) {
-        $.when(this.renderHtml(json))
-          .done(function(html) {
-            popover = $targetEl.data("popover");
-            if (popover !== undefined) {
-              popover.options.content = function() {
-                return html;
-              };
-            } else {
-              $targetEl.popover({
-                content: function() {
-                  return html;
-                },
-                placement: "bottom",
-                trigger: "manual",
-                template: self.popoverTemplate
-              });
-            }
-            self.vent.trigger("nowplaying:lastfm:popover:enabled", {
-              target: $targetEl,
-              model: self.model
-            });
-          });
-      }
+    onEnable: function() {
+      this.vent.trigger("nowplaying:lastfm:popover:enabled", {
+        target: $(this.el),
+        model: this.model
+      });
     },
-    toggle: function() {
-      var $el = $(this.el);
-      var popover = $el.data("popover");
-      if (popover) {
-        $(this.el).popover("toggle");
-        if (popover.enabled) {
-          this.vent.trigger("analytics:trackevent", "LastFm", "Popover", "Show");
-          popover.$tip.find(".close").click(function() {
-            popover.hide();
-          });
-        }
-      }
+    onShow: function() {
+      this.vent.trigger("analytics:trackevent", "LastFm", "Popover", "Show");
     },
     close: function() {
       // Very important we do not delete the view's el as we are only touching the popover data blob

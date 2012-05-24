@@ -48,8 +48,8 @@ define(["machina", "jquery", "underscore", "models/LastFmModel"], function(machi
             this.fireEvent("resolve:liked", nowPlayingModel.get("relLiked"));
 
             var self = this,
-              artistName = nowPlayingModel.get("Artist"),
-              albumName = nowPlayingModel.get("Album"),
+              artistName = nowPlayingModel.get("artist"),
+              albumName = nowPlayingModel.get("album"),
               metaCollection = nowPlayingModel.get("relLastFmMeta"),
               albumPromise = metaCollection.getOrFetchAlbum(artistName, albumName),
               artistPromise = metaCollection.getOrFetchArtist(artistName),

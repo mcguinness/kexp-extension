@@ -1,13 +1,13 @@
-<table id="table-liked" class="table table-striped table-condensed table-removable table-infoable">
+<table id="table-liked" class="table table-striped table-condensed table-removable table-infoable table-liked">
   <thead class="table-header-nofocus">
     <tr>
-      <th></th>
-      <th class="column-sortable">Likes</th>
-      <th class="column-sortable">Artist</th>
-      <th class="column-sortable">Song</th>
-      <th class="column-sortable">Album</th>
-      <th class="column-sortable">Last Liked</th>
-      <!-- <th></th> -->
+      <th></th> <!-- remove-action -->
+      <th class="column-sortable center"><i class="icon-star"></i></th>
+      <th class="column-sortable"><i class="icon-user"></i> Artist</th>
+      <th class="column-sortable"><i class="icon-music"></i> Song</th>
+      <th class="column-sortable"><i class="icon-book"></i> Album</th>
+      <th class="column-sortable center"><i class="icon-time"></i></th>
+      <th></th> <!-- info action -->
     </tr>
   </thead>
   <tbody>
@@ -19,7 +19,7 @@
       <td class="cell-song"><%- song.songTitle %></td>
       <td class="cell-album"><%- song.album %></td>
       <td class="cell-lastliked"><%- song.timeLastLike %></td>
-      <!-- <td class="cell-info-action"><i class="icon-info-sign"></i></td> -->
+      <td class="cell-info-action"><i class="icon-info-sign"></i></td>
     </tr>
     <% }); %>
   </tbody>

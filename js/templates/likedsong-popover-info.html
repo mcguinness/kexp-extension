@@ -1,27 +1,53 @@
-< table id = "table-liked-info"
-class = "table table-striped table-condensed" >
-<!--   <thead class="table-header-nofocus">
-<
-tr > < th > < /th>
-      <th></th > < /tr>
-  </thead > -->
-<
-tbody > < tr > < td > < span class = "btn-kexp-nohover" > < span class = "prefix-accent" > \\\ < /span> SONG</span > < /td>
-      <td><%= model.songTitle %></td > < /tr>
-    <tr>
-      <td><span class="btn-kexp-nohover"><span class="prefix-accent">\\\</span > ARTIST < /span></td > < td > <%= model.artist %> < /td>
-    </tr > < tr > < td > < span class = "btn-kexp-nohover" > < span class = "prefix-accent" > \\\ < /span> ALBUM</span > < /td>
-      <td><%= model.album %></td > < /tr>
-    <tr>
-      <td><span class="btn-kexp-nohover"><span class="prefix-accent">\\\</span > YEAR < /span></span > < /td>
-      <td><%= model.albumYear %></td > < /tr>
-    <tr>
-      <td><span class="btn-kexp-nohover"><span class="prefix-accent">\\\</span > LABEL < /span></span > < /td>
-      <td><%= model.albumLabel %></td > < /tr>
-    <tr>
-      <td><span class="btn-kexp-nohover"><span class="prefix-accent">\\\</span > LIKES < /span></span > < /td>
-      <td><%= model.likeCount %></td > < /tr>
-    <tr>
-      <td><span class="btn-kexp-nohover"><span class="prefix-accent">\\\</span > LAST LIKED < /span></span > < /td>
-      <td><%= model.timeLastLike %></td > < /tr>
-  </tbody > < /table>
+<div>
+  <div>
+    <table id="table-liked-info" class="table table-striped table-condensed">
+      <thead class="table-header-nofocus">
+        <tr>
+          <th></th>
+          <th></th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><div class="btn-kexp-nohover"><span class="prefix-accent">\\\</span> SONG</div></td>
+          <td><%= model.songTitle %></td>
+        </tr>
+        <tr>
+          <td><div class="btn-kexp-nohover"><span class="prefix-accent">\\\</span> ARTIST</div></td>
+          <td><%= model.artist %></td>
+        </tr>
+        <tr>
+          <td><div class="btn-kexp-nohover"><span class="prefix-accent">\\\</span> ALBUM</div></td>
+          <td><%= model.album %></td>
+        </tr>
+        <tr>
+          <td><div class="btn-kexp-nohover"><span class="prefix-accent">\\\</span> YEAR</div></td>
+          <td><%= model.albumYear %></td>
+        </tr>
+        <tr>
+          <td><div class="btn-kexp-nohover"><span class="prefix-accent">\\\</span> LABEL</div></td>
+          <td><%= model.albumLabel %></td>
+        </tr>
+        <tr>
+          <td><div class="btn-kexp-nohover"><span class="prefix-accent">\\\</span> LIKES</div></td>
+          <td><span class="badge"><%= model.likeCount %><span></td>
+        </tr>
+        <tr>
+          <td><div class="btn-kexp-nohover"><span class="prefix-accent">\\\</span> LAST LIKED</div></td>
+          <td><%= model.timeLastLike %></td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+  <div class="btn-group dropup">
+    <a class="btn dropdown-toggle btn-mini btn-lastfm" data-toggle="dropdown" href="#">
+      <span class="lastfm-logo"><span class="caret"></span></span>
+    </a>
+    <ul class="dropdown-menu">
+      <li><a href="#">Artist</a></li>
+      <li><a href="#">Album</a></li>
+      <li class="divider"></li>
+      <li><a href="#"><i class="icon-share"></i> Share song to your Last.fm profile</a></li>
+    </ul>
+  </div>
+<div>

@@ -21,8 +21,8 @@ define([
     },
     events: {
       "click #btn-lastfm-service": "handleAuthorizationToggle",
-      //"click #btn-lastfm-service.off": "showAuthzModal",
-      "click #check-lastfm-sync-like": "handleSyncCheck",
+      "click #chkbx-lastfm-share-like": "handleLikeShareCheck",
+      "click #chkbx-lastfm-scrobble-like": "handleLikeScrobbleCheck",
       "click #modal-lastfm-authorize button.accept": "acceptAuthorization",
       "click #link-redirect-authorize": "handleRedirectAuthorization"
     },
@@ -110,7 +110,7 @@ define([
 
       $("#btn-lastfm-service").html('<i class="icon-user"></i> Enabled');
       $("#btn-lastfm-service").button('toggle');
-      $("#check-lastfm-sync-like").removeAttr("disabled");
+      $(serviceBoxEl).find("input.checkbox").removeAttr("disabled");
     },
     removeSession: function() {
 
@@ -118,7 +118,7 @@ define([
 
       $("#btn-lastfm-service").html('<i class="icon-user icon-white"></i> Disabled');
       $("#btn-lastfm-service").button('toggle');
-      $("#check-lastfm-sync-like").attr("disabled", "disabled");
+      $(serviceBoxEl).find("input.checkbox").attr("disabled", "disabled");
     },
     showAuthzModal: function() {
       var self = this;
@@ -147,9 +147,14 @@ define([
       var $button = $(event.currentTarget);
       $button.hasClass("active") ? this.removeSession() : this.showAuthzModal();
     },
-    handleSyncCheck: function(event) {
+    handleLikeShareCheck: function(event) {
       this.model.set({
-        likeSyncEnabled: $(event.currentTarget).attr("checked")
+        likeShareEnabled: $(event.currentTarget).attr("checked")
+      });
+    },
+    handleLikeScrobbleCheck: function(event) {
+      this.model.set({
+        likeScrobbleEnabled: $(event.currentTarget).attr("checked")
       });
     }
   });

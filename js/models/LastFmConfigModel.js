@@ -13,12 +13,13 @@ define([
       sync: store.sync,
       defaults: {
         id: "lastfm",
-        likeSyncEnabled: false,
         apiKey: "10fc31f4ac0c2a4453cab6d75b526c67",
         apiSecret: "b2dbe4ef99d4cbfd3de034950a0daa4b",
         sessionKey: "",
         userName: "",
-        authUrl: "http://www.last.fm/api/auth/"
+        authUrl: "http://www.last.fm/api/auth/",
+        likeShareEnabled: true,
+        likeScrobbleEnabled: true
       },
       hasAuthorization: function() {
         return !_.isEmpty(this.get("sessionKey"));
@@ -37,7 +38,10 @@ define([
         });
       },
       isLikeShareEnabled: function() {
-        return (this.get("likeSyncEnabled") && this.hasAuthorization());
+        return (this.get("likeShareEnabled") && this.hasAuthorization());
+      },
+      isLikeScrobbleEnabled: function() {
+        return (this.get("likeScrobbleEnabled") && this.hasAuthorization());
       },
       getApi: function() {
         var options = _.pick(this.toJSON(), "apiKey", "apiSecret", "sessionKey");

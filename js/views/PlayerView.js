@@ -35,7 +35,7 @@ define([
 							break;
 					}
 				}
-				console.warn("Player: Error %s occurred with stream.", errorMessage, self.audioEl);
+				console.warn("[Player Error:%s]", errorMessage, self.audioEl.error, self.audioEl);
 				self.vent.trigger("analytics:trackevent", "LiveStream", "error", errorMessage);
 			});
 
@@ -77,7 +77,7 @@ define([
 			"click #player-mute": "handleToggleMute"
 		},
 		handleAudioPlay: function(event) {
-			console.debug("Player: Playing", event);
+			console.debug("[AudioElement] OnPlaying", event);
 			this.model.set({
 				"message": "Live Stream",
 				"paused": false,
@@ -85,7 +85,7 @@ define([
 			});
 		},
 		handleAudioPause: function(event) {
-			console.debug("Player: Paused", event);
+			console.debug("[AudioElement] OnPause", event);
 			this.model.set({
 				"message": "Paused",
 				"paused": true,
@@ -93,14 +93,14 @@ define([
 			});
 		},
 		handleAudioBuffer: function(event) {
-			console.debug("Player: Buffering", event);
+			console.debug("[AudioElement] OnWaiting", event);
 			this.model.set({
 				"message": "Buffering",
 				"disabled": true
 			});
 		},
 		handleAudioError: function(event) {
-			console.warn("Player: Error occurred with stream.", event);
+			console.warn("[AudioElement] OnError", event);
 			this.model.set({
 				"message": "Stream Error",
 				"paused": true,
@@ -127,9 +127,9 @@ define([
 			this.model.set({muted: this.audioEl.muted});
 		},
 		handleChangeMessage: function(model, value, options) {
-			console.log("Player Current Status: " + $("#player-status").text());
+			console.log("[Player] Previous Status: " + $("#player-status").text());
 			$("#player-status").text(value);
-			console.log("Player Post Status: " + $("#player-status").text());
+			console.log("[Player] Current Status: " + $("#player-status").text());
 		},
 		handleChangePaused: function(model, value, options) {
 			$("#player-button").html(value ? '<i class="icon-play icon-white"></i> Play' : '<i class="icon-pause icon-white"></i> Pause');

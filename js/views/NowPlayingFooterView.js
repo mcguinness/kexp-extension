@@ -3,6 +3,7 @@ define([
   "underscore",
   "marionette-extensions",
   "text!templates/nowplaying-footer.html",
+  "moment",
   "jquery-ui", // no need for arg
   "jquery-kexp", // no need for arg
   "bootstrap" // no need for arg
@@ -15,6 +16,7 @@ define([
       
       this.bindTo(this.vent, "nowplaying:lastfm:popover:enabled", this.showLastFmButton, this);
       this.bindTo(this.vent, "nowplaying:refresh:background", this.handleBackgroundRefresh, this);
+      this.bindTo(this.vent, "lastfm:track:love:success", this.showShareAnimation, this);
     },
     events: {
       "click #button-like": "handleLike",
@@ -49,7 +51,7 @@ define([
           .tooltip({
             placement: "top",
             title: function() {
-              return "Last Update: " + self.model.get("LastUpdate");
+              return "Last Update: " + moment.utc(self.model.get("timeLastUpdate")).local().format("M/D/YYYY h:mm:ss A");
             }
           });
       $(this.el)
@@ -75,6 +77,12 @@ define([
       var $icon = $("#button-refresh i", this.$el).removeClass("rotate");
       _.delay(function() {
         $icon.addClass("rotate");
+      });
+    },
+    showShareAnimation: function() {
+      var $icon = $("#button-share i", this.$el).removeClass("pulse");
+      _.delay(function() {
+        $icon.addClass("pulse");
       });
     },
     showLastFmButton: function() {

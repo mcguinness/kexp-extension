@@ -13,7 +13,8 @@ define([
         }
 
         this.bindTo(this.vent, "lastfm:api:error:sessionkey:invalid", this.handleInvalidSessionKey, this);
-        this.bindTo(this.vent, "lastfm:love:fail", this.handleLoveFail, this);
+        this.bindTo(this.vent, "lastfm:track:love:fail", this.handleLoveFail, this);
+        this.bindTo(this.vent, "lastfm:track:scrobble:fail", this.handleScrobbleFail, this);
       },
       handleLike: function() {
         if (!this.featuresConfig.get("hasClickedLike")) {
@@ -38,6 +39,11 @@ define([
         this.vent.trigger("notification:error",
           'Last.fm error "' + resp.message + '"',
           "Unable to share like to your Last.fm profile!");
+      },
+      handleScrobbleFail: function(resp) {
+        this.vent.trigger("notification:error",
+          'Last.fm error "' + resp.message + '"',
+          "Unable to scrobble like to your Last.fm profile!");
       }
     });
 

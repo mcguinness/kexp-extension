@@ -112,6 +112,58 @@ button.close {
   }
 }
 
+.popover.popover-kexp {
+  .arrow {
+    border-bottom-color: rgba(0, 0, 0, 0.8);
+  }
+  .popover-wrap {
+    border: 3px solid rgba(0, 0, 0, 0.8);
+    background-color: transparent;
+    .border-radius(6px);
+    .box-shadow(0 3px 7px rgba(0,0,0,0.3));
+  }
+  .popover-header {
+    padding: 5px 5px;
+    background-color: rgba(0, 0, 0, 0.8);
+    .border-radius(3px 3px 0 0);
+    .clearfix;
+    .popover-title {
+      display: inline-block;
+      float: left;
+      // Override Bootstrap
+      background-color: transparent;
+      color: @white;
+      .border-radius(0);
+      border-bottom: 0;
+      padding: 0px 5px 5px 5px;
+      font-size: 18px;
+      font-weight: bold;
+      text-rendering: optimizelegibility;
+    }
+  }
+  .popover-inner {
+    max-width: 420px;
+    width: auto;
+    background-color: transparent;
+    padding: 0px;
+    .border-radius(0px);
+    .box-shadow(0);
+  }
+  .close {
+    color: @white;
+    opacity: 1;
+    &:hover {
+      opacity: 1;
+    }
+  }
+  .popover-content {
+    background-color: rgba(238,238,238,.8);
+    .kexp-box-striped {
+      background-color: rgba(255,255,255, .8);
+    }
+  }
+}
+
 /////////////////////////////////////////////
 // last.fm Styles
 /////////////////////////////////////////////
@@ -124,7 +176,7 @@ button.close {
   height: 14px;
   padding: 0px 0px;
   .center-block();
-  background-origin:content-box;
+  background-origin: content-box;
 }
 
 .lastfm-bg-color() {
@@ -216,4 +268,16 @@ button.close {
     -webkit-transform: rotate(360deg);
     transform: rotate(360deg);
   }
+}
+
+@-webkit-keyframes pulse {
+  0%   { opacity: 1; }
+  30%  { opacity: 0.3; }
+  50% { opacity: 1; }
+  80% { opacity: 0.3; }
+  100% { opacity: 1; }
+}
+
+.pulse {
+  -webkit-animation: pulse 3s linear;
 }

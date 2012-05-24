@@ -1,17 +1,17 @@
-<% if (!model.AirBreak) { %>
+<% if (!model.airBreak) { %>
   <p>
-    <span class="artist"><%- model.Artist %></span>
-    <span class="song-title"><%- model.SongTitle %></span>
+    <span class="artist"><%- model.artist %></span>
+    <span class="song-title"><%- model.songTitle %></span>
   </p>
   <p>
-    <span class="album"><%- model.Album %><% if (model.ReleaseYear) { %> (<%- model.ReleaseYear %>) <% } %></span>
-    <span class="label-title"><%- model.LabelName %></span>
+    <span class="album"><%- model.album %><% if (model.albumYear) { %> (<%- model.albumYear %>) <% } %></span>
+    <span class="label-title"><%- model.albumLabel %></span>
   </p>
-  <% if (model.Comments) { %>
-  <blockquote class="comment"><%= model.Comments %></blockquote>
+  <% if (model.comments) { %>
+  <blockquote class="comment"><%= model.comments %></blockquote>
   <% } %>
-  <p class="bottom"><span class="timeplayed">► <%- model.TimePlayed %></span></p>
+  <p class="bottom"><span class="timeplayed">► <%- model.timePlayed %></span></p>
 <% } else { %>
   <p><span class="artist">Air Break</span></p>
-  <p><span class="timestamp">► <%- model.TimePlayed %></span></p>
+  <p><span class="timestamp">► <%- model.timePlayed %></span></p>
 <% } %>
