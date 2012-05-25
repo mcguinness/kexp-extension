@@ -10,7 +10,7 @@ define([
   ], function($, Backbone, _, moment, LastFmModel, LikedSongModel, LikedSongCollection, LastFmCollection) {
   
   var NowPlayingModel = Backbone.RelationalModel.extend({
-    //idAttribute: "PlayID",
+
     relations: [
       {
         type: Backbone.HasMany,
@@ -90,6 +90,12 @@ define([
       if (attributes.id === undefined || attributes.id === null) {
         return "id attribute is missing or null";
       }
+      if (attributes.songTitle === undefined || attributes.songTitle === null) {
+        return "songTitle attribute is missing or null";
+      }
+      if (attributes.artist === undefined || attributes.artist === null) {
+        return "artist attribute is missing or null";
+      }
     },
     getLikedSong: function() {
       return this.get("relLiked");
@@ -140,14 +146,22 @@ define([
         albumYear: this.get("albumYear"),
         albumLabel: this.get("albumLabel")
       };
+      var lastfmModel, track;
 
       _.each(this.getLastFmCollection().models, function(lastfmModel) {
         if (lastfmModel.isArtist()) {
           song.artistMbid = lastfmModel.get("mbid") || "";
           song.artistLastFmUrl = lastfmModel.get("url") || "";
-        } else if (lastfmModel.isAlbum()) {
+        }
+        else if (lastfmModel.isAlbum()) {
           song.albumMbid = lastfmModel.get("mbid") || "";
           song.albumLastFmUrl = lastfmModel.get("url") || "";
+          track = lastfmModel.getTrack(song.songTitle, song.album, song.artist);
+          if (track) {
+            song.trackMbid = track.mbid || "";
+            song.trackLastFmUrl = track.url || "";
+            song.trackDownloadUrl = track.downloadurl || "";
+          }
         }
       });
 

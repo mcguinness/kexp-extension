@@ -32,6 +32,16 @@ define([
           .value();
       }
 
+      if (entity.tracks && entity.tracks.track) {
+        result.tracks = _.chain(entity.tracks.track)
+          .map(function(track) {
+            var mapped = _.pick(track, "artist", "mbid", "name", "url", "downloadurl");
+            if (track["@attr"])  mapped.rank = track["@attr"].rank;
+            return mapped;
+          })
+          .value();
+      }
+
       if (entity.wiki && entity.wiki.summary) {
         result.summary = entity.wiki.summary;
         result.content = entity.wiki.content;
@@ -138,6 +148,22 @@ define([
         .value();
 
       return image;
+    },
+    getTrack: function(trackName, albumName, artistName) {
+      if (_.isEmpty(trackName) || _.isEmpty(albumName) || _.isEmpty(artistName)) return void 0;
+      
+      var tracks = this.get("tracks"),
+        modelName = this.get("name") || "",
+        track;
+
+      if (tracks && this.isAlbum() && modelName.toLowerCase() === albumName.toLowerCase()) {
+        return _.find(tracks, function(track) {
+          return (track.name && track.name.toLowerCase() === trackName.toLowerCase() &&
+            _.isObject(track.artist) && track.artist.name.toLowerCase() === artistName.toLowerCase());
+        });
+      }
+
+      return void 0;
     }
   });
   return LastFmModel;

@@ -57,6 +57,8 @@ define([
         this._api.scrobbleTrack(track, artist, album, false, timePlayed)
           .then(
             function() {
+              likedSong.scrobble();
+              likedSong.save();
               self.vent.trigger("lastfm:track:scrobble:success", likedSong);
             },
             function(resp, error, options) {

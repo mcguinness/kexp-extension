@@ -1,4 +1,4 @@
-define(["jquery", "underscore"], function($, _) {
+define(["jquery", "underscore", "backbone"], function($, _, Backbone) {
 
   var LastFmSync = function(options) {
     var appConfig = (options && options.appConfig) ? options.appConfig : window.KexpApp.appConfig;
@@ -9,6 +9,31 @@ define(["jquery", "underscore"], function($, _) {
 
   _.extend(LastFmSync.prototype, {
 
+    getInfo: function(model, options) {
+      switch (model.get("entity").toLowerCase()) {
+        case "album":
+          this.callbackApiCall({
+            method: "album.getInfo",
+            mbid: model.id
+          }, options);
+          break;
+        case "artist":
+          this.callbackApiCall({
+            method: "artist.getInfo",
+            mbid: model.id
+          }, options);
+          break;
+        case "track":
+          this.callbackApiCall({
+            method: "track.getInfo",
+            mbid: model.id
+          }, options);
+          break;
+        default:
+          options.error("Model entity type [" + model.get("entity") + "] is not supported", "invalidoption");
+          break;
+      }
+    },
     query: function(options) {
 
       if (options.conditions === undefined) {
@@ -41,7 +66,7 @@ define(["jquery", "underscore"], function($, _) {
         break;
       case "artist":
         if (_.isEmpty(options.conditions.artist)) {
-          options.error("Album query requires an artist condition [artist: name]", "invalidoption");
+          options.error("Album query requires an artist condition [artist: {name}]", "invalidoption");
           break;
         }
         this.callbackApiCall({
@@ -75,8 +100,8 @@ define(["jquery", "underscore"], function($, _) {
 
       switch (method) {
         case "read":
-          if (model && model.id) {
-            throw new Error("Model fetch by id not supported yet");
+          if (model && model instanceof Backbone.Model && model.id && model.get("entity")) {
+            this.getInfo(model, options);
           } else {
             this.query(options); // It's a collection
           }

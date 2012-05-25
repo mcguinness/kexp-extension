@@ -17,8 +17,10 @@ define([
       artistMbid: "",
       artistLastFmUrl: "",
       songTitle: "",
-      // reserved
-      //songMbid: "",
+      // http://musicbrainz.org/
+      trackMbid: "",
+      trackLastFmUrl: "",
+      trackDownloadUrl: "",
       album: "",
       albumLastFmUrl: "",
       // http://musicbrainz.org/
@@ -27,8 +29,9 @@ define([
       albumLabel: "",
       // reserved
       //labelMbid:"",
-      lastFmShareStatus: 0,
       likeCount: 0,
+      lastFmShareStatus: 0,
+      lastFmTrackScrobbleCount: 0,
       timeCreated: new Date(),
       timeModified: new Date(),
       timeLastLike: new Date(),
@@ -81,6 +84,12 @@ define([
       this.set({
         likeCount: ++likeCount,
         timeLastLike: new Date()
+      });
+    },
+    scrobble: function() {
+      var scrobbleCount = this.get("lastFmTrackScrobbleCount");
+      this.set({
+        lastFmTrackScrobbleCount: ++scrobbleCount
       });
     },
     hasLastFmShareStatus: function(flag) {

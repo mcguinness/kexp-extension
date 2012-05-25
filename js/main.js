@@ -22,6 +22,7 @@ require.config({
     "lastfm-api": "services/LastFmApi",
     "md5": "util/md5",
     "toastr": "util/toastr",
+    "regexpatterns": "util/regexpatterns",
     // Non AMD
     "jquery.dataTables": "libs/jquery.dataTables",
     "jquery.dataTables.sort": "plugins/jquery.dataTables.sort",
