@@ -29,8 +29,14 @@ define([
     },
     toJSON: function() {
       var json = Backbone.Model.prototype.toJSON.call(this);
-      json.timePlayed = this.get("timePlayed").toISOString();
-      json.timeLastUpdate = this.get("timeLastUpdate").toISOString();
+      
+      json.timePlayed = _.isDate(this.get("timePlayed")) ?
+        this.get("timePlayed").toISOString() :
+        "";
+      json.timeLastUpdate = _.isDate(this.get("timeLastUpdate")) ?
+        this.get("timeLastUpdate").toISOString() :
+        "";
+      
       return json;
     },
     parse: function(resp, xhr) {
@@ -71,11 +77,10 @@ define([
         if (!_.isEmpty(value) && _.isString(value)) {
           parsedModel[key] = self.htmlEncoder.htmlDecode(value);
           if (!_.isEqual(parsedModel[key], value)) {
-            console.warn("NowPlayingModel response html value: " + value + " was decoded to : " + parsedModel[key]);
+            console.log("[NowPlayingModel HtmlDecode] response value: " + value + " was decoded to : " + parsedModel[key]);
           }
         }
       });
-
 
       console.debug("NowPlayingModel Parse Result", parsedModel, resp);
       return parsedModel;
@@ -84,11 +89,12 @@ define([
       return "http://www.kexp.org/s/s.aspx?x=3";
     },
     validate: function(attributes) {
-      if (attributes.timeLastUpdate === undefined || attributes.timeLastUpdate === null) {
-        return "timeLastUpdate attribute is missing or null";
-      }
+      // KEXP feed sometimes returns nulls when there is an error, otherwise expect empty string values for "valid" data
       if (attributes.id === undefined || attributes.id === null) {
         return "id attribute is missing or null";
+      }
+      if (attributes.timeLastUpdate === undefined || attributes.timeLastUpdate === null) {
+        return "timeLastUpdate attribute is missing or null";
       }
       if (attributes.songTitle === undefined || attributes.songTitle === null) {
         return "songTitle attribute is missing or null";
@@ -105,6 +111,29 @@ define([
     },
     getLastFmCollection: function() {
       return this.get("relLastFmMeta");
+    },
+    getLastFmLikedSongAttributes: function() {
+
+      var lastfmModel, track, attributes = {}, self = this;
+
+      _.each(this.getLastFmCollection().models, function(lastfmModel) {
+        if (lastfmModel.isArtist()) {
+          attributes.artistMbid = lastfmModel.get("mbid") || "";
+          attributes.artistLastFmUrl = lastfmModel.get("url") || "";
+        }
+        else if (lastfmModel.isAlbum()) {
+          attributes.albumMbid = lastfmModel.get("mbid") || "";
+          attributes.albumLastFmUrl = lastfmModel.get("url") || "";
+          track = lastfmModel.getTrack(self.get("songTitle"), self.get("album"), self.get("artist"));
+          if (track) {
+            attributes.trackMbid = track.mbid || "";
+            attributes.trackLastFmUrl = track.url || "";
+            attributes.trackDownloadUrl = track.downloadurl || "";
+          }
+        }
+      });
+
+      return attributes;
     },
     resolveLikedSong: function() {
       var self = this,
@@ -146,25 +175,8 @@ define([
         albumYear: this.get("albumYear"),
         albumLabel: this.get("albumLabel")
       };
-      var lastfmModel, track;
-
-      _.each(this.getLastFmCollection().models, function(lastfmModel) {
-        if (lastfmModel.isArtist()) {
-          song.artistMbid = lastfmModel.get("mbid") || "";
-          song.artistLastFmUrl = lastfmModel.get("url") || "";
-        }
-        else if (lastfmModel.isAlbum()) {
-          song.albumMbid = lastfmModel.get("mbid") || "";
-          song.albumLastFmUrl = lastfmModel.get("url") || "";
-          track = lastfmModel.getTrack(song.songTitle, song.album, song.artist);
-          if (track) {
-            song.trackMbid = track.mbid || "";
-            song.trackLastFmUrl = track.url || "";
-            song.trackDownloadUrl = track.downloadurl || "";
-          }
-        }
-      });
-
+      
+      _.extend(song, this.getLastFmLikedSongAttributes());
       return new LikedSongModel(song);
     }
   });

@@ -11,8 +11,8 @@
       </label>
       <p class="help-block"><em>Allows this extension to access your Last.fm profile</em></p>
     </div>
-    <label class="control-label" for="check-lastfm-sync">Share <i class="icon-share"></i>:</label>
-    <div class="controls">
+    <label class="control-label">Share <i class="icon-share"></i>:</label>
+    <div id="ctrls-lastfm-features" class="controls">
       <label class="checkbox">
         <input type="checkbox" id="chkbx-lastfm-share-like"
         <%= model.likeShareEnabled ? "checked='checked'" : '' %>
@@ -36,19 +36,15 @@
   </div>
   <div class="modal-body">
     <p>
-      In a few seconds the <strong>Last.fm Connect Application</strong> page will launch.
+      In a few seconds the <a id="link-redirect-authorize"><strong>Last.fm Connect Application</strong></a> 
+      page will launch.
     </p>
     <p>
-      This extension requires permission to access your Last.fm account.
-      <br>After you have accepted the permission request, <strong>return</strong> to this 
-      options page and click <strong>Complete</strong>.
+      This extension requires permission to access your Last.fm account.  After you have accepted the permission request, 
+      <strong>return</strong> to this options page and click <strong>Complete</strong>.
     </p>
     <p>
       <strong>Note:</strong> You can revoke this permission from your last.fm account options at any time.
-    </p>
-    <p>
-      If the <strong>Last.fm Connect Application</strong> does not launch, you can always click 
-      <a id="link-redirect-authorize">here</a>.
     </p>
   </div>
   <div class="modal-footer">

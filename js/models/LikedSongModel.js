@@ -42,9 +42,11 @@ define([
     },
     toJSON: function() {
       var json = Backbone.Model.prototype.toJSON.call(this);
+
       json.timeCreated = this.get("timeCreated").toISOString();
       json.timeModified = this.get("timeModified").toISOString();
       json.timeLastLike = this.get("timeLastLike").toISOString();
+      // Can be Null
       json.timeLastFmLoveShare = _.isDate(this.get("timeLastFmLoveShare")) ?
         this.get("timeLastFmLoveShare").toISOString() :
         null;
@@ -52,17 +54,18 @@ define([
     },
     parse: function(resp, xhr) {
       var parsedModel = _.clone(resp);
+      var date;
       
-      if (!_.isUndefined(parsedModel.timeCreated) && !_.isDate(parsedModel.timeCreated)) {
+      if (!_.isEmpty(parsedModel.timeCreated) && !_.isDate(parsedModel.timeCreated)) {
         parsedModel.timeCreated = new Date(Date.parse(parsedModel.timeCreated));
       }
-      if (!_.isUndefined(parsedModel.timeModified) && !_.isDate(parsedModel.timeModified)) {
+      if (!_.isEmpty(parsedModel.timeModified) && !_.isDate(parsedModel.timeModified)) {
         parsedModel.timeModified = new Date(Date.parse(parsedModel.timeModified));
       }
-      if (!_.isUndefined(parsedModel.timeLastLike) && !_.isDate(parsedModel.timeLastLike)) {
+      if (!_.isEmpty(parsedModel.timeLastLike) && !_.isDate(parsedModel.timeLastLike)) {
         parsedModel.timeLastLike = new Date(Date.parse(parsedModel.timeLastLike));
       }
-      if (!_.isUndefined(parsedModel.timeLastFmLoveShare) && !_.isDate(parsedModel.timeLastFmLoveShare)) {
+      if (!_.isEmpty(parsedModel.timeLastFmLoveShare) && !_.isDate(parsedModel.timeLastFmLoveShare)) {
         parsedModel.timeLastFmLoveShare = new Date(Date.parse(parsedModel.timeLastFmLoveShare));
       }
 

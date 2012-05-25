@@ -8,11 +8,12 @@ define([
   "bootstrap" // no need for arg
   ], function($, _, Backbone, LastFmApi, AppConfigCollection, ViewTemplate) {
   
-  
   var LastFmOptionsItemView = Backbone.Marionette.ItemView.extend({
+    
     template: ViewTemplate,
     modalEl: "#modal-lastfm-authorize",
     serviceBoxEl: "#ctrls-lastfm-service",
+    featureBoxEl: "#ctrls-lastfm-features",
 
     initialize: function(options) {
       this.lastFmApi = new LastFmApi();
@@ -110,7 +111,7 @@ define([
 
       $("#btn-lastfm-service").html('<i class="icon-user"></i> Enabled');
       $("#btn-lastfm-service").button('toggle');
-      $(serviceBoxEl).find("input.checkbox").removeAttr("disabled");
+      $(featureBoxEl).find("input.checkbox").removeAttr("disabled");
     },
     removeSession: function() {
 
@@ -118,7 +119,7 @@ define([
 
       $("#btn-lastfm-service").html('<i class="icon-user icon-white"></i> Disabled');
       $("#btn-lastfm-service").button('toggle');
-      $(serviceBoxEl).find("input.checkbox").attr("disabled", "disabled");
+      $(featureBoxEl).find("input.checkbox").attr("disabled", "disabled");
     },
     showAuthzModal: function() {
       var self = this;

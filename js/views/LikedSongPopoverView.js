@@ -14,7 +14,7 @@ define([
     template: PopoverContentTemplate,
     popoverTemplate: PopoverTemplate,
     initialize: function(options) {
-     
+     this.hideOnClose = true;
     },
     serializeData: function() {
       var json = this.model.toJSON();
@@ -33,6 +33,9 @@ define([
     onShow: function() {
       var self = this;
       var $table = $("#table-liked-info");
+      var loveTooltipTitle;
+
+      $table.find("[rel=tooltip]").tooltip();
 
       $table
         .find("span.badge-likes")
@@ -43,19 +46,26 @@ define([
             }
           });
 
-      if (this.appConfig.getLastFm().isLikeShareEnabled() &&
-        this.model.hasLastFmShareStatus(LikedSongModel.LastFmShareStatus.TrackLove) &&
+      if (this.model.hasLastFmShareStatus(LikedSongModel.LastFmShareStatus.TrackLove) &&
         _.isDate(this.model.get("timeLastFmLoveShare"))) {
+        
+        loveTooltipTitle = '<i class="icon-time icon-white"></i> ' +
+          moment(self.model.get("timeLastFmLoveShare")).format("MMM Do, YYYY @ hh:mm A");
 
-          $table
-            .find("#btn-lastfm-love")
-              .tooltip({
-                placement: "right",
-                title: function() {
-                  return '<i class="icon-time icon-white"></i> ' + moment(self.model.get("timeLastFmLoveShare")).format("MMM Do, YYYY @ hh:mm A");
-                }
-              });
+      } else if (this.appConfig.getLastFm().isLikeShareEnabled()) {
+        loveTooltipTitle = "<strong>Last.fm Sharing Enabled</strong> - Share this song to your Last.fm profile (Love)";
+      } else {
+        loveTooltipTitle = "<strong>Last.fm Sharing Disabled</strong> - Share likes with your Last.fm profile (See Options)";
       }
+
+      $table
+        .find("#btn-lastfm-love")
+          .tooltip({
+            placement: "right",
+            title: function() {
+              return loveTooltipTitle;
+            }
+          });
 
 
     },

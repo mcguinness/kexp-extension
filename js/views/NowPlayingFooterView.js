@@ -46,14 +46,16 @@ define([
               placement: "top",
               title: "Searches Spotify (requires Spotify app and access to launch from web)"
             });
-      $(this.el)
-        .find("#button-refresh")
-          .tooltip({
-            placement: "top",
-            title: function() {
-              return "Last Update: " + moment.utc(self.model.get("timeLastUpdate")).local().format("M/D/YYYY h:mm:ss A");
-            }
-          });
+      if (_.isDate(self.model.get("timeLastUpdate"))) {
+        $(this.el)
+          .find("#button-refresh")
+            .tooltip({
+              placement: "top",
+              title: function() {
+                return "Last Update: " + moment.utc(self.model.get("timeLastUpdate")).local().format("M/D/YYYY h:mm:ss A");
+              }
+            });
+      }
       $(this.el)
         .find("#button-share")
           .tooltip({
@@ -94,7 +96,7 @@ define([
     handleLike: function(event) {
       var modelId = $(event.currentTarget).attr("data-id"),
         targetModel = this.collection.get(modelId),
-        likedSong;
+        likedSong, lastfmAttributes;
 
       if (_.isUndefined(targetModel)) return;
 
@@ -107,6 +109,9 @@ define([
         likedSong.save();
         targetModel.setLikedSong(likedSong);
       } else {
+        lastfmAttributes = targetModel.getLastFmLikedSongAttributes();
+        console.debug("[NowPlaying Like] merging now playing last.fm attributes to existing liked song", lastfmAttributes, likedSong);
+        likedSong.set(lastfmAttributes);
         likedSong.save();
       }
 

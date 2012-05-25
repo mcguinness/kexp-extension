@@ -3427,6 +3427,45 @@ button.close {
 .alert-success {
   text-shadow: 0 1px 0 rgba(0, 0, 0, 0.5);
 }
+i.disabled {
+  opacity: 0.3;
+  filter: alpha(opacity=30);
+}
+i.enabled {
+  opacity: 1;
+  filter: alpha(opacity=100);
+}
+.table-header-nofocus th:focus {
+  outline: 0;
+}
+.table-removable tbody tr td.cell-remove-action {
+  width: 22px;
+  padding-left: 8px;
+  padding-right: 0px;
+}
+.table-removable tbody tr td.cell-remove-action i.icon-remove {
+  display: none;
+  vertical-align: text-bottom;
+}
+.table-removable tbody tr:hover td.cell-remove-action i.icon-remove {
+  display: inline-block;
+}
+.table-infoable tbody tr td.cell-info-action {
+  width: 22px;
+  padding-left: 8px;
+  padding-right: 0px;
+}
+.table-infoable tbody tr td.cell-info-action i {
+  display: none;
+  vertical-align: text-bottom;
+}
+.table-infoable tbody tr:hover td.cell-info-action i {
+  display: inline-block;
+}
+.column-sortable {
+  text-decoration: none;
+  cursor: pointer;
+}
 .hr-stripes {
   display: block;
   height: 20px;
@@ -4184,37 +4223,6 @@ body {
   margin-top: 10px;
   text-align: justify;
 }
-.table-header-nofocus th:focus {
-  outline: 0;
-}
-.table-removable tbody tr td.cell-remove-action {
-  width: 22px;
-  padding-left: 8px;
-  padding-right: 0px;
-}
-.table-removable tbody tr td.cell-remove-action i.icon-remove {
-  display: none;
-  vertical-align: text-bottom;
-}
-.table-removable tbody tr:hover td.cell-remove-action i.icon-remove {
-  display: inline-block;
-}
-.table-infoable tbody tr td.cell-info-action {
-  width: 22px;
-  padding-left: 8px;
-  padding-right: 0px;
-}
-.table-infoable tbody tr td.cell-info-action i {
-  display: none;
-  vertical-align: text-bottom;
-}
-.table-infoable tbody tr:hover td.cell-info-action i {
-  display: inline-block;
-}
-.column-sortable {
-  text-decoration: none;
-  cursor: pointer;
-}
 .table-liked {
   margin-bottom: 10px;
 }
@@ -4224,13 +4232,16 @@ body {
 .table-liked .badge:hover {
   cursor: default;
 }
-.popover-liked table {
+.popover.popover-liked .popover-inner {
+  max-width: 550px !important;
+}
+.popover.popover-liked table {
   margin-bottom: 0px;
 }
-.popover-liked td .btn-kexp-nohover i {
+.popover.popover-liked td .btn-kexp-nohover i {
   vertical-align: top;
 }
-.popover-liked td .btn-lastfm-nohover {
+.popover.popover-liked td .btn-lastfm-nohover {
   padding: 2px 6px;
   font-size: 11px;
   line-height: 14px;
@@ -4252,23 +4263,30 @@ body {
   height: 17px;
   padding: 0px 6px;
 }
-.popover-liked td .btn-lastfm-nohover .prefix-accent {
+.popover.popover-liked td .btn-lastfm-nohover .prefix-accent {
   color: #feac31;
 }
-.popover-liked td .btn-lastfm-nohover i {
+.popover.popover-liked td .btn-lastfm-nohover i {
   vertical-align: 10%;
 }
-.popover-liked td .btn-lastfm-nohover .lastfm-logo {
+.popover.popover-liked td .btn-lastfm-nohover .lastfm-logo {
   padding: 2px 0px 0px 0px;
 }
-.popover-liked td .info-icon-group {
+.popover.popover-liked td .info-icon-group {
   margin-left: 10px;
 }
-.popover-liked td span.lastfm-logo {
+.popover.popover-liked td .badge:hover {
+  cursor: default;
+}
+.popover.popover-liked td span.lastfm-logo {
   display: inline-block;
 }
-.popover-liked td .badge-scrobbles i {
+.popover.popover-liked td .badge-scrobbles i {
   vertical-align: -10%;
+}
+.popover.popover-liked td .btn-lastfm-love {
+  margin-left: 10px;
+  vertical-align: text-bottom;
 }
 .popover.popover-liked .arrow {
   left: 40%;

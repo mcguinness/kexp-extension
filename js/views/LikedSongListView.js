@@ -94,22 +94,35 @@ define([
       };
     },
     showInfoPopover: function(event) {
-      if (this.popoverView) this.popoverView.close();
+      
+      var songId = $(event.currentTarget).parentsUntil("tbody", "[data-id]").attr("data-id"),
+        self = this,
+        closeDfr,
+        model;
 
-      var self = this;
-      var songId = $(event.currentTarget).parentsUntil("tbody", "[data-id]").attr("data-id");
+      if (this.popoverView) {
+        closeDfr = this.popoverView.close();
+        //delete this.popoverView;
+      } else {
+        closeDfr = $.Deferred().resolve();
+      }
+
       if (_.isEmpty(songId)) return;
-      var model = this.collection.get(songId);
+      model = this.collection.get(songId);
       if (_.isUndefined(model)) return;
-     
-      this.popoverView = new LikedSongPopoverView({
-          el: "#navbar-top",
-          model: model,
-          vent: this.vent,
-          appConfig: this.appConfig
-        });
-      this.popoverView.render();
-      this.popoverView.toggle();
+
+      $.when(closeDfr).then(
+        function() {
+          self.popoverView = new LikedSongPopoverView({
+              el: "#navbar-top",
+              model: model,
+              vent: self.vent,
+              appConfig: self.appConfig
+            });
+          self.popoverView.render();
+          self.popoverView.toggle();
+        }
+      );
     },
     removeLike: function(event) {
       var self = this;

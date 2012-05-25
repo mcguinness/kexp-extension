@@ -188,7 +188,7 @@ define([
         artist: artist,
         album: album,
         chosenByUser: (chosenByUser ? 1 : 0),
-        timestamp: (timestampUtc ? moment.utc(timestampUtc).unix() : moment.utc().unix())
+        timestamp: (!_.isEmpty(timestampUtc) ? moment.utc(timestampUtc).unix() : moment.utc().unix())
       };
 
       var options = {
