@@ -113,9 +113,17 @@ define([
       collection.fetch({upsert: true});
     },
     handleError: function(collection, model) {
+      var self = this;
       console.debug("[Error NowPlaying] - Added adding new new playing to view collection", model, collection);
-      this.vent.trigger("analytics:trackevent", "NowPlaying", "Error", model.toDebugString());
-      this.showErrorView();
+      this.vent.trigger("analytics:trackevent", "NowPlaying", "Error", model && _.isFunction(model.toDebugString) ?
+        model.toDebugString() : "");
+      $.when(
+        self.footer ? self.footer.close() : true,
+        self.meta ? self.meta.close() : true)
+        .then(function() {
+          self.showErrorView();
+        });
+      
     },
     handleNewSong: function(model, collection) {
       console.debug("[New NowPlaying] - Added new %s to view collection", model.toDebugString(), model, collection);

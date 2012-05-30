@@ -53,7 +53,7 @@ define([
           "bAutoWidth": true,
           "bScrollInfinite": true,
           "bScrollCollapse": false,
-          "sScrollY": "225px",
+          "sScrollY": "245px",
           "bDeferRender": true,
           "aoColumns": [
             null,

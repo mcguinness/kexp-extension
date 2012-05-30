@@ -16,6 +16,7 @@ require.config({
     "text": "libs/text",
     "linkify": "util/ba-linkify",
     "htmlencoder": "util/htmlencoder",
+    "detectzoom": "util/detectzoom",
     "moment": "libs/moment.min",
     "ga": "https://ssl.google-analytics.com/ga",
     "gaq": "util/google-analytics",
@@ -27,7 +28,8 @@ require.config({
     "jquery.dataTables": "libs/jquery.dataTables",
     "jquery.dataTables.sort": "plugins/jquery.dataTables.sort",
     // Non AMD
-    "bootstrap": "libs/bootstrap/bootstrap"
+    "bootstrap": "libs/bootstrap/bootstrap",
+    "mutation-summary" : "libs/mutation_summary"
   }
 });
 
@@ -48,7 +50,7 @@ require(["jquery", "underscore", "KexpApp", "gaq"], function($, _, KexpApp) {
     });
   };
 
-  var chromeTab = function() {
+  var chromeTab = function(event) {
     var $link = $(this),
       attrValue = $link.attr("data-chrometab"),
       active = attrValue ? (attrValue === "active") : true,
@@ -64,8 +66,10 @@ require(["jquery", "underscore", "KexpApp", "gaq"], function($, _, KexpApp) {
 
     if (href) {
       backgroundPage.setTimeout(backgroundTab, 0, href, temp ? false : active, temp);
+      return false;
     }
   };
+
 
   $(document).ready(function() {
 
@@ -82,7 +86,9 @@ require(["jquery", "underscore", "KexpApp", "gaq"], function($, _, KexpApp) {
     });
     
     window.KexpApp.start({
-      audioElement: audioElement
+      audioElement: audioElement,
+      popout: $("body").hasClass("popout"),
+      appUrl: chrome.extension.getURL("popup.html")
     });
   });
 });

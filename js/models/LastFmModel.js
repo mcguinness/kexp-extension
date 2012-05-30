@@ -11,6 +11,7 @@ define([
       this.sync = new LastFmSync(options).sync;
     },
     parseEntity: function(entity) {
+      var image, track, mapped;
       var result = {
         mbid: entity.mbid || "",
         url: entity.url || "",
@@ -19,7 +20,7 @@ define([
       };
 
       if (entity.image) {
-        result.images = _.chain(entity.image)
+        result.images = _.chain(_.isArray(entity.image) ? entity.image : [entity.image])
           .filter(function(image) {
             return (!_.isEmpty(image["#text"]) && !_.isEmpty(image["size"]));
           })
@@ -33,9 +34,9 @@ define([
       }
 
       if (entity.tracks && entity.tracks.track) {
-        result.tracks = _.chain(entity.tracks.track)
+        result.tracks = _.chain(_.isArray(entity.tracks.track) ? entity.tracks.track : [entity.tracks.track])
           .map(function(track) {
-            var mapped = _.pick(track, "artist", "mbid", "name", "url", "downloadurl");
+            mapped = _.pick(track, "artist", "mbid", "name", "url", "downloadurl");
             if (track["@attr"])  mapped.rank = track["@attr"].rank;
             return mapped;
           })
@@ -82,8 +83,7 @@ define([
     fetchAlbum: function(artist, album) {
 
       var fetchDfr = $.Deferred();
-
-      options = {
+      var options = {
         conditions: {
           entity: "album",
           artist: artist,
@@ -103,8 +103,7 @@ define([
     fetchArtist: function(artist) {
 
       var fetchDfr = $.Deferred();
-
-      options = {
+      var options = {
         conditions: {
           entity: "artist",
           artist: artist
