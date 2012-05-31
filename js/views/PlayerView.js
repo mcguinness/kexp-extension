@@ -10,7 +10,8 @@ define([
 	
 	var PlayerView = Backbone.Marionette.ItemView.extend({
 		template: ViewTemplate,
-		tagName: 'div',
+		tagName: "div",
+		className: "container-player",
 		
 		initialize: function(options) {
 			this.audioEl = options.audioElement;

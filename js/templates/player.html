@@ -1,15 +1,11 @@
-<div class="row">
-  <div class="span12">
-    <div id="player" class="player">
-      <div class="wrap">
-          <p></p>
-          <button id="player-button" class="btn btn-small btn-inverse" type="button">
-          <%= paused ? '<i class="icon-play icon-white"></i> Play' : '<i class="icon-pause icon-white"></i> Pause' %>
-          </button>
-          <input id="player-volume" class="slider-volume" type="range" min="0" max="10" value="<%= volume %>" step="1" />
-          <i id="player-mute" class="<%= muted ? 'icon-volume-off' : 'icon-volume-up' %>"></i>
-          <span class="player-title"><span class="prefix-accent">\\\</span> <span id="player-status"><%= message %></span></span>
-      </div>
-    </div>
-  </div>
+<div id="player" class="player">
+  <div class="wrap">
+    <p></p>
+    <button id="player-button" class="btn btn-small btn-inverse" type="button">
+    <%= paused ? '<i class="icon-play icon-white"></i> Play' : '<i class="icon-pause icon-white"></i> Pause' %>
+    </button>
+    <input id="player-volume" class="slider-volume" type="range" min="0" max="10" value="<%= volume %>" step="1" />
+    <i id="player-mute" class="<%= muted ? 'icon-volume-off' : 'icon-volume-up' %>"></i>
+    <span class="player-title"><span class="prefix-accent">\\\</span> <span id="player-status"><%= message %></span></span>
+  <div>
 </div>

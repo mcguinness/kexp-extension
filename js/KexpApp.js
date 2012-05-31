@@ -78,13 +78,48 @@ define([
     if (options.popout && window.WebKitMutationObserver) {
       this.popoutResizeObserver = new MutationSummary({
         callback: function(resp) {
+          
           // Browser Page Zoom makes dynamic sizing of window a bitch....
           // Luckily this dude made a cool abstraction
-          var zoom = DetectZoom.zoom();
-          var height = Math.round($(document.documentElement).height() * zoom) + 46;
-          if (window.outerHeight !== height) {
+         
+
+          var zoom = DetectZoom.zoom(),
+            windowHeight = window.outerHeight,
+            viewportHeight = window.innerHeight,
+            documentHeight = $(document.documentElement).height(),
+            viewportHeightDelta = Math.round((viewportHeight - documentHeight) * zoom),
+            height = Math.round(documentHeight * zoom);
+            
+
+          console.log("Height: Outer:[%s] Inner:[%s] Document:[%s] DocumentElement: [%s] Client:[%s] Body:[%s]",
+            windowHeight, viewportHeight, document.height, documentHeight, document.documentElement.clientHeight, document.body.clientHeight);
+
+
+          if (this.prevViewportHeight && this.prevDocumentHeight) {
+            if (this.prevViewportHeight === viewportHeight && this.prevDocumentHeight === height) {
+              console.log("Skipping resizing, no delta");
+              this.prevViewportHeight = viewportHeight;
+              this.prevDocumentHeight = height;
+              return;
+            }
+          }
+          this.prevViewportHeight = viewportHeight;
+          this.prevDocumentHeight = height;
+
+          
+          if (viewportHeightDelta > 0) {
+            height += windowHeight - (viewportHeightDelta + height);
+          }
+          else if (viewportHeightDelta < 0) {
+            height = (-viewportHeightDelta) + windowHeight;
+          }
+          else {
+            height = windowHeight;
+          }
+
+          if (windowHeight !== height) {
             console.log("Resizing window [%s x %s] to [%s x %s] with zoom: %s",
-              window.outerWidth, window.outerHeight, window.outerWidth, height, zoom, resp);
+              window.outerWidth, windowHeight, window.outerWidth, height, zoom, resp);
             window.resizeTo(window.outerWidth, height);
           }
         },
@@ -107,15 +142,18 @@ define([
     if (!options.popout && options.appUrl) {
       $containerPopout = $('<div class="container-footer-popout"><span><i class="icon-fullscreen"></i> Popout</span></div>');
       $containerPopout.click(function() {
-        width = window.outerWidth + 20;
-        height = window.outerHeight + 50;
+        width = window.outerWidth;
+        height = window.outerHeight;
         // TODO: Resolve why multi-monitor doesn't work for left offsets...
         left = (screen.width / 2) - (width / 2);
         top = (screen.height/ 2) - (height / 2);
 
         targetWin = window.open(options.appUrl + window.location.hash, "", "width="+width+", height="+height+", top="+top+", left="+left);
+        
         $(targetWin).on("load", function() {
           $(targetWin.document.body).addClass("popout");
+          // Detect Window Chrome Width and Resize Width
+          targetWin.resizeBy(targetWin.outerWidth - targetWin.document.width, 0);
         });
       });
       $containerPopout.appendTo("#footer");

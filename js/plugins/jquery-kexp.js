@@ -7,8 +7,12 @@ define(["jquery", "underscore"], function($, _) {
         return this;
       }
 
+      var img = new Image();
       var $el = $(this);
-      var $img = $("<img>").hide();
+      var $img = $(img)
+        .addClass(cssClass || "")
+        .appendTo($el)
+        .hide();
 
       if (attribs) {
         for (var key in attribs) {
@@ -17,10 +21,7 @@ define(["jquery", "underscore"], function($, _) {
       }
 
       $img.load(function() {
-        $img
-          .addClass(cssClass || "")
-          .appendTo($el)
-          .fadeIn();
+        $img.fadeIn();
       });
       $img.attr("src", src);
     });

@@ -4121,13 +4121,14 @@ body {
   cursor: pointer;
   font-weight: bold;
 }
+.container-player {
+  padding: 10px 0px;
+}
 .player {
   width: 212px;
   display: block;
   margin-left: auto;
   margin-right: auto;
-  margin-top: 10px;
-  margin-bottom: 10px;
   background-color: #fea929;
   background-image: -webkit-gradient(linear, 0 0, 0 100%, from(#feac31), color-stop(33%, #feac31), to(#fe9c08));
   background-image: -webkit-linear-gradient(#feac31, #feac31 33%, #fe9c08);
