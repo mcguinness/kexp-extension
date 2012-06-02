@@ -6,9 +6,10 @@ define([
   "mutation-summary"
   ], function($, _, Service, DetectZoom) {
 
+    
     var PopoutService = Service.extend({
       onStart: function(options) {
-        _.bindAll(this, "domObserver");
+        _.bindAll(this, "addPopoutBodyClass", "domObserver");
 
         if (!options.popout && options.appUrl && window.WebKitMutationObserver) {
           this.popoutUrl = options.appUrl;
@@ -17,22 +18,31 @@ define([
         }
 
         if (options.popout && window.WebKitMutationObserver) {
-                  console.log("^Width: Outer:[%s] Inner:[%s] Document:[%s] DocElement: [%s] Client:[%s] Body:[%s] Offset:[%s]",
-            window.outerWidth, window.innerWidth, window.document.width, $(window.document.documentElement).width(), window.document.documentElement.clientWidth, window.document.body.clientWidth, window.document.body.offsetWidth);
-         window.resizeBy(window.outerWidth - window.document.width, 0);
-
-
-          window.resizeBy((window.innerWidth - document.documentElement.clientWidth), 0);
+          console.log("!Width: Outer:[%s] Inner:[%s] Document:[%s] DocElement: [%s] Client:[%s] Body:[%s]",
+            window.outerWidth, window.innerWidth, window.document.width, $(window.document.documentElement).width(),
+            window.document.documentElement.clientWidth, window.document.body.clientWidth);
+          
+          // Set initial window width to include browser chrome (window width should not change after this)
+          window.resizeBy(window.outerWidth - window.document.width, 0);
 
           this.popoutResizeObserver = new MutationSummary({
            callback: this.domObserver,
            observeOwnChanges: true,
            queries: [{
-             element: '*',
-             elementAttributes: 'clientWidth clientHeight'
+             element: '*'
            }]
           });
         }
+      },
+      addPopoutBodyClass: function() {
+        var self = this;
+
+        $(this.popoutWindow.document.body).addClass("popout");
+
+        _.delay(function() {
+          self.popoutWindow.removeEventListener("DOMContentLoaded", self.addPopoutBodyClass);
+        }, 1000);
+
       },
       bindPopout: function() {
         var $containerPopout,
@@ -46,16 +56,14 @@ define([
 
         $containerPopout = $('<div class="container-footer-popout"><span><i class="icon-fullscreen"></i> Popout</span></div>');
         $containerPopout.click(function() {
-          width = window.outerWidth + 1;
+          width = window.outerWidth;
           height = window.outerHeight;
           // TODO: Resolve why multi-monitor doesn't work for left offsets...
           left = (screen.width / 2) - (width / 2);
           top = (screen.height / 2) - (height / 2);
 
-          targetWin = window.open(self.popoutUrl + window.location.hash, "", "width="+width+",height="+height+",top="+top+",left="+left);
-          targetWin.addEventListener("DOMContentLoaded", function() {
-            $(targetWin.document.body).addClass("popout");
-          });
+          self.popoutWindow = window.open(self.popoutUrl + window.location.hash, "", "width="+width+",height="+height+",top="+top+",left="+left);
+          self.popoutWindow.addEventListener("DOMContentLoaded", self.addPopoutBodyClass);
           self.vent.trigger("analytics:trackevent", "Navigation", "Popout");
         });
         $containerPopout.appendTo(this.popoutContainerId);
@@ -68,19 +76,20 @@ define([
         var zoom = DetectZoom.zoom(),
           windowWidth = window.outerWidth,
           windowHeight = window.outerHeight,
+          viewportWidth = window.innerWidth,
           viewportHeight = window.innerHeight,
-          documentHeight = $(document.documentElement).height(),
+          $docEl = $(document.documentElement),
+          documentWidth = $docEl.width(),
+          documentHeight = $docEl.height(),
           viewportHeightDelta = Math.round((viewportHeight - documentHeight) * zoom),
-          width = (window.innerWidth === document.width) ? window.outerWidth :
-            document.width  + (window.innerWidth - document.documentElement.clientWidth),
+          width = (viewportWidth === document.width) ? windowWidth :
+            document.width + Math.round(((viewportWidth - document.documentElement.clientWidth) * zoom)),
           height = Math.round(documentHeight * zoom),
           element,
           foundSkipElement;
           
-
-        console.log("Width: Outer:[%s] Inner:[%s] Document:[%s] DocElement: [%s] Client:[%s] Body:[%s] Offset:[%s]",
-            window.outerWidth, window.innerWidth, window.document.width, $(window.document.documentElement).width(), window.document.documentElement.clientWidth, window.document.body.clientWidth, window.document.body.offsetWidth);
-
+        console.log("Width: Outer:[%s] Inner:[%s] Document:[%s] DocumentElement: [%s] Client:[%s] Body:[%s]",
+          windowWidth, viewportWidth, document.width, documentWidth, document.documentElement.clientWidth, document.body.clientWidth);
         console.log("Height: Outer:[%s] Inner:[%s] Document:[%s] DocumentElement: [%s] Client:[%s] Body:[%s]",
           windowHeight, viewportHeight, document.height, documentHeight, document.documentElement.clientHeight, document.body.clientHeight);
 
@@ -106,17 +115,6 @@ define([
             viewportHeightDelta = 0;
           }
         }
-
-
-        // if (this.prevViewportHeight && this.prevDocumentHeight) {
-        //   if (this.prevViewportHeight === viewportHeight && this.prevDocumentHeight === height) {
-        //     console.log("Skipping resizing, no delta", summary);
-        //     viewportHeightDelta = 0;
-        //   }
-        // }
-        // this.prevViewportHeight = viewportHeight;
-        // this.prevDocumentHeight = height;
-
         
         if (viewportHeightDelta > 0) {
           height += windowHeight - (viewportHeightDelta + height);

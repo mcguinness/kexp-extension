@@ -104,6 +104,7 @@ define([
                 resp.message + '"</em></div>'
                 );
             }
+            self.vent.trigger("analytics:trackevent", "Options", "LastFmAuthorization", "Error", error);
           });
     },
     addSession: function(session) {
@@ -111,7 +112,9 @@ define([
 
       $("#btn-lastfm-service").html('<i class="icon-user"></i> Enabled');
       $("#btn-lastfm-service").button('toggle');
-      $(featureBoxEl).find("input.checkbox").removeAttr("disabled");
+      $(this.featureBoxEl).find("input[type=checkbox]").removeAttr("disabled");
+
+      this.vent.trigger("analytics:trackevent", "Options", "LastFmAuthorization", "Enabled");
     },
     removeSession: function() {
 
@@ -119,14 +122,14 @@ define([
 
       $("#btn-lastfm-service").html('<i class="icon-user icon-white"></i> Disabled');
       $("#btn-lastfm-service").button('toggle');
-      $(featureBoxEl).find("input.checkbox").attr("disabled", "disabled");
+      $(this.featureBoxEl).find("input[type=checkbox]").attr("disabled", true);
+
+      this.vent.trigger("analytics:trackevent", "Options", "LastFmAuthorization", "Disabled");
     },
     showAuthzModal: function() {
       var self = this;
       var $authzModal = $(this.modalEl).modal();
       var authTokenDfr;
-
-      $(this.serviceBoxEl).find("div.alert").remove();
 
       $authzModal.on("shown", function () {
         _.delay(function() {
@@ -145,21 +148,25 @@ define([
         });
     },
     handleAuthorizationToggle: function(event) {
+      $(this.serviceBoxEl).find("div.alert").remove();
       var $button = $(event.currentTarget);
       $button.hasClass("active") ? this.removeSession() : this.showAuthzModal();
     },
     handleLikeShareCheck: function(event) {
+      var checked = $(event.currentTarget).is(":checked");
       this.model.set({
-        likeShareEnabled: $(event.currentTarget).attr("checked")
+        likeShareEnabled: checked
       });
+      this.vent.trigger("analytics:trackevent", "Options", "LastFmLikeShare", checked ? "Enabled" : "Disabled");
     },
     handleLikeScrobbleCheck: function(event) {
+      var checked = $(event.currentTarget).is(":checked");
       this.model.set({
-        likeScrobbleEnabled: $(event.currentTarget).attr("checked")
+        likeScrobbleEnabled: checked
       });
+      this.vent.trigger("analytics:trackevent", "Options", "LastFmLikeScrobble", checked ? "Enabled" : "Disabled");
     }
   });
 
   return LastFmOptionsItemView;
-
 });

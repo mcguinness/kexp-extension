@@ -15,13 +15,13 @@
     <div id="ctrls-lastfm-features" class="controls">
       <label class="checkbox">
         <input type="checkbox" id="chkbx-lastfm-share-like"
-        <%= model.likeShareEnabled ? "checked='checked'" : '' %>
+        <%= model.likeShareEnabled ? "checked" : '' %>
         <%= _.isEmpty(model.sessionKey) ? "disabled='disabled'" : '' %>>
         Share likes with my Last.fm profile (Loves)
       </label>
       <label class="checkbox">
         <input type="checkbox" id="chkbx-lastfm-scrobble-like"
-        <%= model.likeScrobbleEnabled ? "checked='checked'" : '' %>
+        <%= model.likeScrobbleEnabled ? "checked" : '' %>
         <%= _.isEmpty(model.sessionKey) ? "disabled='disabled'" : '' %>>
         Scrobble likes with my Last.fm profile (Plays)
       </label>
