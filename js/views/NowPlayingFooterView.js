@@ -11,6 +11,7 @@ define([
   
   var NowPlayingFooterView = Backbone.Marionette.ItemView.extend({
     template: ViewTemplate,
+    className: "container-nowplaying-footer",
     initialize: function(options) {
       this.collection = this.model.collection;
       

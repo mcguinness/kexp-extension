@@ -9,7 +9,7 @@ define([
   
   var LastFmMetaView = Backbone.Marionette.ItemView.extend({
     tagName: "div",
-    className: "meta-image",
+    className: "container-nowplaying-meta",
     initialize: function(options) {
       this.popoverEl = options.popoverEl;
       if (!this.popoverEl) {
@@ -41,7 +41,7 @@ define([
       }
 
       if (lastFmImageModel) {
-        this.$el.loadImage(lastFmImageModel.image.url, "kexp-box-small", {
+        this.$el.loadImage(lastFmImageModel.image.url, "kexp-box-small nowplaying-image", {
           "title": lastFmImageModel.model.get("name"),
           "alt": lastFmImageModel.model.get("name")
         });

@@ -9,7 +9,7 @@ define([
 
   var NowPlayingSongView = Backbone.Marionette.ItemView.extend({
     template: ViewTemplate,
-    className: "song",
+    className: "container-nowplaying-song",
     serializeData: function() {
       var json = this.model.toJSON();
 

@@ -62,7 +62,7 @@ require(["jquery", "underscore", "KexpApp", "gaq"], function($, _, KexpApp) {
         href = chrome.extension.getURL(chromeMatches[2]);
       }
 
-      _gaq.push(["_trackEvent", "Link", "navigate", href]);
+      _gaq.push(["_trackEvent", "Navigation", "Link", href]);
 
     if (href) {
       backgroundPage.setTimeout(backgroundTab, 0, href, temp ? false : active, temp);
@@ -81,7 +81,7 @@ require(["jquery", "underscore", "KexpApp", "gaq"], function($, _, KexpApp) {
 
     // Since event handlers can register with background page, we must close the app on unload
     $(window).on("unload", function() {
-        _gaq.push(["_trackEvent", "App", "Close"]);
+        _gaq.push(["_trackEvent", "Application", "Close"]);
         window.KexpApp.close();
     });
     

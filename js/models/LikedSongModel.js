@@ -111,6 +111,10 @@ define([
       this.set({
         lastFmShareStatus: this.get("lastFmShareStatus") & flag
       });
+    },
+    toDebugString: function() {
+      return "LikedSong - Artist: {" + this.get("artist") + "} Album: {" + this.get("album") +
+      "} Song: {" + this.get("songTitle") + "} LikeCount: {" + this.get("likeCount") + "}";
     }
   });
 

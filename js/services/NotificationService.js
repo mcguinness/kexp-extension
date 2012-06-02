@@ -10,7 +10,7 @@ define([
         var notification = toastr;
         _.extend(notification.options, {
           containerId: "region-notifications",
-          timeOut: 5000
+          timeOut: 0//5000
         });
 
         var showNotification = function(type, message, title) {

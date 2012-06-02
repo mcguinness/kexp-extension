@@ -53,7 +53,7 @@ define([
           "bAutoWidth": true,
           "bScrollInfinite": true,
           "bScrollCollapse": false,
-          "sScrollY": "245px",
+          "sScrollY": "255px",
           "bDeferRender": true,
           "aoColumns": [
             null,
@@ -96,20 +96,29 @@ define([
     showInfoPopover: function(event) {
       
       var songId = $(event.currentTarget).parentsUntil("tbody", "[data-id]").attr("data-id"),
-        self = this,
-        closeDfr,
-        model;
+        self = this, closeDfr, model;
 
+      if (_.isEmpty(songId)) {
+        console.error("Unable to find the id in the data-id attribute for the clicked row. (Possible Template/Model Error)", event);
+        self.render();
+        return;
+      }
+      model = this.collection.get(songId);
+
+      if (_.isUndefined(model)) {
+        // Stale view, rerender
+        console.error("Unable to find the song id {" + songId + "} in the database (Stale View)", event);
+        self.render();
+        return;
+      }
+
+      // Remove any open popovers...
       if (this.popoverView) {
         closeDfr = this.popoverView.close();
         //delete this.popoverView;
       } else {
         closeDfr = $.Deferred().resolve();
       }
-
-      if (_.isEmpty(songId)) return;
-      model = this.collection.get(songId);
-      if (_.isUndefined(model)) return;
 
       $.when(closeDfr).then(
         function() {
@@ -121,6 +130,7 @@ define([
             });
           self.popoverView.render();
           self.popoverView.toggle();
+          self.vent.trigger("analytics:trackevent", "LikedSong", "ShowPopover", model.toDebugString());
         }
       );
     },
@@ -128,8 +138,7 @@ define([
       var self = this;
       var songId = $(event.currentTarget).parentsUntil("tbody", "[data-id]").attr("data-id");
 
-      if (songId === undefined) {
-        // Should only happen on bug in render template or model added to collection that is not persisted
+      if (_.isEmpty(songId)) {
         console.error("Unable to find the id in the data-id attribute for the clicked row. (Possible Template/Model Error)", event);
         self.render();
         return;
@@ -137,7 +146,7 @@ define([
 
       console.log("Retrieving liked song with id: {%s}", songId);
       var song = this.collection.get(songId);
-      if (song === undefined) {
+      if (_.isUndefined(song)) {
         // Stale view, rerender
         console.error("Unable to find the song id " + songId + " in the database for remove like request. (Stale View)", event);
         self.render();
@@ -152,6 +161,7 @@ define([
           console.log("Successfully deleted song with id: {%s}", songId, song);
           self.collection.remove(model);
           self.render();
+          self.vent.trigger("analytics:trackevent", "LikedSong", "Remove", model.toDebugString());
         }
       });
     },

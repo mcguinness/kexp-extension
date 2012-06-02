@@ -8,10 +8,14 @@ define([
   var NavRegionView = Backbone.Marionette.Region.extend({
     el: "#navbar-top",
     initialize: function(options) {
-      // Bind before adding hashchange event handler (bug)
+      // Bind before adding hashchange event handler
       _.bindAll(this, "updateNav");
       
       $("ul.nav li", this.el).hover(this.toggleActiveNav, this.toggleActiveNav);
+      
+      // Initialize
+      this.updateNav();
+      // Listen for changes for future routes...
       $(window).on("hashchange", this.updateNav);
     },
     toggleActiveNav: function() {
@@ -22,22 +26,22 @@ define([
       }
     },
     updateNav: function() {
-      // TODO: Pass vent as init option
-      window.KexpApp.vent.trigger("analytics:trackevent", "Navigation", "Route", window.location.hash);
-
-      // Nasty Hack: Since we have very limited screen size w/popups, we use the nav bar to bind a popup on bottom.
-      // Cleanup any open popups on navigate;
-      var data = $(this.el).data();
-      if (data && data.popover) {
-        data.popover.hide();
-        delete data.popover;
+      
+      var $activeNav = $("ul.nav", this.el).children().filter(".active");
+      
+      if ($activeNav.length > 0) {
+        $activeNav.toggleClass("active", false);
+        $activeNav.find("i").toggleClass("icon-white", false);
+        // TODO: Pass vent as init option
+        window.KexpApp.vent.trigger("analytics:trackevent", "Navigation", "Route", window.location.hash);
       }
 
-      var $activeNav = $("ul.nav", this.el).children().filter(".active");
-      $activeNav.toggleClass("active", false);
-      $activeNav.find("i").toggleClass("icon-white", false);
-
+      // Find hash or default
       $activeNav = $("ul.nav", this.el).find("a[href=" + window.location.hash + "]").parent();
+      if ($activeNav.length === 0) {
+        $activeNav = $('ul.nav li[data-active=default]', this.el);
+      }
+
       $activeNav.toggleClass("active", true);
       $activeNav.find("i").toggleClass("icon-white", true);
     },

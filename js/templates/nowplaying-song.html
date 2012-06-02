@@ -1,17 +1,19 @@
-<% if (!model.airBreak) { %>
-  <p>
-    <span class="artist"><%- model.artist %></span>
-    <span class="song-title"><%- model.songTitle %></span>
-  </p>
-  <p>
-    <span class="album"><%- model.album %><% if (model.albumYear) { %> (<%- model.albumYear %>) <% } %></span>
-    <span class="label-title"><%- model.albumLabel %></span>
-  </p>
-  <% if (model.comments) { %>
-  <blockquote class="comment"><%= model.comments %></blockquote>
+<div class="song">
+  <% if (!model.airBreak) { %>
+    <p>
+      <span class="artist"><%- model.artist %></span>
+      <span class="song-title"><%- model.songTitle %></span>
+    </p>
+    <p>
+      <span class="album"><%- model.album %><% if (model.albumYear) { %> (<%- model.albumYear %>) <% } %></span>
+      <span class="label-title"><%- model.albumLabel %></span>
+    </p>
+    <% if (model.comments) { %>
+    <blockquote class="comment"><%= model.comments %></blockquote>
+    <% } %>
+    <p class="bottom"><span class="timeplayed">► <%- model.timePlayed %></span></p>
+  <% } else { %>
+    <p><span class="artist">Air Break</span></p>
+    <p><span class="timestamp">► <%- model.timePlayed %></span></p>
   <% } %>
-  <p class="bottom"><span class="timeplayed">► <%- model.timePlayed %></span></p>
-<% } else { %>
-  <p><span class="artist">Air Break</span></p>
-  <p><span class="timestamp">► <%- model.timePlayed %></span></p>
-<% } %>
+</div

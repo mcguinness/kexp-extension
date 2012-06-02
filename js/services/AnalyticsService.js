@@ -15,7 +15,7 @@ define([
         
         var eventParams = ["_trackEvent"];
 
-        eventParams.push(_.isEmpty(category) ? "App" : category);
+        eventParams.push(_.isEmpty(category) ? "Application" : category);
         eventParams.push(_.isEmpty(action) ? "Unknown" : action);
         eventParams.push(_.isEmpty(label) ? null : label);
         eventParams.push(_.isEmpty(value) ? null : value);
