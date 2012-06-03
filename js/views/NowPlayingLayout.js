@@ -57,7 +57,7 @@ define([
         loaderDfr.resolve(nowPlayingModel);
       });
       loader.on("error", function(error) {
-        this.vent.trigger("analytics:trackevent", "NowPlaying", "Error", error);
+        layout.vent.trigger("analytics:trackevent", "NowPlaying", "Error", error);
         layout.showErrorView();
         loaderDfr.reject(nowPlayingModel, error);
       });
