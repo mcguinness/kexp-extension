@@ -4069,12 +4069,12 @@ body {
 }
 .notification-fixed {
   position: absolute;
-  bottom: 78px;
+  bottom: 79px;
   width: 100%;
 }
 .notification-fixed-single {
   position: absolute;
-  bottom: 87px;
+  bottom: 88px;
   width: 100%;
 }
 .toast-title {
@@ -4095,6 +4095,7 @@ body {
   -moz-box-shadow: 0 0 12px #999999;
   box-shadow: 0 0 12px #999999;
   padding: 2px 5px;
+  margin-top: 2px;
   opacity: 0.8;
   filter: alpha(opacity=80);
 }
@@ -4516,4 +4517,10 @@ body.popout .container-player {
 }
 body.popout .song {
   padding-left: 4px;
+}
+body.popout .notification-fixed {
+  bottom: 5px;
+}
+body.popout .notification-fixed-single {
+  bottom: 2px;
 }

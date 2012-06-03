@@ -73,6 +73,13 @@ define([
       main: "#region-content",
       player: "#region-player"
     });
+
+    // Marionette.Region does not have Marionette.View as prototype, and we can't pass options through so...
+    _.extend(this.nav, {
+      vent: this.vent,
+      appConfig: this.appConfig
+    });
+    
   });
 
   // Show Player

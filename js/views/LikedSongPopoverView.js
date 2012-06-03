@@ -25,8 +25,6 @@ define([
       json.artistSpotifyUrl = "spotify:search:" + encodeURI('artist:"' + json.artist + '"');
       json.albumSpotifyUrl = "spotify:search:" + encodeURI('artist:"' + json.artist + '" album:"' + json.album + '"');
       json.trackSpotifyUrl = "spotify:search:" + encodeURI('artist:"' + json.artist + '" track:"' + json.songTitle + '"');
-      
-      console.log("Popover JSON: ", json);
 
       return { model: json};
     },

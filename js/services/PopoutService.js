@@ -2,9 +2,9 @@ define([
   "jquery",
   "underscore",
   "services/Service",
-  "detectzoom",
-  "mutation-summary"
-  ], function($, _, Service, DetectZoom) {
+  "mutation-summary",
+  "detectzoom"
+  ], function($, _, Service, MutationSummary, DetectZoom) {
 
     
     var PopoutService = Service.extend({
@@ -25,13 +25,30 @@ define([
           // Set initial window width to include browser chrome (window width should not change after this)
           window.resizeBy(window.outerWidth - window.document.width, 0);
 
-          this.popoutResizeObserver = new MutationSummary({
-           callback: this.domObserver,
-           observeOwnChanges: true,
-           queries: [{
-             element: '*'
-           }]
+          this.zoom = DetectZoom.zoom();
+
+          this.popoutResizeObserver = new WebKitMutationObserver(_.debounce(this.domObserver, 100));
+          this.popoutResizeObserver.observe(document.querySelector("#region-content"), {
+            attributes: false,
+            subtree: true,
+            childList: true,
+            characterData: false
           });
+
+          // this.popoutResizeObserver = new MutationSummary({
+          //  callback: this.domObserver,
+          //  rootNode: window.document.body,
+          //  observeOwnChanges: true,
+          //  queries: [{
+          //    element: '*'
+          //  }]
+          // });
+        }
+      },
+      onStop: function() {
+        if (this.popoutResizeObserver) {
+          this.popoutResizeObserver.disconnect();
+          delete this.popoutResizeObserver;
         }
       },
       addPopoutBodyClass: function() {
@@ -59,8 +76,8 @@ define([
           width = window.outerWidth;
           height = window.outerHeight;
           // TODO: Resolve why multi-monitor doesn't work for left offsets...
-          left = (screen.width / 2) - (width / 2);
-          top = (screen.height / 2) - (height / 2);
+          left = Math.round((screen.width / 2) - (width / 2));
+          top = Math.round((screen.height / 2) - (height / 2));
 
           self.popoutWindow = window.open(self.popoutUrl + window.location.hash, "", "width="+width+",height="+height+",top="+top+",left="+left);
           self.popoutWindow.addEventListener("DOMContentLoaded", self.addPopoutBodyClass);
@@ -70,21 +87,24 @@ define([
       },
       domObserver: function(summary) {
 
+        // summary.forEach(function(mutation) {
+        //     console.log(mutation.type, mutation);
+        // });
+
         // Browser Page Zoom makes dynamic sizing of window a bitch....
         // Luckily this dude made a cool abstraction
        
-        var zoom = DetectZoom.zoom(),
-          windowWidth = window.outerWidth,
+        var windowWidth = window.outerWidth,
           windowHeight = window.outerHeight,
           viewportWidth = window.innerWidth,
           viewportHeight = window.innerHeight,
           $docEl = $(document.documentElement),
           documentWidth = $docEl.width(),
           documentHeight = $docEl.height(),
-          viewportHeightDelta = Math.round((viewportHeight - documentHeight) * zoom),
+          viewportHeightDelta = Math.round((viewportHeight - documentHeight) * this.zoom),
           width = (viewportWidth === document.width) ? windowWidth :
-            document.width + Math.round(((viewportWidth - document.documentElement.clientWidth) * zoom)),
-          height = Math.round(documentHeight * zoom),
+            document.width + Math.round(((viewportWidth - document.documentElement.clientWidth) * this.zoom)),
+          height = Math.round(documentHeight * this.zoom),
           element,
           foundSkipElement;
           
@@ -97,24 +117,24 @@ define([
         // These elements are observed on addition and cause unnecessary resizing of window the messes up look and feel
         // Skip em... we will get another callback to handle required resize when song-footer is rendered.
         
-        if (summary.length > 0 && summary[0].added.length > 0) {
-          foundSkipElement = _.find(summary[0].added, function(element) {
-            switch (element.className) {
-              case "container-player" :
-                return true;
-              case "song" :
-                return true;
-              case "container-nowplaying-meta" :
-                return true;
-              default :
-                return false;
-            }
-          });
-          if (foundSkipElement) {
-            console.log("Skipping resizing for element", foundSkipElement, summary);
-            viewportHeightDelta = 0;
-          }
-        }
+        // if (summary.length > 0 && summary[0].added.length > 0) {
+        //   foundSkipElement = _.find(summary[0].added, function(element) {
+        //     switch (element.className) {
+        //       case "container-player" :
+        //         return true;
+        //       case "song" :
+        //         return true;
+        //       case "container-nowplaying-meta" :
+        //         return true;
+        //       default :
+        //         return false;
+        //     }
+        //   });
+        //   if (foundSkipElement) {
+        //     console.log("Skipping resizing for element", foundSkipElement, summary);
+        //     viewportHeightDelta = 0;
+        //   }
+        // }
         
         if (viewportHeightDelta > 0) {
           height += windowHeight - (viewportHeightDelta + height);
@@ -128,7 +148,7 @@ define([
 
         if (windowHeight !== height) {
           console.log("Resizing window [%s x %s] to [%s x %s] with zoom: %s",
-            windowWidth, windowHeight, width, height, zoom, summary);
+            windowWidth, windowHeight, width, height, this.zoom, summary);
           window.resizeTo(width, height);
         }
       }

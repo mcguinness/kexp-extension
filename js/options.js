@@ -2,22 +2,22 @@ require.config({
   paths: {
     "jquery": "libs/jquery-1.7.2.min",
     "jquery-ui": "libs/jquery-ui-1.8.20.custom.min",
-    "underscore": "libs/underscore",
-    "backbone": "libs/backbone",
+    "underscore": "libs/underscore-min",
+    "backbone": "libs/backbone-min",
     "backbone-extensions": "plugins/backbone.extensions",
     "backbone-relational": "libs/Backbone-relational",
     "backbone-localstorage": "libs/Backbone-localstorage",
-    "marionette": "libs/backbone.marionette",
+    "marionette": "libs/backbone.marionette.min",
     "marionette-extensions": "plugins/backbone.marionette.extensions",
     "indexeddb": "libs/backbone-indexeddb",
-    "text": "libs/text",
+    "text": "libs/text-min",
     "moment": "libs/moment.min",
     "gaq": "util/google-analytics",
     "md5": "util/md5",
     "lastfm-api": "services/LastFmApi",
     // Non AMD
     "ga": "https://ssl.google-analytics.com/ga",
-    "bootstrap": "libs/bootstrap/bootstrap",
+    "bootstrap": "libs/bootstrap.min",
     "twitter": "https://platform.twitter.com/widgets"
   }
 });

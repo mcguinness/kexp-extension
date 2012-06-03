@@ -32,8 +32,7 @@ define([
       if ($activeNav.length > 0) {
         $activeNav.toggleClass("active", false);
         $activeNav.find("i").toggleClass("icon-white", false);
-        // TODO: Pass vent as init option
-        window.KexpApp.vent.trigger("analytics:trackevent", "Navigation", "Route", window.location.hash);
+        this.vent.trigger("analytics:trackevent", "Navigation", "Route", window.location.hash);
       }
 
       // Find hash or default

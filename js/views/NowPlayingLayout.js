@@ -130,8 +130,7 @@ define([
       this.showNowPlaying(model);
     },
     handleUpdatedSong: function(model) {
-      console.debug("[Updated NowPlaying] - Attributes changed for %s", model.toDebugString(), model);
-
+      var key;
       var identityChange = _.any(Object.keys(model.changed), function(key) {
         return (key === ("album" || "artist" || "songTitle"));
       });
@@ -142,6 +141,7 @@ define([
       if (identityChange) {
         this.showNowPlaying(model);
       } else if (songChange) {
+        console.debug("[Updated NowPlaying] - Attributes changed for %s", model.toDebugString(), model);
         this.showSongView(model);
       }
     },

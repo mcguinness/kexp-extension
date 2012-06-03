@@ -15,7 +15,6 @@ define([
 		
 		initialize: function(options) {
 			this.audioEl = options.audioElement;
-			this.$audioEl = $(this.audioEl);
 			this.playerFsm = new PlayerFsm(options.audioElement);
 			var self = this;
 
@@ -43,11 +42,12 @@ define([
 			// Bind Background Audio Element Events
 			_.bindAll(this, "handleAudioPlay", "handleAudioPause", "handleAudioBuffer",
 				"handleAudioError", "handleAudioVolumeChange");
-			this.$audioEl.on("playing", this.handleAudioPlay);
-			this.$audioEl.on("pause", this.handleAudioPause);
-			this.$audioEl.on("waiting", this.handleAudioBuffer);
-			this.$audioEl.on("error", this.handleAudioError);
-			this.$audioEl.on("volumechange", this.handleAudioVolumeChange);
+
+			this.audioEl.addEventListener("playing", this.handleAudioPlay);
+			this.audioEl.addEventListener("pause", this.handleAudioPause);
+			this.audioEl.addEventListener("waiting", this.handleAudioBuffer);
+			this.audioEl.addEventListener("error", this.handleAudioError);
+			this.audioEl.addEventListener("volumechange", this.handleAudioVolumeChange);
 
 			// Init State & Model
 			this.playerFsm.handle("initialize");
@@ -66,11 +66,11 @@ define([
 			this.bindTo(this.model, "change:disabled", this.handleModelChangeDisabled);
 		},
 		beforeClose: function() {
-			this.$audioEl.off("playing", this.handleAudioPlay);
-			this.$audioEl.off("pause", this.handleAudioPause);
-			this.$audioEl.off("waiting", this.handleAudioBuffer);
-			this.$audioEl.off("error", this.handleAudioError);
-			this.$audioEl.off("volumechange", this.handleAudioVolumeChange);
+			this.audioEl.removeEventListener("playing", this.handleAudioPlay);
+			this.audioEl.removeEventListener("pause", this.handleAudioPause);
+			this.audioEl.removeEventListener("waiting", this.handleAudioBuffer);
+			this.audioEl.removeEventListener("error", this.handleAudioError);
+			this.audioEl.removeEventListener("volumechange", this.handleAudioVolumeChange);
 		},
 		events: {
 			"click #player-button": "handleInputTogglePlay",

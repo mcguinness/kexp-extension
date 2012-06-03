@@ -12,7 +12,15 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-(function(global) {
+(function (root, factory) {
+    if (typeof define === 'function' && define.amd) {
+        // AMD. Register as an anonymous module.
+        define([], function() { return factory(root); });
+    } else {
+        // Browser globals
+        root.MutationSummary = factory(root);
+    }
+}(this, function (global) {
 
   "use strict";
 
@@ -1617,9 +1625,6 @@
 
     this.reconnect();
   }
-
-  // Externs
-  global.MutationSummary = MutationSummary;
-  global.MutationSummary.NodeMap = NodeMap; // exposed for use in TreeMirror.
-  global.MutationSummary.parseElementFilter = parseElementFilter; // exposed for testing.
-})(this);
+  
+  return MutationSummary;
+}));

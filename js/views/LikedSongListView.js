@@ -18,6 +18,7 @@ define([
   var LikedSongListView = Backbone.Marionette.ItemView.extend({
 
     tagName: "div",
+    className: "container-likedsongs",
     template: ViewTemplate,
     emptyTemplate: EmptyTemplate,
 

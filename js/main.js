@@ -3,17 +3,17 @@ require.config({
     "jquery": "libs/jquery-1.7.2.min",
     "jquery-ui": "libs/jquery-ui-1.8.20.custom.min",
     "jquery-kexp": "plugins/jquery-kexp",
-    "underscore": "libs/underscore",
-    "backbone": "libs/backbone",
+    "underscore": "libs/underscore-min",
+    "backbone": "libs/backbone-min",
     "backbone-extensions": "plugins/backbone.extensions",
     "backbone-relational": "libs/Backbone-relational",
     "backbone-localstorage": "libs/Backbone-localstorage",
-    "marionette": "libs/backbone.marionette",
+    "marionette": "libs/backbone.marionette.min",
     "marionette-extensions": "plugins/backbone.marionette.extensions",
     "indexeddb": "libs/backbone-indexeddb",
-    "machina": "libs/machina",
-    "order": "libs/order",
-    "text": "libs/text",
+    "machina": "libs/machina.min",
+    "order": "libs/order-min",
+    "text": "libs/text-min",
     "linkify": "util/ba-linkify",
     "htmlencoder": "util/htmlencoder",
     "detectzoom": "util/detectzoom",
@@ -25,10 +25,10 @@ require.config({
     "toastr": "util/toastr",
     "regexpatterns": "util/regexpatterns",
     // Non AMD
-    "jquery.dataTables": "libs/jquery.dataTables",
+    "jquery.dataTables": "libs/jquery.dataTables.min",
     "jquery.dataTables.sort": "plugins/jquery.dataTables.sort",
     // Non AMD
-    "bootstrap": "libs/bootstrap/bootstrap",
+    "bootstrap": "libs/bootstrap.min",
     "mutation-summary" : "libs/mutation_summary"
   }
 });
@@ -83,6 +83,7 @@ require(["jquery", "underscore", "KexpApp", "gaq"], function($, _, KexpApp) {
     $(window).on("unload", function() {
         _gaq.push(["_trackEvent", "Application", "Close"]);
         window.KexpApp.close();
+        delete window.KexpApp;
     });
     
     window.KexpApp.start({

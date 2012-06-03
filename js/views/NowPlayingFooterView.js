@@ -116,6 +116,11 @@ define([
         likedSong.save();
       }
 
+      if (!_.isEmpty(likedSong.get("trackDownloadUrl"))) {
+        this.vent.trigger("notification:info", "You can find the download link in the song info popover in your liked song collection.",
+          "This song has a free download!");
+      }
+
       this.vent.trigger("analytics:trackevent", "NowPlaying", "Like", targetModel.toDebugString(), likedSong.get("likeCount"));
 
       $(".badge", this.$el).toggleClass("badge-zero", false).text(likedSong.get("likeCount"));
