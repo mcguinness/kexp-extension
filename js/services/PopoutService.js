@@ -27,13 +27,15 @@ define([
 
           this.zoom = DetectZoom.zoom();
 
-          this.popoutResizeObserver = new WebKitMutationObserver(_.debounce(this.domObserver, 100));
+          this.popoutResizeObserver = new WebKitMutationObserver(this.domObserver);
           this.popoutResizeObserver.observe(document.querySelector("#region-content"), {
             attributes: false,
             subtree: true,
             childList: true,
             characterData: false
           });
+
+          // Mutation-Summary library causes memory leaks in background page, disabling and using raw mutations
 
           // this.popoutResizeObserver = new MutationSummary({
           //  callback: this.domObserver,
@@ -85,11 +87,7 @@ define([
         });
         $containerPopout.appendTo(this.popoutContainerId);
       },
-      domObserver: function(summary) {
-
-        // summary.forEach(function(mutation) {
-        //     console.log(mutation.type, mutation);
-        // });
+      domObserver: function(mutations) {
 
         // Browser Page Zoom makes dynamic sizing of window a bitch....
         // Luckily this dude made a cool abstraction
@@ -105,6 +103,9 @@ define([
           width = (viewportWidth === document.width) ? windowWidth :
             document.width + Math.round(((viewportWidth - document.documentElement.clientWidth) * this.zoom)),
           height = Math.round(documentHeight * this.zoom),
+          skipMutations,
+          nodeList,
+          node,
           element,
           foundSkipElement;
           
@@ -113,12 +114,29 @@ define([
         console.log("Height: Outer:[%s] Inner:[%s] Document:[%s] DocumentElement: [%s] Client:[%s] Body:[%s]",
           windowHeight, viewportHeight, document.height, documentHeight, document.documentElement.clientHeight, document.body.clientHeight);
 
+
         // Hacky Optimization (could break if browser/assumptions change)
         // These elements are observed on addition and cause unnecessary resizing of window the messes up look and feel
         // Skip em... we will get another callback to handle required resize when song-footer is rendered.
         
-        // if (summary.length > 0 && summary[0].added.length > 0) {
-        //   foundSkipElement = _.find(summary[0].added, function(element) {
+        skipMutations = _.chain(mutations)
+          .pluck("addedNodes")
+          .filter(function(nodeList) {
+            return _.find(nodeList, function(node) {
+              return (node.className === "container-nowplaying-song") ||
+                (node.className === "container-nowplaying-meta");
+            });
+          })
+          .value();
+
+        if (skipMutations.length > 0) {
+          console.log("Skipping resizing for element mutations", skipMutations, mutations);
+          viewportHeightDelta = 0;
+        }
+
+
+        // if (mutations.length > 0 && mutations[0].added.length > 0) {
+        //   foundSkipElement = _.find(mutations[0].added, function(element) {
         //     switch (element.className) {
         //       case "container-player" :
         //         return true;
@@ -131,7 +149,7 @@ define([
         //     }
         //   });
         //   if (foundSkipElement) {
-        //     console.log("Skipping resizing for element", foundSkipElement, summary);
+        //     console.log("Skipping resizing for element", foundSkipElement, mutations);
         //     viewportHeightDelta = 0;
         //   }
         // }
@@ -148,8 +166,8 @@ define([
 
         if (windowHeight !== height) {
           console.log("Resizing window [%s x %s] to [%s x %s] with zoom: %s",
-            windowWidth, windowHeight, width, height, this.zoom, summary);
-          window.resizeTo(width, height);
+            windowWidth, windowHeight, width, height, this.zoom, mutations);
+          window.resizeTo(windowWidth, height);
         }
       }
     });
