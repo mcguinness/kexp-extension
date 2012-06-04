@@ -15,7 +15,6 @@
                 <a class="btn-spotify-favicon" href="<%= model.trackSpotifyUrl %>" 
                   rel="tooltip" title="Search Spotify for Track" data-chrometab="temp"></a>
               <% } %>
-              <!-- TODO Invert Statement after test -->
               <% if (!_.isEmpty(model.trackDownloadUrl)) { %>
                 <a class="btn-download" href="<%= model.trackDownloadUrl %>" 
                   rel="tooltip" title="Track Download" data-chrometab="active">
@@ -25,6 +24,7 @@
             </div>
           </td>
         </tr>
+        <% if (!_.isEmpty(model.artist)) { %>
         <tr>
           <td><div class="btn-kexp-nohover"><span class="prefix-accent">\\\</span> ARTIST</div></td>
           <td>
@@ -41,6 +41,8 @@
             </div>
           </td>
         </tr>
+        <% } %>
+        <% if (!_.isEmpty(model.album)) { %>
         <tr>
           <td><div class="btn-kexp-nohover"><span class="prefix-accent">\\\</span> ALBUM</div></td>
           <td>
@@ -57,14 +59,19 @@
             </div>
           </td>
         </tr>
+        <% } %>
+        <% if (!_.isEmpty(model.albumYear)) { %>
         <tr>
           <td><div class="btn-kexp-nohover"><span class="prefix-accent">\\\</span> YEAR</div></td>
           <td><%= model.albumYear %></td>
         </tr>
+        <% } %>
+        <% if (!_.isEmpty(model.albumLabel)) { %>
         <tr>
           <td><div class="btn-kexp-nohover"><span class="prefix-accent">\\\</span> LABEL</div></td>
           <td><%= model.albumLabel %></td>
         </tr>
+        <% } %>
         <tr>
           <td><div class="btn-kexp-nohover"><span class="prefix-accent">\\\</span> LIKES</div></td>
           <td><span class="badge badge-likes"><%= model.likeCount %></span></td>

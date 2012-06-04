@@ -3845,6 +3845,7 @@ i.enabled {
 .popover.popover-kexp .popover-header .popover-title {
   display: inline-block;
   float: left;
+  width: 90%;
   background-color: transparent;
   color: #ffffff;
   -webkit-border-radius: 0;
@@ -4482,6 +4483,7 @@ body {
   border-radius: 4px;
   color: #ffffff;
   height: 17px;
+  min-width: 65px;
   padding: 0px 6px;
 }
 .popover.popover-liked td .btn-lastfm-nohover .prefix-accent {
@@ -4491,7 +4493,7 @@ body {
   vertical-align: 10%;
 }
 .popover.popover-liked td .btn-lastfm-nohover .lastfm-logo {
-  padding: 2px 0px 0px 0px;
+  padding: 2px 0px 0px 1px;
 }
 .popover.popover-liked td .info-icon-group {
   margin-left: 10px;
@@ -4508,9 +4510,6 @@ body {
 .popover.popover-liked td .btn-lastfm-love {
   margin-left: 10px;
   vertical-align: text-bottom;
-}
-.popover.popover-liked .arrow {
-  left: 40%;
 }
 body.popout .container-player {
   padding: 10px 0px 25px 0px;
