@@ -130,17 +130,26 @@ define([
       var self = this;
       var $authzModal = $(this.modalEl).modal();
       var authTokenDfr;
+      var cancelled = false;
 
-      $authzModal.on("shown", function () {
+      $authzModal.one("shown.kexp", function() {
+        $authzModal.off("shown.kexp");
         _.delay(function() {
+            if (cancelled) { return; }
             $.when(authTokenDfr)
               .done(function(resp) {
                 if ($authzModal.data("modal") && $authzModal.data("modal").isShown) {
                   self.requestAuthorization(resp.token);
                 }
               });
-        }, 5000);
+        }, 12000);
       });
+      $authzModal.one("hide.kexp", function(event) {
+        $authzModal.off("hide.kexp");
+        console.log("Modal hide", event);
+        cancelled = true;
+      });
+
       authTokenDfr = this.lastFmApi.getAuthToken()
         .done(function(resp) {
           $authzModal.data("token", resp.token);
