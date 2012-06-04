@@ -63,10 +63,12 @@ define([
             likedSong.setLastFmShareStatus(LikedSongModel.LastFmShareStatus.TrackLove);
             likedSong.save();
             self.vent.trigger("lastfm:track:love:success", likedSong);
+            self.vent.trigger("analytics:trackevent", "LastFm", "Love", likedSong.toDebugString());
           },
           function(resp, error, options) {
             console.warn("[LastFmLikeSyncService Error] %s track.love %s", resp.message, nowPlayingModel.toDebugString(), resp, options);
             self.vent.trigger("lastfm:track:love:fail", resp, likedSong, options);
+            self.vent.trigger("analytics:trackevent", "LastFm", "Love", "Error", error);
           }
         );
       }
@@ -78,10 +80,12 @@ define([
               likedSong.scrobble();
               likedSong.save();
               self.vent.trigger("lastfm:track:scrobble:success", likedSong);
+              self.vent.trigger("analytics:trackevent", "LastFm", "Scrobble", likedSong.toDebugString());
             },
             function(resp, error, options) {
               console.warn("[LastFmLikeSyncService Error] %s track.scrobble %s", resp.message, nowPlayingModel.toDebugString(), resp, options);
               self.vent.trigger("lastfm:track:scrobble:fail", resp, likedSong, options);
+              self.vent.trigger("analytics:trackevent", "LastFm", "Scrobble", "Error", error);
             }
           );
       }

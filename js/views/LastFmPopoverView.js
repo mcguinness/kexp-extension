@@ -47,7 +47,7 @@ define([
       });
     },
     onShow: function() {
-      this.vent.trigger("analytics:trackevent", "LastFm", "Popover", "Show");
+      this.vent.trigger("analytics:trackevent", "LastFm", "ShowPopover", this.model.toDebugString());
     },
     close: function() {
       // Very important we do not delete the view's el as we are only touching the popover data blob

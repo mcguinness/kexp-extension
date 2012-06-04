@@ -104,7 +104,7 @@ define([
                 resp.message + '"</em></div>'
                 );
             }
-            self.vent.trigger("analytics:trackevent", "Options", "LastFmAuthorization", "Error", error);
+            self.vent.trigger("analytics:trackevent", "Feature", "LastFmAuthorization", "Error", error);
           });
     },
     addSession: function(session) {
@@ -114,7 +114,7 @@ define([
       $("#btn-lastfm-service").button('toggle');
       $(this.featureBoxEl).find("input[type=checkbox]").removeAttr("disabled");
 
-      this.vent.trigger("analytics:trackevent", "Options", "LastFmAuthorization", "Enabled");
+      this.vent.trigger("analytics:trackevent", "Feature", "LastFmAuthorization", "Enabled");
     },
     removeSession: function() {
 
@@ -124,7 +124,7 @@ define([
       $("#btn-lastfm-service").button('toggle');
       $(this.featureBoxEl).find("input[type=checkbox]").attr("disabled", true);
 
-      this.vent.trigger("analytics:trackevent", "Options", "LastFmAuthorization", "Disabled");
+      this.vent.trigger("analytics:trackevent", "Feature", "LastFmAuthorization", "Disabled");
     },
     showAuthzModal: function() {
       var self = this;
@@ -166,14 +166,14 @@ define([
       this.model.set({
         likeShareEnabled: checked
       });
-      this.vent.trigger("analytics:trackevent", "Options", "LastFmLikeShare", checked ? "Enabled" : "Disabled");
+      this.vent.trigger("analytics:trackevent", "Feature", "LastFmLikeShare", checked ? "Enabled" : "Disabled");
     },
     handleLikeScrobbleCheck: function(event) {
       var checked = $(event.currentTarget).is(":checked");
       this.model.set({
         likeScrobbleEnabled: checked
       });
-      this.vent.trigger("analytics:trackevent", "Options", "LastFmLikeScrobble", checked ? "Enabled" : "Disabled");
+      this.vent.trigger("analytics:trackevent", "Feature", "LastFmLikeScrobble", checked ? "Enabled" : "Disabled");
     }
   });
 

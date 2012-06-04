@@ -34,6 +34,8 @@ define([
         var lastFmConfig = this.appConfig.getLastFm();
         if (lastFmConfig.hasAuthorization()) {
           this.appConfig.getLastFm().disableAuthorization();
+          
+          this.vent.trigger("analytics:trackevent", "Feature", "LastFmAuthorization", "Revoked");
           this.vent.trigger("notification:warning",
             "Extension is no longer authorized to access your Last.fm profile.",
             "Last.fm Authorization Disabled!");
