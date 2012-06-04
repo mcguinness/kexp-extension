@@ -25,7 +25,7 @@ define([
       if (!_.isEmpty(json.comments)) {
         json.comments = linkify(json.comments, {
           callback: function(text, href) {
-            console.debug("Linkify: [" + text + "] -> href: " + (href || ""));
+            //console.debug("Linkify: [" + text + "] -> href: " + (href || ""));
             return href ? '<a href="' + encodeURI(href) + '" data-chrometab="active">' + text + '</a>' : text;
           }
         });

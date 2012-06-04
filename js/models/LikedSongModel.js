@@ -69,7 +69,7 @@ define([
         parsedModel.timeLastFmLoveShare = new Date(Date.parse(parsedModel.timeLastFmLoveShare));
       }
 
-      console.debug("LikedSongModel Parse Result", parsedModel, resp);
+      //console.debug("LikedSongModel Parse Result", parsedModel, resp);
       return parsedModel;
     },
     save: function(key, value, options) {

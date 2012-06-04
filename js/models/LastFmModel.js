@@ -71,7 +71,7 @@ define([
         console.error("LastFmModel cannot parse response to a known entity", resp);
         throw new Error("Model cannot parse response to a known entity");
       }
-      console.debug("LastFmModel Parse Result", parsedModel, resp);
+      //console.debug("LastFmModel Parse Result", parsedModel, resp);
       return parsedModel;
     },
     isAlbum: function() {

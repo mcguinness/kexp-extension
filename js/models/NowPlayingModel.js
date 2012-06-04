@@ -82,7 +82,7 @@ define([
         }
       });
 
-      console.debug("NowPlayingModel Parse Result", parsedModel, resp);
+      //console.debug("NowPlayingModel Parse Result", parsedModel, resp);
       return parsedModel;
     },
     url: function() {
