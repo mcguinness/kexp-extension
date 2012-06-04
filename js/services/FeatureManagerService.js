@@ -18,7 +18,9 @@ define([
       },
       handleLike: function() {
         if (!this.featuresConfig.get("hasClickedLike")) {
-          this.vent.trigger("notification:info", "Enable sharing in options", "Share your \"likes\" with your Last.fm profile!");
+          if (!this.appConfig.getLastFm().hasAuthorization()) {
+            this.vent.trigger("notification:info", "Enable sharing in options", "Share your \"likes\" with your Last.fm profile!");
+          }
           this.featuresConfig.set({hasClickedLike: true});
         }
         
