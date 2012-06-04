@@ -14,10 +14,12 @@ define([
     className: "container-nowplaying-footer",
     initialize: function(options) {
       this.collection = this.model.collection;
+      this.lastFmConfig = this.appConfig.getLastFm();
       
       this.bindTo(this.vent, "nowplaying:lastfm:popover:enabled", this.showLastFmButton, this);
       this.bindTo(this.vent, "nowplaying:refresh:background", this.handleBackgroundRefresh, this);
       this.bindTo(this.vent, "lastfm:track:love:success", this.showShareAnimation, this);
+      this.bindTo(this.lastFmConfig, "change:sessionKey", this.handleLastFmAuthorizationChange, this);
     },
     events: {
       "click #button-like": "handleLike",
@@ -26,19 +28,17 @@ define([
     },
     serializeData: function() {
       var likedSong = this.model.getLikedSong();
-      var lastFmConfig = this.appConfig.getLastFm();
 
       return {
         model: {
           id: this.model.id,
           likeCount: likedSong ? likedSong.get("likeCount") : 0,
-          likeShareEnabled: lastFmConfig.isLikeShareEnabled()
+          likeShareEnabled: this.lastFmConfig.isLikeShareEnabled()
         }
       };
     },
     onRender: function() {
       var self = this;
-      var lastFmConfig = this.appConfig.getLastFm();
 
       $(this.el)
         .find("#button-spotify")
@@ -62,7 +62,7 @@ define([
           .tooltip({
             placement: "top",
             title: function() {
-              return lastFmConfig.isLikeShareEnabled() ?
+              return self.lastFmConfig.isLikeShareEnabled() ?
               "<strong>Last.fm Sharing Enabled</strong> - Likes will be shared to your Last.fm profile as 'loves' (See Options)" :
               "<strong>Last.fm Sharing Disabled</strong> - Likes will only be locally stored and not shared with your Last.fm profile (See Options)";
             }
@@ -138,6 +138,9 @@ define([
     },
     handleLastFmPopoverToggle: function() {
       this.vent.trigger("nowplaying:lastfm:popover:toggle");
+    },
+    handleLastFmAuthorizationChange: function(model, value, options) {
+      $("#button-share", this.$el).toggleClass("active", model.hasAuthorization());
     },
     beforeClose: function() {
       var fadeDfr = $.Deferred();

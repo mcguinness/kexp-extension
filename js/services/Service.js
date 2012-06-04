@@ -27,9 +27,11 @@ define([
         this.unbind();
       },
       pipeToVent: function(target, events) {
+        var self = this;
         this.bindTo(target, events, function() {
           console.debug("Piping event to vent", arguments);
-          this.vent.trigger.apply(this, arguments);
+          var args = Array.prototype.slice.call(arguments);
+          self.vent.trigger.apply(self.vent, args);
         }, this);
       }
     });

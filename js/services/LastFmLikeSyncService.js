@@ -8,13 +8,31 @@ define([
 
   var LastFmLikeSyncService = Service.extend({
     onStart: function() {
+      var self = this;
       this.lastFmConfig = this.appConfig.getLastFm();
+      _.bindAll(this, "enableSync", "disableSync", "handleSync");
       
       if (this.lastFmConfig.isLikeShareEnabled() || this.lastFmConfig.isLikeScrobbleEnabled()) {
         console.debug("Enabling Last.fm Sync Service...");
+        
         this._api = this.lastFmConfig.getApi();
         this.pipeToVent(this._api, "all");
-        this.bindTo(this.vent, "nowplaying:like", this.handleSync, this);
+        
+        this.enableSync();
+        this.bindTo(this.lastFmConfig, "change:sessionKey", function(model, value) {
+          model.hasAuthorization() ? self.enableSync() : self.disableSync();
+        }, this);
+      }
+    },
+    enableSync: function() {
+      if (_.isUndefined(this.handleSyncBinding)) {
+        this.handleSyncBinding = this.bindTo(this.vent, "nowplaying:like", this.handleSync, this);
+      }
+    },
+    disableSync: function() {
+      if (this.handleSyncBinding) {
+        this.vent.unbindFrom(this.handleSyncBinding);
+        delete this.handleSyncBinding;
       }
     },
     handleSync: function(nowPlayingModel) {

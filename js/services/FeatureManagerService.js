@@ -29,11 +29,13 @@ define([
       },
       handleInvalidSessionKey: function(sessionKey, options) {
         console.warn("LastFM API SessionKey {%s} is revoked!", sessionKey, options);
-
-        this.appConfig.getLastFm().disableAuthorization();
-        this.vent.trigger("notification:warning",
-          "Extension is no longer authorized to access your Last.fm profile.",
-          "Last.fm Authorization Disabled!");
+        var lastFmConfig = this.appConfig.getLastFm();
+        if (lastFmConfig.hasAuthorization()) {
+          this.appConfig.getLastFm().disableAuthorization();
+          this.vent.trigger("notification:warning",
+            "Extension is no longer authorized to access your Last.fm profile.",
+            "Last.fm Authorization Disabled!");
+        }
       },
       handleLoveFail: function(resp) {
         this.vent.trigger("notification:error",
