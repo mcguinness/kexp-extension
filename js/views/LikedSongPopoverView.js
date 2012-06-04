@@ -15,12 +15,13 @@ define([
     popoverTemplate: PopoverTemplate,
     initialize: function(options) {
      this.hideOnClose = true;
+     this.lastFmConfig = this.appConfig.getLastFm();
     },
     serializeData: function() {
       var json = this.model.toJSON();
 
-      json.isLikeShareEnabled = this.appConfig.getLastFm().isLikeShareEnabled();
-      json.isLikeScrobbleEnabled = this.appConfig.getLastFm().isLikeScrobbleEnabled();
+      json.isLikeShareEnabled = this.lastFmConfig.isLikeShareEnabled();
+      json.isLikeScrobbleEnabled = this.lastFmConfig.isLikeScrobbleEnabled();
       json.hasLastFmLoveShare = this.model.hasLastFmShareStatus(LikedSongModel.LastFmShareStatus.TrackLove);
       json.artistSpotifyUrl = "spotify:search:" + encodeURI('artist:"' + json.artist + '"');
       json.albumSpotifyUrl = "spotify:search:" + encodeURI('artist:"' + json.artist + '" album:"' + json.album + '"');
@@ -31,7 +32,8 @@ define([
     onShow: function() {
       var self = this;
       var $table = $("#table-liked-info");
-      var loveTooltipTitle;
+      var hasTrackLoveDate = this.model.hasLastFmShareStatus(LikedSongModel.LastFmShareStatus.TrackLove) &&
+        _.isDate(this.model.get("timeLastFmLoveShare"));
 
       $table.find("[rel=tooltip]").tooltip();
 
@@ -44,24 +46,29 @@ define([
             }
           });
 
-      if (this.model.hasLastFmShareStatus(LikedSongModel.LastFmShareStatus.TrackLove) &&
-        _.isDate(this.model.get("timeLastFmLoveShare"))) {
-        
-        loveTooltipTitle = '<i class="icon-time icon-white"></i> ' +
-          moment(self.model.get("timeLastFmLoveShare")).format("MMM Do, YYYY @ hh:mm A");
-
-      } else if (this.appConfig.getLastFm().isLikeShareEnabled()) {
-        loveTooltipTitle = "<strong>Last.fm Sharing Enabled</strong> - Share this song to your Last.fm profile (Love)";
-      } else {
-        loveTooltipTitle = "<strong>Last.fm Sharing Disabled</strong> - Share likes with your Last.fm profile (See Options)";
-      }
+      $table
+        .find("span.badge-scrobbles")
+          .tooltip({
+            placement: "bottom",
+            title: function() {
+              return self.lastFmConfig.isLikeScrobbleEnabled() ?
+                "<strong>Last.fm Scrobble Enabled</strong> - Last.fm Track Scrobbles (Listens)" :
+                (self.model.get("lastFmTrackScrobbleCount") > 0 ?
+                  "<strong>Last.fm Scrobble Disabled</strong> - Previous Last.fm Track Scrobbles (Listens)" :
+                  "<strong>Last.fm Scrobble Disabled</strong> - Scrobble listens with your Last.fm profile (See Options)");
+            }
+          });
 
       $table
         .find("#btn-lastfm-love")
           .tooltip({
             placement: "right",
             title: function() {
-              return loveTooltipTitle;
+              return hasTrackLoveDate ?
+                '<i class="icon-time icon-white"></i> ' + moment(self.model.get("timeLastFmLoveShare")).format("MMM Do, YYYY @ hh:mm A") :
+                (self.lastFmConfig.isLikeShareEnabled() ?
+                  "<strong>Last.fm Sharing Enabled</strong> - Share this song to your Last.fm profile (Love)" :
+                  "<strong>Last.fm Sharing Disabled</strong> - Share likes with your Last.fm profile (See Options)");
             }
           });
 

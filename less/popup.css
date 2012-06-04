@@ -4507,6 +4507,10 @@ body {
 .popover.popover-liked td .badge-scrobbles i {
   vertical-align: -10%;
 }
+.popover.popover-liked td .badge-scrobbles.disabled {
+  opacity: 0.6;
+  filter: alpha(opacity=60);
+}
 .popover.popover-liked td .btn-lastfm-love {
   margin-left: 10px;
   vertical-align: text-bottom;

@@ -79,7 +79,7 @@
         <tr>
           <td><div class="btn-lastfm-nohover"><i class="icon-share icon-white"></i> <span class="lastfm-logo"></span></div></td>
           <td>
-            <span class="badge badge-scrobbles" rel="tooltip" title="Last.fm Track Scrobbles (Listens)" data-placement="bottom">
+            <span class="badge badge-scrobbles <%= model.isLikeScrobbleEnabled ? 'enabled' : 'disabled' %>">
               <i class="icon-headphones icon-white"></i> <%= model.lastFmTrackScrobbleCount %>
             </span>
             <i id="btn-lastfm-love" class="btn-lastfm-love <%= model.hasLastFmLoveShare ? 'icon-heart enabled' : 'icon-heart disabled' %>"></i>
