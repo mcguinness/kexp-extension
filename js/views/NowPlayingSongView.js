@@ -1,7 +1,7 @@
 define([
   "jquery",
   "underscore",
-  "marionette-extensions",
+  "backbone-kexp",
   "linkify",
   "text!templates/nowplaying-song.html",
   "moment"

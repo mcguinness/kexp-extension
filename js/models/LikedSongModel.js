@@ -1,6 +1,6 @@
 define([
   "jquery",
-  "backbone-relational",
+  "backbone-kexp",
   "underscore",
   "indexeddb",
   "databases/LikedSongDatabase"

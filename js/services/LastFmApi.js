@@ -1,7 +1,7 @@
 define([
   "jquery",
   "underscore",
-  "backbone",
+  "backbone-kexp",
   "md5",
   "moment" // Global, no need for arg
   ], function($, _, Backbone, MD5) {

@@ -1,7 +1,7 @@
 define([
   "jquery",
   "underscore",
-  "marionette-extensions",
+  "backbone-kexp",
   "collections/AppConfigCollection"
   ], function($, _, Backbone, AppConfigCollection) {
 

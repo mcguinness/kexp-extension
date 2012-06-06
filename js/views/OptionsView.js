@@ -1,7 +1,7 @@
 define([
   "jquery",
   "underscore",
-  "marionette-extensions",
+  "backbone-kexp",
   "collections/AppConfigCollection",
   "views/LastFmOptionsItemView",
   "text!templates/options.html"

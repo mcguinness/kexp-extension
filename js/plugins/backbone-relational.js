@@ -6,20 +6,23 @@
  * For details and documentation: https://github.com/PaulUithol/Backbone-relational.
  * Depends on Backbone: https://github.com/documentcloud/backbone.
  */
-(function(root, factory) {
-  // Set up appropriately for the environment.
-  if (typeof exports !== 'undefined') {
-    // Node/CommonJS
-    factory(exports, require('underscore'), require('backbone'));
-  } else if (typeof define === 'function' && define.amd) {
-    // AMD
-    define(['exports', 'underscore', 'backbone'], factory);
-  } else {
-    // Browser globals
-    factory({}, root._, root.Backbone);
-  }
-}(this, function (exports, _, Backbone) {
+( function( undefined ) {
 	"use strict";
+	
+	/**
+	 * CommonJS shim
+	 **/
+	var _, Backbone, exports;
+	if ( typeof window === 'undefined' ) {
+		_ = require( 'underscore' );
+		Backbone = require( 'backbone' );
+		exports = module.exports = Backbone;
+	}
+	else {
+		var _ = window._;
+		Backbone = window.Backbone;
+		exports = window;
+	}
 	
 	Backbone.Relational = {
 		showWarnings: true
@@ -1646,6 +1649,4 @@
 
 		return child;
 	};
-
-  return Backbone;
-}));
+})();

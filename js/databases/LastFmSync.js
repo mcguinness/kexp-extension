@@ -1,4 +1,4 @@
-define(["jquery", "underscore", "backbone"], function($, _, Backbone) {
+define(["jquery", "underscore", "backbone-kexp"], function($, _, Backbone) {
 
   var LastFmSync = function(options) {
     var appConfig = (options && options.appConfig) ? options.appConfig : window.KexpApp.appConfig;

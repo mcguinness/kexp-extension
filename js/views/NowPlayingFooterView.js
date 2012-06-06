@@ -1,7 +1,7 @@
 define([
   "jquery",
   "underscore",
-  "marionette-extensions",
+  "backbone-kexp",
   "text!templates/nowplaying-footer.html",
   "moment",
   "jquery-ui", // no need for arg

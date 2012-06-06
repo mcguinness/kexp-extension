@@ -1,7 +1,7 @@
 define([
   "jquery",
   "underscore",
-  "marionette-extensions",
+  "backbone-kexp",
   "views/PopoverView",
   "text!templates/nowplaying-popover.html",
   "text!templates/nowplaying-popover-lastfm.html"

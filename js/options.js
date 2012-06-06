@@ -1,31 +1,36 @@
 require.config({
   paths: {
     "jquery": "libs/jquery-1.7.2.min",
-    "jquery-ui": "libs/jquery-ui-1.8.20.custom.min",
+    "jquery-ui": "plugins/jquery-ui-1.8.20.custom.min",
+    "jquery-kexp": "plugins/jquery-kexp",
     "underscore": "libs/underscore-min",
     "backbone": "libs/backbone-min",
     "backbone-extensions": "plugins/backbone.extensions",
-    "backbone-relational": "libs/Backbone-relational",
-    "backbone-localstorage": "libs/Backbone-localstorage",
+    "backbone-relational": "plugins/backbone-relational",
+    "backbone-localstorage": "libs/backbone-localstorage",
+    "bootstrap": "plugins/bootstrap.min",
     "marionette": "libs/backbone.marionette.min",
-    "marionette-extensions": "plugins/backbone.marionette.extensions",
     "indexeddb": "libs/backbone-indexeddb",
     "text": "libs/text-min",
     "moment": "libs/moment.min",
     "gaq": "util/google-analytics",
     "md5": "util/md5",
     "lastfm-api": "services/LastFmApi",
-    // Non AMD
     "ga": "https://ssl.google-analytics.com/ga",
-    "bootstrap": "libs/bootstrap.min",
     "twitter": "https://platform.twitter.com/widgets"
+  },
+  shim: {
+    "jquery-ui": ["jquery"],
+    "jquery-kexp": ["jquery", "underscore"],
+    "backbone-relational": ["backbone", "underscore"],
+    "bootstrap": ["jquery"]
   }
 });
 
 require([
   "jquery",
   "underscore",
-  "marionette-extensions",
+  "backbone-kexp",
   "services/AnalyticsService",
   "collections/AppConfigCollection",
   "views/OptionsView",

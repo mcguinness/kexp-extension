@@ -1,7 +1,7 @@
 define([
   "jquery",
   "underscore",
-  "marionette-extensions",
+  "backbone-kexp",
   "collections/NowPlayingCollection",
   "views/NowPlayingLayout",
   "views/LikedSongListView"
@@ -20,7 +20,7 @@ define([
       likedSongsView.collection.fetch()
         .then(function(collection, resp) {
           //console.log("[Show LikedSongListView]");
-          self.kexpApp.main.show(likedSongsView, "append");
+          self.kexpApp.main.show(likedSongsView);
         });
     },
     showNowPlaying: function() {
@@ -35,7 +35,7 @@ define([
             appConfig: self.kexpApp.appConfig
           });
           //console.log("[Show NowPlayingLayout]");
-          self.kexpApp.main.show(layout, "append");
+          self.kexpApp.main.show(layout);
           layout.enablePoll(60000);
         });
     }

@@ -1,6 +1,3 @@
-define(["jquery"], function(jQuery) {
-
-
 /**
  * @summary     DataTables
  * @description Paginate, search and sort HTML tables
@@ -11839,6 +11836,3 @@ define(["jquery"], function(jQuery) {
 	 *  @param {object} o DataTables settings object {@link DataTable.models.oSettings}
 	 */
 }(jQuery, window, document, undefined));
-
-
-});

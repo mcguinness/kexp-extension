@@ -1,7 +1,7 @@
 define([
   "jquery",
   "underscore",
-  "marionette-extensions",
+  "backbone-kexp",
   "bootstrap" // no need for arg
   ], function($, _, Backbone) {
 

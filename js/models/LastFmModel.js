@@ -1,6 +1,6 @@
 define([
   "jquery",
-  "backbone-relational",
+  "backbone-kexp",
   "underscore",
   "databases/LastFmSync"
   ], function($, Backbone, _, LastFmSync) {

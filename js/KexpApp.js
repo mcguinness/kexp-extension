@@ -1,8 +1,7 @@
 define([
   "jquery",
   "underscore",
-  "backbone-extensions",
-  "marionette-extensions",
+  "backbone-kexp",
   "htmlencoder",
   "KexpAppController",
   "collections/AppConfigCollection",
@@ -14,7 +13,7 @@ define([
   "services/PopoverCleanupService",
   "views/NavRegionView",
   "views/PlayerView"
-  ], function($, _, Backbone, Marionette, HtmlEncoder,
+  ], function($, _, Backbone, HtmlEncoder,
     KexpAppController,
     AppConfigCollection,
     NotificationService,

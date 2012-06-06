@@ -1,6 +1,6 @@
 define([
   "jquery",
-  "backbone",
+  "backbone-kexp",
   "underscore",
   "databases/LastFmSync",
   "models/LastFmModel"

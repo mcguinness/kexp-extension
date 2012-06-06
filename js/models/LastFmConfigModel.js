@@ -1,7 +1,7 @@
 define([
   "jquery",
   "underscore",
-  "backbone",
+  "backbone-kexp",
   "backbone-localstorage",
   "lastfm-api"
   ], function($, _, Backbone, Store, LastFmApi) {

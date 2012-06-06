@@ -1,7 +1,7 @@
 define([
   "jquery",
   "underscore",
-  "marionette-extensions",
+  "backbone-kexp",
   "views/NowPlayingFsm",
   "views/NowPlayingSongView",
   "views/NowPlayingFooterView",

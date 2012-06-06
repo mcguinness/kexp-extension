@@ -1,6 +1,6 @@
 define([
   "jquery",
-  "backbone",
+  "backbone-kexp",
   "underscore",
   "marionette",
   "views/LastFmPopoverView",

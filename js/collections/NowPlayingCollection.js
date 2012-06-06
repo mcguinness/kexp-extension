@@ -1,6 +1,6 @@
 define([
   "jquery",
-  "backbone",
+  "backbone-kexp",
   "underscore",
   "models/NowPlayingModel"
   ], function($, Backbone, _, NowPlayingModel) {
@@ -19,11 +19,31 @@ define([
         return;
       }
       var overLimitCount = (this.length + models.length) - this.limit;
-      var removedModel;
+      var removeModel, lastFmModels, lastFmModel;
       if (overLimitCount > 0) {
         while (overLimitCount--) {
-          removedModel = this.shift();
-          console.log("Removed overlimit [>=" + this.limit + "] model from NowPlayingCollection [" + this.length + "]", removedModel);
+          removeModel = this.at(0);
+
+          // Backbone-relational has a global store!!!
+          // It keeps a cache of models and only removes on destroy events (memory leaks).
+          // This is hack to cleanup for removed (delimit) models since we are not destroying
+          // Consider replacing backbone-relational or finding better design approach
+
+          // We need a copy since we are iterating and removing
+          lastFmModels = _.toArray(removeModel.getLastFmCollection());
+
+          this.remove(removeModel);
+          console.log("Removed overlimit [>=" + this.limit + "] model from NowPlayingCollection [" + (this.length + 1) + "]", removeModel);
+
+          console.log("LastFM Collection for Remove", lastFmModels);
+          _.each(lastFmModels, function(lastFmModel) {
+            console.log("Unregistering Relational Store LastFm Model", lastFmModel);
+            Backbone.Relational.store.unregister(lastFmModel);
+            lastFmModel.unbind();
+          });
+          console.log("Unregistering Relational Store NowPlaying Model", removeModel);
+          Backbone.Relational.store.unregister(removeModel);
+          removeModel.unbind();
         }
       }
     },

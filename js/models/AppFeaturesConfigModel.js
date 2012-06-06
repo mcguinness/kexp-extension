@@ -1,4 +1,4 @@
-define(["jquery", "underscore", "backbone", "backbone-localstorage"],
+define(["jquery", "underscore", "backbone-kexp", "backbone-localstorage"],
   function($, _, Backbone, Store) {
   
   var AppFeaturesConfigModel = Backbone.Model.extend({

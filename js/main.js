@@ -1,18 +1,18 @@
 require.config({
   paths: {
     "jquery": "libs/jquery-1.7.2.min",
-    "jquery-ui": "libs/jquery-ui-1.8.20.custom.min",
+    "jquery-ui": "plugins/jquery-ui-1.8.20.custom.min",
     "jquery-kexp": "plugins/jquery-kexp",
+    "jquery.dataTables": "plugins/jquery.dataTables.min",
+    "jquery.dataTables.sort": "plugins/jquery.dataTables.sort",
     "underscore": "libs/underscore-min",
     "backbone": "libs/backbone-min",
-    "backbone-extensions": "plugins/backbone.extensions",
-    "backbone-relational": "libs/Backbone-relational",
-    "backbone-localstorage": "libs/Backbone-localstorage",
+    "backbone-relational": "plugins/backbone-relational",
+    "backbone-localstorage": "libs/backbone-localstorage",
+    "backbone-kexp": "plugins/backbone-kexp",
     "marionette": "libs/backbone.marionette.min",
-    "marionette-extensions": "plugins/backbone.marionette.extensions",
     "indexeddb": "libs/backbone-indexeddb",
     "machina": "libs/machina.min",
-    "order": "libs/order-min",
     "text": "libs/text-min",
     "linkify": "util/ba-linkify",
     "htmlencoder": "util/htmlencoder",
@@ -24,12 +24,16 @@ require.config({
     "md5": "util/md5",
     "toastr": "util/toastr",
     "regexpatterns": "util/regexpatterns",
-    // Non AMD
-    "jquery.dataTables": "libs/jquery.dataTables.min",
-    "jquery.dataTables.sort": "plugins/jquery.dataTables.sort",
-    // Non AMD
-    "bootstrap": "libs/bootstrap.min",
+    "bootstrap": "plugins/bootstrap.min",
     "mutation-summary" : "libs/mutation_summary"
+  },
+  shim: {
+    "jquery-ui": ["jquery"],
+    "jquery-kexp": ["jquery", "underscore"],
+    "jquery.dataTables": ["jquery"],
+    "jquery.dataTables.sort": ["jquery.dataTables"],
+    "backbone-relational": ["backbone", "underscore"],
+    "bootstrap": ["jquery"]
   }
 });
 

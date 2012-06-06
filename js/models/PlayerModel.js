@@ -1,4 +1,4 @@
-define(["jquery", "backbone", "underscore"], function($, Backbone, _) {
+define(["jquery", "backbone-kexp", "underscore"], function($, Backbone, _) {
   var PlayerModel = Backbone.Model.extend({
 
     defaults: {
