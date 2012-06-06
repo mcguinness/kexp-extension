@@ -116,7 +116,7 @@ define([
       // Remove any open popovers...
       if (this.popoverView) {
         closeDfr = this.popoverView.close();
-        //delete this.popoverView;
+        delete this.popoverView;
       } else {
         closeDfr = $.Deferred().resolve();
       }
@@ -169,6 +169,12 @@ define([
     beforeClose: function() {
       if (this.popoverView) {
         this.popoverView.close();
+        delete this.popoverView;
+      }
+      if (this.dataTable) {
+        this.dataTable.fnDestroy(true);
+        delete this.dataTable;
+        delete this.$el.DataTable;
       }
     }
   });

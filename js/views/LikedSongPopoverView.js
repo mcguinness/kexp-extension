@@ -14,8 +14,15 @@ define([
     template: PopoverContentTemplate,
     popoverTemplate: PopoverTemplate,
     initialize: function(options) {
-     this.hideOnClose = true;
+     this.waitForHideOnClose = true;
      this.lastFmConfig = this.appConfig.getLastFm();
+    },
+    tooltips: {
+      "[rel=tooltip]": "tooltip",
+      "span.badge-likes": "tooltip",
+      "span.badge-scrobbles": "tooltip",
+      "#btn-lastfm-love": "tooltip",
+      "this": "popover wait"
     },
     serializeData: function() {
       var json = this.model.toJSON();

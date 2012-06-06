@@ -2,7 +2,8 @@ define([
   "jquery",
   "underscore",
   "backbone",
-  "marionette"
+  "marionette",
+  "jquery-kexp"
   ], function($, _, Backbone, Marionette) {
 
   // Enable Require.js Template Cache
@@ -94,6 +95,7 @@ define([
 
     $.when((this.beforeClose) ? this.beforeClose() : true)
       .then(function() {
+        that.tooltipClose();
         that.unbindAll();
         that.remove();
 
@@ -106,6 +108,79 @@ define([
       });
 
     return deferredClose.promise();
+  };
+
+  var tooltipSplitter = /\s+/;
+  Backbone.Marionette.View.prototype.tooltipClose = function() {
+    
+    // Exit early if no tooltip hash is defined
+    if (!_.isObject(this.tooltips)) { return; }
+
+    // Tooltips are created as document child element $tip and not a child of a view
+    // They do not get removed on view close by default
+
+    var value,
+      selector,
+      splitParts,
+      tooltipKey,
+      waitForHideOnClose = false,
+      $tooltips,
+      $tooltip,
+      index,
+      data,
+      tooltip,
+      tooltipDfr,
+      tooltipDfrs = [],
+      closeDfr = $.Deferred(),
+      self = this;
+    
+    _.each(self.tooltips, function(value, selector) {
+      
+      // Validate & Parse Hash Value, continue to next element is not valid
+      if (_.isEmpty(value)) { return; }
+      splitParts = value.split(tooltipSplitter);
+      if (_.isUndefined(splitParts) || splitParts.length < 1) { return; }
+      
+      tooltipKey = splitParts.shift();
+      if (splitParts.length > 0) {
+        waitForHideOnClose = (splitParts.shift().toLowerCase() === "wait");
+      }
+
+      $tooltips = (selector === "this") ? self.$el : self.$el.find(selector);
+      $tooltips.each(function(index) {
+        
+        data = $(this).data() || {};
+        tooltip = data[tooltipKey];
+        // Skip element if no tooltip data or wrapped element
+        if (!_.isObject(tooltip) || !_.isObject(tooltip.$tip)) { return; }
+        $tooltip = tooltip.$tip;
+
+        if (waitForHideOnClose && tooltip.enabled && $tooltip.index() >= 0) {
+            tooltipDfr = $.Deferred();
+            tooltipDfrs.push(tooltipDfr);
+            // Popover fades out with CSS animation, wait for fade out before close is finished
+            $tooltip.queueTransition(function() {
+              delete data[tooltipKey];
+              tooltipDfr.resolve();
+            });
+            // Trigger animation
+            tooltip.hide();
+        } else {
+          tooltip.enabled ? tooltip.hide() : $tooltip.remove();
+          delete data[tooltipKey];
+        }
+      });
+    });
+    
+    $.when.apply($, tooltipDfrs).then(
+      function() {
+        closeDfr.resolve();
+      },
+      function() {
+        closeDfr.reject();
+      });
+
+    return closeDfr.promise();
   };
 
   return Backbone;

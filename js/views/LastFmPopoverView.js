@@ -48,18 +48,6 @@ define([
     },
     onShow: function() {
       this.vent.trigger("analytics:trackevent", "LastFm", "ShowPopover", this.model.toDebugString());
-    },
-    close: function() {
-      // Very important we do not delete the view's el as we are only touching the popover data blob
-      // We must override otherwise prototype will remove the popover's element
-      
-      this.unbindAll();
-      this.unbind();
-
-      var data = $(this.el).data();
-      if (data && data.popover) {
-        delete data.popover;
-      }
     }
   });
   return LastFmPopoverView;

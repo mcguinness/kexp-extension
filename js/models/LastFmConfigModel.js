@@ -6,11 +6,8 @@ define([
   "lastfm-api"
   ], function($, _, Backbone, Store, LastFmApi) {
 
-  var store = new Store("app.kexp.config");
-
   var LastFmConfigModel = Backbone.Model.extend({
-      localStorage: store,
-      sync: store.sync,
+
       defaults: {
         id: "lastfm",
         apiKey: "10fc31f4ac0c2a4453cab6d75b526c67",
@@ -20,6 +17,18 @@ define([
         authUrl: "http://www.last.fm/api/auth/",
         likeShareEnabled: true,
         likeScrobbleEnabled: true
+      },
+      initialize: function(options) {
+      
+        options = options || {};
+
+        if (options.localStorage && _.isFunction(options.localStorage.sync)) {
+          this.localStorage = options.localStorage;
+          this.sync = options.localStorage.sync;
+        } else {
+          this.localStorage = new Store("app.kexp.config");
+          this.sync = this.localStorage.sync;
+        }
       },
       hasAuthorization: function() {
         return !_.isEmpty(this.get("sessionKey"));

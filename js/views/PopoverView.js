@@ -2,7 +2,6 @@ define([
   "jquery",
   "underscore",
   "marionette-extensions",
-  "jquery-kexp",
   "bootstrap" // no need for arg
   ], function($, _, Backbone) {
 
@@ -16,6 +15,9 @@ define([
       _.bindAll(this, "toggle");
 
       Backbone.Marionette.ItemView.prototype.constructor.apply(this, arguments);
+    },
+    tooltips: {
+      "this": "popover"
     },
     getPopoverTemplate: function() {
       return this.popoverTemplate;
@@ -74,31 +76,7 @@ define([
       this.unbindAll();
       this.unbind();
 
-      var elData = $(this.el).data(),
-        popover = this.popover ? this.popover : elData.popover,
-        closeDfr = $.Deferred();
-
-      if (!popover) return closeDfr.resolve().promise();
-      // Ok, I know this is nasty and should be redone...
-      // I should probably use routes instead of popovers....
-      if (popover.enabled && popover.$tip.index() >= 0 && this.hideOnClose) {
-          // Popover fades out with CSS animation, wait for fade out before close is finished
-          popover.$tip.queueTransition(function() {
-            popover.$tip.remove();
-            delete this.popover;
-            delete elData.popover;
-            closeDfr.resolve();
-          });
-          // Trigger animation
-          popover.hide();
-          if (self.onHide) self.onHide();
-          self.trigger("hide");
-      } else {
-        delete this.popover;
-        delete elData.popover;
-        closeDfr.resolve();
-      }
-      return closeDfr.promise();
+      return this.tooltipClose();
     }
   });
 

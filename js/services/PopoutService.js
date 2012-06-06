@@ -2,9 +2,8 @@ define([
   "jquery",
   "underscore",
   "services/Service",
-  "mutation-summary",
   "detectzoom"
-  ], function($, _, Service, MutationSummary, DetectZoom) {
+  ], function($, _, Service, DetectZoom) {
 
     
     var PopoutService = Service.extend({

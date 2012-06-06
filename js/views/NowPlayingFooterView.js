@@ -20,11 +20,17 @@ define([
       this.bindTo(this.vent, "nowplaying:refresh:background", this.handleBackgroundRefresh, this);
       this.bindTo(this.vent, "lastfm:track:love:success", this.showShareAnimation, this);
       this.bindTo(this.lastFmConfig, "change:sessionKey", this.handleLastFmAuthorizationChange, this);
+
     },
     events: {
       "click #button-like": "handleLike",
       "click #button-lastfm": "handleLastFmPopoverToggle",
       "click #button-refresh": "handleRefresh"
+    },
+    tooltips: {
+      "#button-spotify" : "tooltip",
+      "#button-refresh" : "tooltip",
+      "#button-share" : "tooltip"
     },
     serializeData: function() {
       var likedSong = this.model.getLikedSong();
@@ -143,6 +149,7 @@ define([
       $("#button-share", this.$el).toggleClass("active", model.hasAuthorization());
     },
     beforeClose: function() {
+      
       var fadeDfr = $.Deferred();
       $(this.el).find("#song-footer")
         .queueTransition(function() {
