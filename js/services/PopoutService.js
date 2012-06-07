@@ -33,17 +33,6 @@ define([
             childList: true,
             characterData: false
           });
-
-          // Mutation-Summary library causes memory leaks in background page, disabling and using raw mutations
-
-          // this.popoutResizeObserver = new MutationSummary({
-          //  callback: this.domObserver,
-          //  rootNode: window.document.body,
-          //  observeOwnChanges: true,
-          //  queries: [{
-          //    element: '*'
-          //  }]
-          // });
         }
       },
       onStop: function() {
@@ -122,8 +111,7 @@ define([
           .pluck("addedNodes")
           .filter(function(nodeList) {
             return _.find(nodeList, function(node) {
-              return (node.className === "container-nowplaying-song") ||
-                (node.className === "container-nowplaying-meta");
+              return (node.className === "container-nowplaying-meta");
             });
           })
           .value();
@@ -132,26 +120,6 @@ define([
           //console.log("Skipping resizing for element mutations", skipMutations, mutations);
           viewportHeightDelta = 0;
         }
-
-
-        // if (mutations.length > 0 && mutations[0].added.length > 0) {
-        //   foundSkipElement = _.find(mutations[0].added, function(element) {
-        //     switch (element.className) {
-        //       case "container-player" :
-        //         return true;
-        //       case "song" :
-        //         return true;
-        //       case "container-nowplaying-meta" :
-        //         return true;
-        //       default :
-        //         return false;
-        //     }
-        //   });
-        //   if (foundSkipElement) {
-        //     console.log("Skipping resizing for element", foundSkipElement, mutations);
-        //     viewportHeightDelta = 0;
-        //   }
-        // }
         
         if (viewportHeightDelta > 0) {
           height += windowHeight - (viewportHeightDelta + height);

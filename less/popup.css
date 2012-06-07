@@ -4250,6 +4250,7 @@ body {
 }
 .span-nowplaying-content {
   width: 367px;
+  min-height: 291px;
 }
 .span-nowplaying-meta {
   width: 210px;
