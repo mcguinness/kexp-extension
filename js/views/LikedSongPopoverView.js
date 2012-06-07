@@ -14,7 +14,6 @@ define([
     template: PopoverContentTemplate,
     popoverTemplate: PopoverTemplate,
     initialize: function(options) {
-     this.waitForHideOnClose = true;
      this.lastFmConfig = this.appConfig.getLastFm();
     },
     tooltips: {
@@ -37,7 +36,7 @@ define([
       return { model: json};
     },
     onShow: function() {
-      var self = this;
+      var view = this;
       var $table = $("#table-liked-info");
       var hasTrackLoveDate = this.model.hasLastFmShareStatus(LikedSongModel.LastFmShareStatus.TrackLove) &&
         _.isDate(this.model.get("timeLastFmLoveShare"));
@@ -49,7 +48,7 @@ define([
           .tooltip({
             placement: "right",
             title: function() {
-              return '<i class="icon-time icon-white"></i> ' + moment(self.model.get("timeLastLike")).format("MMM Do, YYYY @ hh:mm A");
+              return '<i class="icon-time icon-white"></i> ' + moment(view.model.get("timeLastLike")).format("MMM Do, YYYY @ hh:mm A");
             }
           });
 
@@ -58,9 +57,9 @@ define([
           .tooltip({
             placement: "bottom",
             title: function() {
-              return self.lastFmConfig.isLikeScrobbleEnabled() ?
+              return view.lastFmConfig.isLikeScrobbleEnabled() ?
                 "<strong>Last.fm Scrobble Enabled</strong> - Last.fm Track Scrobbles (Listens)" :
-                (self.model.get("lastFmTrackScrobbleCount") > 0 ?
+                (view.model.get("lastFmTrackScrobbleCount") > 0 ?
                   "<strong>Last.fm Scrobble Disabled</strong> - Previous Last.fm Track Scrobbles (Listens)" :
                   "<strong>Last.fm Scrobble Disabled</strong> - Scrobble listens with your Last.fm profile (See Options)");
             }
@@ -72,8 +71,8 @@ define([
             placement: "right",
             title: function() {
               return hasTrackLoveDate ?
-                '<i class="icon-time icon-white"></i> ' + moment(self.model.get("timeLastFmLoveShare")).format("MMM Do, YYYY @ hh:mm A") :
-                (self.lastFmConfig.isLikeShareEnabled() ?
+                '<i class="icon-time icon-white"></i> ' + moment(view.model.get("timeLastFmLoveShare")).format("MMM Do, YYYY @ hh:mm A") :
+                (view.lastFmConfig.isLikeShareEnabled() ?
                   "<strong>Last.fm Sharing Enabled</strong> - Share this song to your Last.fm profile (Love)" :
                   "<strong>Last.fm Sharing Disabled</strong> - Share likes with your Last.fm profile (See Options)");
             }

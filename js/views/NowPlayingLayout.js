@@ -62,7 +62,9 @@ define([
         loaderDfr.resolve(nowPlayingModel);
       });
       loader.on("error", function(error) {
-        layout.vent.trigger("analytics:trackevent", "NowPlaying", "Error", error);
+        layout.vent.trigger("analytics:trackevent", "NowPlaying", "Error",
+          model && _.isFunction(model.toDebugString) ?
+            model.toDebugString() : "");
         layout.showErrorView();
         loaderDfr.reject(nowPlayingModel, error);
       });
@@ -118,11 +120,7 @@ define([
       collection.fetch({upsert: true});
     },
     handleError: function(collection, model) {
-      var layout = this;
-      console.debug("[Error NowPlaying] - Added adding new new playing to view collection", model, collection);
-      this.vent.trigger("analytics:trackevent", "NowPlaying", "Error", model && _.isFunction(model.toDebugString) ?
-        model.toDebugString() : "");
-      
+      console.debug("[Error NowPlaying] - Unable to upsert now playing to view collection");
       this.showNowPlaying(void 0);
     },
     handleNewSong: function(model, collection) {
@@ -146,7 +144,9 @@ define([
       }
     },
     beforeClose: function() {
+      // Song "could" be loading during close.  This should kill any event handlers
       if (this._currentLoader) {
+        this._currentLoader.eventListeners = {};
         delete this._currentLoader;
       }
       this.disablePoll();

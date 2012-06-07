@@ -41,7 +41,7 @@ define([
     },
     onRender: function() {
       //console.log("[OnRender LikedSongListView]");
-      var $table = $("#table-liked", this.$el);
+      var $table = $("#table-liked", this.el);
       if ($table.length > 0) {
         // Sort by like count, then by song
         this.dataTable = $table.dataTable({
@@ -97,11 +97,11 @@ define([
     showInfoPopover: function(event) {
       
       var songId = $(event.currentTarget).parentsUntil("tbody", "[data-id]").attr("data-id"),
-        self = this, closeDfr, model;
+        view = this, closeDfr, model;
 
       if (_.isEmpty(songId)) {
         console.error("Unable to find the id in the data-id attribute for the clicked row. (Possible Template/Model Error)", event);
-        self.render();
+        view.render();
         return;
       }
       model = this.collection.get(songId);
@@ -109,7 +109,7 @@ define([
       if (_.isUndefined(model)) {
         // Stale view, rerender
         console.error("Unable to find the song id {" + songId + "} in the database (Stale View)", event);
-        self.render();
+        view.render();
         return;
       }
 
@@ -123,25 +123,25 @@ define([
 
       $.when(closeDfr).then(
         function() {
-          self.popoverView = new LikedSongPopoverView({
+          view.popoverView = new LikedSongPopoverView({
               el: "#navbar-top",
               model: model,
-              vent: self.vent,
-              appConfig: self.appConfig
+              vent: view.vent,
+              appConfig: view.appConfig
             });
-          self.popoverView.render();
-          self.popoverView.toggle();
-          self.vent.trigger("analytics:trackevent", "LikedSong", "ShowPopover", model.toDebugString());
+          view.popoverView.render();
+          view.popoverView.toggle();
+          view.vent.trigger("analytics:trackevent", "LikedSong", "ShowPopover", model.toDebugString());
         }
       );
     },
     removeLike: function(event) {
-      var self = this;
+      var view = this;
       var songId = $(event.currentTarget).parentsUntil("tbody", "[data-id]").attr("data-id");
 
       if (_.isEmpty(songId)) {
         console.error("Unable to find the id in the data-id attribute for the clicked row. (Possible Template/Model Error)", event);
-        self.render();
+        view.render();
         return;
       }
 
@@ -150,7 +150,7 @@ define([
       if (_.isUndefined(song)) {
         // Stale view, rerender
         console.error("Unable to find the song id " + songId + " in the database for remove like request. (Stale View)", event);
-        self.render();
+        view.render();
         return;
       }
 
@@ -160,9 +160,9 @@ define([
         wait: true,
         success: function(model, resp) {
           console.log("Successfully deleted song with id: {%s}", songId, song);
-          self.collection.remove(model);
-          self.render();
-          self.vent.trigger("analytics:trackevent", "LikedSong", "Remove", model.toDebugString());
+          view.collection.remove(model);
+          view.render();
+          view.vent.trigger("analytics:trackevent", "LikedSong", "Remove", model.toDebugString());
         }
       });
     },
@@ -171,8 +171,11 @@ define([
         this.popoverView.close();
         delete this.popoverView;
       }
+      // Datatable jquery plugin seems to cache a bunch of stuff
+      // This should force clear everything
       if (this.dataTable) {
         this.dataTable.fnDestroy(true);
+        $("#table-liked", this.el).empty().remove();
         delete this.dataTable;
       }
     }
