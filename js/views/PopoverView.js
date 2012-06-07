@@ -12,7 +12,7 @@ define([
       options = options || {};
       _.extend(this, options);
 
-      _.bindAll(this, "toggle");
+      _.bindAll(this, "getPopoverTemplate", "render", "toggle", "close");
 
       Backbone.Marionette.ItemView.prototype.constructor.apply(this, arguments);
     },
@@ -26,48 +26,48 @@ define([
       var $targetEl = $(this.el),
         popoverTemplate = this.getPopoverTemplate();
         json = this.serializeData(),
-        self = this;
+        view = this;
 
-      if (!popoverTemplate) throw new Error("Popover template is required");
+      if (_.isEmpty(popoverTemplate)) { throw new Error("Popover template is required"); }
       if ((_.isArray(json) && json.length < 1) || _.isEmpty(json)) { return; }
 
        $.when(this.renderHtml(json))
           .done(function(html) {
-            self.popover = $targetEl.data("popover");
-            if (_.isObject(self.popover)) {
-              self.popover.options.content = function() {
+            view.popover = $targetEl.data("popover");
+            if (_.isObject(view.popover)) {
+              view.popover.options.content = function() {
                 return html;
               };
             } else {
               $targetEl.popover({
-                title: (_.isFunction(self.getPopoverTitle)) ? self.getPopoverTitle() : null,
+                title: (_.isFunction(view.getPopoverTitle)) ? view.getPopoverTitle() : null,
                 content: function() {
                   return html;
                 },
-                placement: self.popoverPlacement,
+                placement: view.popoverPlacement,
                 trigger: "manual",
-                template: self.popoverTemplate
+                template: view.popoverTemplate
               });
-              self.popover = $targetEl.data("popover");
+              view.popover = $targetEl.data("popover");
             }
-            if (self.onEnable) self.onEnable();
+            if (_.isFunction(view.onEnable)) { view.onEnable(); }
           });
     },
     toggle: function() {
-      var self = this;
+      var view = this;
       var targetPopover = this.popover;
 
-      if (targetPopover) {
+      if (_.isObject(targetPopover)) {
         targetPopover.toggle();
         if (targetPopover.enabled) {
           targetPopover.$tip.find(".close").one("click.popover.toggle", function() {
             $(this).off("click.popover.toggle");
             targetPopover.hide();
-            if (self.onHide) self.onHide();
-            self.trigger("hide");
+            if (_.isFunction(view.onHide)) { view.onHide(); }
+            view.trigger("hide");
           });
-          if (self.onShow) self.onShow();
-          self.trigger("show");
+          if (_.isFunction(view.onShow)) { view.onShow(); }
+          view.trigger("show");
         }
       }
     },

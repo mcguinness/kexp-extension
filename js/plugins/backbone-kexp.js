@@ -154,6 +154,7 @@ define([
       splitParts,
       tooltipKey,
       waitForHideOnClose = false,
+      yieldOnClose = false,
       $tooltips,
       $tooltip,
       index,
@@ -172,32 +173,52 @@ define([
       if (_.isUndefined(splitParts) || splitParts.length < 1) { return; }
       
       tooltipKey = splitParts.shift();
-      if (splitParts.length > 0) {
-        waitForHideOnClose = (splitParts.shift().toLowerCase() === "wait");
+      while (splitParts.length > 0) {
+        switch (splitParts.shift().toLowerCase()) {
+          case "wait" :
+            waitForHideOnClose = true;
+            break;
+          case "yield" :
+            yieldOnClose = true;
+            break;
+          default :
+            break;
+        }
       }
 
       $tooltips = (selector === "this") ? self.$el : self.$el.find(selector);
+      
       $tooltips.each(function(index) {
-        
         data = $(this).data() || {};
         tooltip = data[tooltipKey];
-        // Skip element if no tooltip data or wrapped element
-        if (!_.isObject(tooltip) || !_.isObject(tooltip.$tip)) { return; }
-        $tooltip = tooltip.$tip;
+        
+        if (_.isObject(tooltip)) {
+          $tooltip = tooltip.$tip;
 
-        if (waitForHideOnClose && tooltip.enabled && $tooltip.index() >= 0) {
-            tooltipDfr = $.Deferred();
-            tooltipDfrs.push(tooltipDfr);
-            // Popover fades out with CSS animation, wait for fade out before close is finished
-            $tooltip.queueTransition(function() {
-              delete data[tooltipKey];
-              tooltipDfr.resolve();
-            });
-            // Trigger animation
-            tooltip.hide();
-        } else {
-          tooltip.enabled ? tooltip.hide() : $tooltip.remove();
-          delete data[tooltipKey];
+          if (_.isObject($tooltip)) {
+            if (waitForHideOnClose && $tooltip.index() >= 0) {
+                tooltipDfr = $.Deferred();
+                tooltipDfrs.push(tooltipDfr);
+                // Popover fades out with CSS animation, wait for fade out before close is finished
+                $tooltip.queueTransition(function() {
+                  delete data[tooltipKey];
+                  tooltipDfr.resolve();
+                });
+                // Trigger animation
+                tooltip.hide();
+            } else {
+              if ($tooltip.index() >= 0) {
+                if (!yieldOnClose) {
+                  tooltip.hide();
+                  delete data[tooltipKey];
+                }
+              } else {
+                delete data[tooltipKey];
+              }
+            }
+          } else {
+            delete data[tooltipKey];
+          }
         }
       });
     });

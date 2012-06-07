@@ -26,7 +26,8 @@ define([
         while (overLimitCount--) {
           removeModel = this.at(0);
           this.remove(removeModel);
-          console.log("Removed overlimit [>=" + this.limit + "] model from NowPlayingCollection [" + (this.length + 1) + "]", removeModel);
+          console.log("Removed overlimit [>=%s] model [%s] from NowPlayingCollection [%s]",
+            this.limit, removeModel.toDebugString(), (this.length + 1));
         }
       }
     },

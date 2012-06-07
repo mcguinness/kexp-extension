@@ -8,13 +8,10 @@ define([
 
   var NowPlayingFsm = function(nowPlayingModel) {
 
-    // if (nowPlayingModel === undefined) {
-    //     throw new Error("NowPlayingFsm requires a valid NowPlayingModel");
-    // }
     var fsm = new Machina.Fsm({
 
       initialState: "uninitialized",
-      events: ["initialized", "resolve:liked", "resolve:lastfm", "loaded", "error"],
+      events: ["initialized", "resolve:liked", "resolve:lastfm", "reconciled", "error"],
       states: {
         "uninitialized": {
           _onEnter: function() {
@@ -48,7 +45,7 @@ define([
                 success: function(collection, resp) {
                   likedSong = collection.first();
                   if (likedSong) {
-                    console.debug("Resolved %s for %s", likedSong.toDebugString(), self.toDebugString(), likedSong, self);
+                    console.debug("Resolved %s for %s", likedSong.toDebugString(), self.toDebugString());
                     self.likedSong = likedSong;
                   }
                   self.transition("likeResolved");
@@ -93,12 +90,12 @@ define([
         "lastfmResolved": {
           _onEnter: function() {
             this.fireEvent("resolve:lastfm", nowPlayingModel.lastFmMeta);
-            this.transition("loaded");
+            this.transition("reconciled");
           }
         },
-        "loaded": {
+        "reconciled": {
           _onEnter: function() {
-            this.fireEvent("loaded");
+            this.fireEvent("reconciled");
           }
         },
         "error": {

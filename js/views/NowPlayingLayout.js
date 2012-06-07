@@ -38,10 +38,15 @@ define([
       this.showNowPlaying(this.collection.last());
     },
     showNowPlaying: function(nowPlayingModel) {
-
-      var loader = new NowPlayingFsm(nowPlayingModel),
-        loaderDfr = $.Deferred(),
-        layout = this;
+      if (this._currentLoader) {
+        delete this._currentLoader;
+      }
+      var layout = this,
+        loader = this._currentLoader = new NowPlayingFsm(nowPlayingModel);
+        loaderDfr = $.Deferred().always(function() {
+          delete layout._currentLoader;
+          loader = null;
+        });
 
       loader.on("initialized", function() {
         layout.showSongView(nowPlayingModel);
@@ -52,8 +57,8 @@ define([
       loader.on("resolve:lastfm", function() {
         layout.showMetaView(nowPlayingModel);
       });
-      loader.on("loaded", function() {
-        console.log("[Loaded NowPlaying]");
+      loader.on("reconciled", function() {
+        console.log("[Loaded NowPlaying] %s", nowPlayingModel.toDebugString());
         loaderDfr.resolve(nowPlayingModel);
       });
       loader.on("error", function(error) {
@@ -101,11 +106,11 @@ define([
       }
     },
     enablePoll: function(intervalMs) {
-      var self = this;
-      self.disablePoll();
-      self.pollIntervalId = setInterval(function() {
-        self.vent.trigger("nowplaying:refresh:background", self.collection);
-        self.pollNowPlaying();
+      var layout = this;
+      layout.disablePoll();
+      layout.pollIntervalId = setInterval(function() {
+        layout.vent.trigger("nowplaying:refresh:background", layout.collection);
+        layout.pollNowPlaying();
       }, intervalMs);
     },
     pollNowPlaying: function(event) {
@@ -113,20 +118,15 @@ define([
       collection.fetch({upsert: true});
     },
     handleError: function(collection, model) {
-      var self = this;
+      var layout = this;
       console.debug("[Error NowPlaying] - Added adding new new playing to view collection", model, collection);
       this.vent.trigger("analytics:trackevent", "NowPlaying", "Error", model && _.isFunction(model.toDebugString) ?
         model.toDebugString() : "");
-      $.when(
-        self.footer ? self.footer.close() : true,
-        self.meta ? self.meta.close() : true)
-        .then(function() {
-          self.showErrorView();
-        });
       
+      this.showNowPlaying(void 0);
     },
     handleNewSong: function(model, collection) {
-      console.debug("[New NowPlaying] - Added new %s to view collection", model.toDebugString(), model, collection);
+      console.debug("[New NowPlaying] - Added new %s to view collection", model.toDebugString());
       this.showNowPlaying(model);
     },
     handleUpdatedSong: function(model) {
@@ -141,11 +141,14 @@ define([
       if (identityChange) {
         this.showNowPlaying(model);
       } else if (songChange) {
-        console.debug("[Updated NowPlaying] - Attributes changed for %s", model.toDebugString(), model);
+        console.debug("[Updated NowPlaying] - Attributes changed for %s", model.toDebugString());
         this.showSongView(model);
       }
     },
     beforeClose: function() {
+      if (this._currentLoader) {
+        delete this._currentLoader;
+      }
       this.disablePoll();
     }
   });

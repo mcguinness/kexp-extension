@@ -85,14 +85,14 @@ define(["jquery", "underscore", "backbone-kexp"], function($, _, Backbone) {
       options = options ? _.clone(options) : {};
 
       options.success = _.wrap(options.success, function(callerSuccess, resp, status, xhr) {
-        console.debug("LastFM API Sync Result Status: " + status, resp, xhr);
+        //console.debug("LastFM API Sync Result Status: [%s] Response: [%s]", status, resp, xhr);
         if (callerSuccess) {
           callerSuccess(resp, status, xhr);
         }
       });
 
       options.error = _.wrap(options.error, function(callerError, resp, status, contextOptions) {
-        console.debug("LastFM API Sync Result Status: " + status, resp, contextOptions);
+        console.debug("LastFM API Sync Result Status: [%s]", status, resp, contextOptions);
         if (callerError) {
           callerError(resp, status, contextOptions);
         }

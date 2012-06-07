@@ -42,22 +42,22 @@ define([
       };
     },
     onRender: function() {
-      var self = this;
+      var view = this;
 
       $(this.el)
         .find("#button-spotify")
-          .attr("href", self.model.toSpotifyUrl())
+          .attr("href", view.model.toSpotifyUrl())
             .tooltip({
               placement: "top",
               title: "Searches Spotify (requires Spotify app and access to launch from web)"
             });
-      if (_.isDate(self.model.get("timeLastUpdate"))) {
+      if (_.isDate(view.model.get("timeLastUpdate"))) {
         $(this.el)
           .find("#button-refresh")
             .tooltip({
               placement: "top",
               title: function() {
-                return "Last Update: " + moment.utc(self.model.get("timeLastUpdate")).local().format("M/D/YYYY h:mm:ss A");
+                return "Last Update: " + moment.utc(view.model.get("timeLastUpdate")).local().format("M/D/YYYY h:mm:ss A");
               }
             });
       }
@@ -66,7 +66,7 @@ define([
           .tooltip({
             placement: "top",
             title: function() {
-              return self.lastFmConfig.isLikeShareEnabled() ?
+              return view.lastFmConfig.isLikeShareEnabled() ?
               "<strong>Last.fm Sharing Enabled</strong> - Likes will be shared to your Last.fm profile as 'loves' (See Options)" :
               "<strong>Last.fm Sharing Disabled</strong> - Likes will only be locally stored and not shared with your Last.fm profile (See Options)";
             }
@@ -115,7 +115,8 @@ define([
         targetModel.likedSong = likedSong;
       } else {
         lastfmAttributes = targetModel.getLastFmLikedSongAttributes();
-        console.debug("[NowPlaying Like] merging now playing last.fm attributes to existing liked song", lastfmAttributes, likedSong);
+        console.debug("[NowPlaying Like] merging now playing last.fm attributes [%s] to existing liked song [%s]",
+          lastfmAttributes, JSON.stringify(likedSong));
         likedSong.set(lastfmAttributes);
         likedSong.save();
       }

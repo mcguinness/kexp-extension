@@ -49,10 +49,12 @@ define(["jquery", "underscore"], function($, _) {
         }()) + ".queueTransition";
 
         $el.queue(function() {
-          console.log("transition queued", $el, $el.queue());
+          console.log('transition queued <%s id="%s" class="%s">', $el.prop("tagName").toLowerCase(),
+            $el.prop("id"), $el.prop("className"), $el.queue());
           $el.one(endEvent, function() {
             $el.dequeue();
-            console.log("transition dequeued", $el, $el.queue());
+            console.log('transition dequeued <%s id="%s" class="%s">', $el.prop("tagName").toLowerCase(),
+              $el.prop("id"), $el.prop("className"), $el.queue());
             if (_.isFunction(endTransition)) {
               endTransition();
             }

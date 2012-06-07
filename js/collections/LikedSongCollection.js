@@ -43,11 +43,11 @@ define([
 
       return this.fetch(options)
         .done(function(collection, resp) {
-          console.debug("%s indexeddb {%s} Song: {%s} Artist: {%s} Album: {%s}",
-            (collection.length === 1 ? "[Found]" : "[Missing]"), self.database.id, song, artist, album, resp);
+          console.debug("%s indexeddb: {%s} => Song: {%s} Artist: {%s} Album: {%s}",
+            (collection.length === 1 ? "[Found]" : "[Missing]"), self.database.id, song, artist, album);
         })
         .fail(function(collection, resp) {
-          console.debug("[Fail] indexeddb {%s} error [%s] Song: {%s} Artist: {%s} Album: {%s}",
+          console.debug("[Fail] indexeddb: {%s} error [%s] => Song: {%s} Artist: {%s} Album: {%s}",
             self.database.id, resp, song, artist, album, resp);
         });
     }

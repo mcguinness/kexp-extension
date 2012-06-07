@@ -14,6 +14,9 @@ define([
     initialize: function(options) {
       this.bindTo(this.vent, "nowplaying:lastfm:popover:toggle", this.toggle, this);
     },
+    tooltips: {
+      "this": "popover yield"
+    },
     serializeData: function() {
       return _.chain(this.model.lastFmMeta.models)
         .filter(function(model) {

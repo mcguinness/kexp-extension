@@ -40,7 +40,7 @@ define([
       if (_.isUndefined(nowPlayingModel) || !nowPlayingModel.hasLikedSong()) { return; }
 
       console.debug("[LastFmLikeSyncService] processing nowplaying:like event for song {%s}",
-        nowPlayingModel.toDebugString(), nowPlayingModel);
+        nowPlayingModel.toDebugString());
     
       var likedSong = nowPlayingModel.likedSong;
       var self = this,

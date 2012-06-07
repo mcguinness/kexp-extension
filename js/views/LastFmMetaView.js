@@ -11,6 +11,8 @@ define([
     tagName: "div",
     className: "container-nowplaying-meta",
     initialize: function(options) {
+      _.bindAll(this, "render", "beforeClose");
+
       this.popoverEl = options.popoverEl;
       if (!this.popoverEl) {
         var err = new Error("A popover 'el' must be specified");
@@ -53,6 +55,7 @@ define([
 
       if (this.popoverView) {
         this.popoverView.close();
+        delete this.popoverView;
       }
 
       if ($image.length > 0) {
