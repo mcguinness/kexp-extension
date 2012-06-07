@@ -8,7 +8,7 @@ define([
 
   var NowPlayingFsm = function(nowPlayingModel) {
 
-    var fsm = new Machina.Fsm({
+    var nowPlayingFsm = new Machina.Fsm({
 
       initialState: "uninitialized",
       events: ["initialized", "resolve:liked", "resolve:lastfm", "reconciled", "error"],
@@ -28,7 +28,7 @@ define([
         },
         "initialized": {
           _onEnter: function() {
-            var self = this,
+            var fsm = this,
               songTitle = nowPlayingModel.get("songTitle"),
               artistName = nowPlayingModel.get("artist"),
               albumName = nowPlayingModel.get("album"),
@@ -38,22 +38,22 @@ define([
             this.fireEvent("initialized");
 
             if (nowPlayingModel.hasLikedSong()) {
-              self.transition("likeResolved");
+              fsm.transition("likeResolved");
 
             } else {
               songCollection.fetchSong(songTitle, artistName, albumName, {
                 success: function(collection, resp) {
                   likedSong = collection.first();
                   if (likedSong) {
-                    console.debug("Resolved %s for %s", likedSong.toDebugString(), self.toDebugString());
-                    self.likedSong = likedSong;
+                    console.debug("Resolved %s for %s", likedSong.toDebugString(), nowPlayingModel.toDebugString());
+                    nowPlayingModel.likedSong = likedSong;
                   }
-                  self.transition("likeResolved");
+                  fsm.transition("likeResolved");
                 },
                 error: function(collection, error, options) {
                   // Error "should" not happen
-                  console.warn("Error {%s} resolving liked song for %s", error, self.toDebugString(), collection, error, options);
-                  self.transition("likeResolved");
+                  console.warn("Error {%s} resolving liked song for %s", error, nowPlayingModel.toDebugString(), collection, error, options);
+                  fsm.transition("likeResolved");
                 }
               });
             }
@@ -63,7 +63,7 @@ define([
           _onEnter: function() {
             this.fireEvent("resolve:liked", nowPlayingModel.likedSong);
 
-            var self = this,
+            var fsm = this,
               artistName = nowPlayingModel.get("artist"),
               albumName = nowPlayingModel.get("album"),
               metaCollection = nowPlayingModel.lastFmMeta,
@@ -83,7 +83,7 @@ define([
                 return artistPromise;
               })
               .always(function() {
-                self.transition("lastfmResolved");
+                fsm.transition("lastfmResolved");
               });
           }
         },
@@ -105,7 +105,7 @@ define([
         }
       }
     });
-    return fsm;
+    return nowPlayingFsm;
   };
   return NowPlayingFsm;
 });

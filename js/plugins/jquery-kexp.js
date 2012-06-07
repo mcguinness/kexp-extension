@@ -27,14 +27,17 @@ define(["jquery", "underscore"], function($, _) {
     });
   };
 
-  $.fn.queueTransition = function(endTransition) {
+  $.fn.queueTransition = function(endTransition, timeout) {
 
     return this.each(function () {
       
       var thisStyle = (document.body || document.documentElement).style,
         isSupported = (thisStyle.transition !== undefined || thisStyle.WebkitTransition !== undefined ||
           thisStyle.MozTransition !== undefined || thisStyle.MsTransition !== undefined || thisStyle.OTransition !== undefined),
-        endEvent, $el = $(this), timeoutId;
+        $el = $(this),
+        transitionId = _.uniqueId("transition"),
+        endEvent,
+        timeoutId;
 
       if (isSupported) {
         endEvent = (function() {
@@ -50,21 +53,26 @@ define(["jquery", "underscore"], function($, _) {
         }()) + ".queueTransition";
 
         timeoutId = setTimeout(function() {
+          console.log('%s aborted <%s id="%s" class="%s">', transitionId, $el.prop("tagName").toLowerCase(),
+              $el.prop("id"), $el.prop("className"), $el.queue());
           $el.off(endEvent);
-        }, 10000);
+          if (_.isFunction(endTransition)) {
+              endTransition();
+          }
+        }, timeout || 4000);
 
         $el.queue(function() {
-          console.log('transition queued <%s id="%s" class="%s">', $el.prop("tagName").toLowerCase(),
+          console.log('%s queued <%s id="%s" class="%s">', transitionId, $el.prop("tagName").toLowerCase(),
             $el.prop("id"), $el.prop("className"), $el.queue());
           $el.one(endEvent, function() {
             clearTimeout(timeoutId);
+            $el.off(endEvent);
             $el.dequeue();
-            console.log('transition dequeued <%s id="%s" class="%s">', $el.prop("tagName").toLowerCase(),
+            console.log('%s dequeued <%s id="%s" class="%s">', transitionId, $el.prop("tagName").toLowerCase(),
               $el.prop("id"), $el.prop("className"), $el.queue());
             if (_.isFunction(endTransition)) {
               endTransition();
             }
-            $el.off(endEvent);
           });
         });
       }
