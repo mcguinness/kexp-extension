@@ -30,10 +30,11 @@ define(["jquery", "underscore"], function($, _) {
   $.fn.queueTransition = function(endTransition) {
 
     return this.each(function () {
+      
       var thisStyle = (document.body || document.documentElement).style,
         isSupported = (thisStyle.transition !== undefined || thisStyle.WebkitTransition !== undefined ||
           thisStyle.MozTransition !== undefined || thisStyle.MsTransition !== undefined || thisStyle.OTransition !== undefined),
-        endEvent, $el = $(this);
+        endEvent, $el = $(this), timeoutId;
 
       if (isSupported) {
         endEvent = (function() {
@@ -48,10 +49,15 @@ define(["jquery", "underscore"], function($, _) {
           return transitionEnd;
         }()) + ".queueTransition";
 
+        timeoutId = setTimeout(function() {
+          $el.off(endEvent);
+        }, 10000);
+
         $el.queue(function() {
           console.log('transition queued <%s id="%s" class="%s">', $el.prop("tagName").toLowerCase(),
             $el.prop("id"), $el.prop("className"), $el.queue());
           $el.one(endEvent, function() {
+            clearTimeout(timeoutId);
             $el.dequeue();
             console.log('transition dequeued <%s id="%s" class="%s">', $el.prop("tagName").toLowerCase(),
               $el.prop("id"), $el.prop("className"), $el.queue());

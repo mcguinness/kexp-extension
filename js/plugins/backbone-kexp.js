@@ -2,107 +2,13 @@ define([
   "jquery",
   "underscore",
   "backbone",
-  "backbone-delimit", // Backbone Plugin
+  "backbone-replete", // Backbone Plugin
   "marionette", // Backbone Plugin
   "marionette-deferredclose", // Marionette Plugin
   "jquery-kexp" // jQuery Plugin
 	], function($, _, Backbone) {
 
-  Backbone.Collection.prototype.upsert = function(models, options) {
-    var i, index, length, existingModel, model, cid, id, cids = {}, ids = {}, dups = [];
-    options || (options = {});
-    models = _.isArray(models) ? models.slice() : [models];
-
-    // Begin by turning bare objects into model references, and preventing
-    // invalid models or duplicate models from being added.
-    for (i = 0, length = models.length; i < length; i++) {
-      if (!(model = models[i] = this._prepareModel(models[i], options))) {
-        console.warn("Can't update or add an invalid model to a collection", models[i], this, options);
-        throw new Error("Can't update or add an invalid model to a collection");
-      }
-      cid = model.cid;
-      id = model.id;
-      if (cids[cid] || ((id != null) && (ids[id]))) {
-        dups.push(i);
-        continue;
-      } else if  (this._byCid[cid] || (id != null) && (ids[id] || this._byId[id])) {
-        existingModel = this.getByCid(cid) || this.get(id);
-        existingModel.set(model, options);
-        dups.push(i);
-        continue;
-      }
-
-      cids[cid] = ids[id] = model;
-    }
-
-    // Remove duplicates.
-    i = dups.length;
-    while (i--) {
-      models.splice(dups[i], 1);
-    }
-
-    return this.add(models, options);
-  };
-
-  Backbone.Collection.prototype.fetch = function(options) {
-    options = options ? _.clone(options) : {};
-    if (options.parse === undefined) options.parse = true;
-    var collection = this;
-    var fetchDfr = $.Deferred();
-
-    if (options.success) {
-      fetchDfr.done(options.success);
-    }
-    fetchDfr.fail(Backbone.wrapError(options.error, collection, options));
-
-    options.success = function(resp, status, xhr) {
-      try {
-        collection[options.add ? 'add' : (options.upsert ? "upsert" : 'reset')](collection.parse(resp, xhr), options);
-        fetchDfr.resolve(collection, resp);
-      }
-      catch (e) {
-        console.warn("Error {%s} fetching collection =>", e.toString(), e.stack, collection, e, options);
-        fetchDfr.reject(collection, e, options);
-      }
-    };
-    options.error = function(collection, error, options) {
-      fetchDfr.reject(collection, error, options);
-    };
-
-    (this.sync || Backbone.sync).call(this, 'read', this, options);
-    return fetchDfr.promise();
-  };
-
-
-  Backbone.Model.prototype.fetch = function(options) {
-    options = options ? _.clone(options) : {};
-    if (options.parse === undefined) options.parse = true;
-    var model = this;
-    var fetchDfr = $.Deferred();
-
-    if (options.success) {
-      fetchDfr.done(options.success);
-    }
-    fetchDfr.fail(Backbone.wrapError(options.error, model, options));
-
-    options.success = function(resp, status, xhr) {
-      try {
-        if (!model.set(model.parse(resp, xhr), options)) return false;
-        fetchDfr.resolve(model, resp);
-      }
-      catch (e) {
-        console.warn("Error {%s} fetching model =>", e.toString(), e.stack, model, e, options);
-        fetchDfr.reject(model, e, options);
-      }
-    };
-    options.error = function(model, error, options) {
-      fetchDfr.reject(model, error, options);
-    };
-
-    (this.sync || Backbone.sync).call(this, 'read', this, options);
-    return fetchDfr.promise();
-  };
-
+ 
    // Enable Require.js Template Cache
   Backbone.Marionette.TemplateCache.loadTemplate = function(template, callback) {
     // pre-compile the template and store that in the cache.
@@ -140,14 +46,22 @@ define([
     }
   });
 
+
+  // TODO Simplify design to not require this crap
+  // HACK
+  // I am totally abusing bootstrap popovers.  Due to chrome extension fixed window size
+  // popups are using the navbar as the target element.
+  //
+  // Tooltips are created as document child element $tip and not a child of a view
+  // They do not get removed on view close
+  // This is an over-engineered attempt to make sure there are no memory leaks
+  // 
+  // In a future version, look at using an app route as an overlay
   var tooltipSplitter = /\s+/;
   Backbone.Marionette.View.prototype.tooltipClose = function() {
     
     // Exit early if no tooltip hash is defined
     if (!_.isObject(this.tooltips)) { return; }
-
-    // Tooltips are created as document child element $tip and not a child of a view
-    // They do not get removed on view close by default
 
     var value,
       selector,
@@ -209,7 +123,7 @@ define([
             } else {
               if ($tooltip.index() >= 0) {
                 if (!yieldOnClose) {
-                  tooltip.hide();
+                  $tooltip.remove();
                   delete data[tooltipKey];
                 }
               } else {

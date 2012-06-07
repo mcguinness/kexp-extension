@@ -1,29 +1,29 @@
 require.config({
   paths: {
-    "jquery": "libs/jquery-1.7.2.min",
-    "jquery-ui": "plugins/jquery-ui-1.8.20.custom.min",
-    "jquery-kexp": "plugins/jquery-kexp",
-    "underscore": "libs/underscore-min",
     "backbone": "libs/backbone-min",
-    "backbone-extensions": "plugins/backbone.extensions",
-    "backbone-relational": "plugins/backbone-relational",
+    "backbone-kexp": "plugins/backbone-kexp",
     "backbone-localstorage": "libs/backbone-localstorage",
+    "backbone-replete": "plugins/backbone-replete",
     "bootstrap": "plugins/bootstrap.min",
-    "marionette": "libs/backbone.marionette.min",
-    "indexeddb": "libs/backbone-indexeddb",
-    "text": "libs/text-min",
-    "moment": "libs/moment.min",
-    "gaq": "util/google-analytics",
-    "md5": "util/md5",
-    "lastfm-api": "services/LastFmApi",
     "ga": "https://ssl.google-analytics.com/ga",
-    "twitter": "https://platform.twitter.com/widgets"
+    "gaq": "util/google-analytics",
+    "indexeddb": "libs/backbone-indexeddb",
+    "jquery": "libs/jquery-1.7.2.min",
+    "jquery-kexp": "plugins/jquery-kexp",
+    "jquery-ui": "plugins/jquery-ui-1.8.20.custom.min",
+    "lastfm-api": "services/LastFmApi",
+    "marionette": "libs/backbone.marionette.min",
+    "marionette-deferredclose": "plugins/backbone.marionette-deferredclose",
+    "md5": "util/md5",
+    "moment": "libs/moment.min",
+    "text": "libs/text-min",
+    "twitter": "https://platform.twitter.com/widgets",
+    "underscore": "libs/underscore-min"
   },
   shim: {
-    "jquery-ui": ["jquery"],
+    "bootstrap": ["jquery"],
     "jquery-kexp": ["jquery", "underscore"],
-    "backbone-relational": ["backbone", "underscore"],
-    "bootstrap": ["jquery"]
+    "jquery-ui": ["jquery"]
   }
 });
 

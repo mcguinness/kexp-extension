@@ -17,9 +17,9 @@ define([
         }
 
         if (options.popout && window.WebKitMutationObserver) {
-          console.log("!Width: Outer:[%s] Inner:[%s] Document:[%s] DocElement: [%s] Client:[%s] Body:[%s]",
-            window.outerWidth, window.innerWidth, window.document.width, $(window.document.documentElement).width(),
-            window.document.documentElement.clientWidth, window.document.body.clientWidth);
+          // console.log("!Width: Outer:[%s] Inner:[%s] Document:[%s] DocElement: [%s] Client:[%s] Body:[%s]",
+          //   window.outerWidth, window.innerWidth, window.document.width, $(window.document.documentElement).width(),
+          //   window.document.documentElement.clientWidth, window.document.body.clientWidth);
           
           // Set initial window width to include browser chrome (window width should not change after this)
           window.resizeBy(window.outerWidth - window.document.width, 0);
@@ -108,10 +108,10 @@ define([
           element,
           foundSkipElement;
           
-        console.log("Width: Outer:[%s] Inner:[%s] Document:[%s] DocumentElement: [%s] Client:[%s] Body:[%s]",
-          windowWidth, viewportWidth, document.width, documentWidth, document.documentElement.clientWidth, document.body.clientWidth);
-        console.log("Height: Outer:[%s] Inner:[%s] Document:[%s] DocumentElement: [%s] Client:[%s] Body:[%s]",
-          windowHeight, viewportHeight, document.height, documentHeight, document.documentElement.clientHeight, document.body.clientHeight);
+        // console.log("Width: Outer:[%s] Inner:[%s] Document:[%s] DocumentElement: [%s] Client:[%s] Body:[%s]",
+        //   windowWidth, viewportWidth, document.width, documentWidth, document.documentElement.clientWidth, document.body.clientWidth);
+        // console.log("Height: Outer:[%s] Inner:[%s] Document:[%s] DocumentElement: [%s] Client:[%s] Body:[%s]",
+        //   windowHeight, viewportHeight, document.height, documentHeight, document.documentElement.clientHeight, document.body.clientHeight);
 
 
         // Hacky Optimization (could break if browser/assumptions change)
@@ -129,7 +129,7 @@ define([
           .value();
 
         if (skipMutations.length > 0) {
-          console.log("Skipping resizing for element mutations", skipMutations, mutations);
+          //console.log("Skipping resizing for element mutations", skipMutations, mutations);
           viewportHeightDelta = 0;
         }
 
@@ -164,8 +164,8 @@ define([
         }
 
         if (windowHeight !== height) {
-          console.log("Resizing window [%s x %s] to [%s x %s] with zoom: %s",
-            windowWidth, windowHeight, width, height, this.zoom, mutations);
+          // console.log("Resizing window [%s x %s] to [%s x %s] with zoom: %s",
+          //   windowWidth, windowHeight, width, height, this.zoom, mutations);
           window.resizeTo(windowWidth, height);
         }
       }
