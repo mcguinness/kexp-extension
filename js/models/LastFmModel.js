@@ -5,7 +5,7 @@ define([
   "databases/LastFmSync"
   ], function($, Backbone, _, LastFmSync) {
 
-  var LastFmModel = Backbone.RelationalModel.extend({
+  var LastFmModel = Backbone.Model.extend({
     
     initialize: function(options) {
       this.sync = new LastFmSync(options).sync;

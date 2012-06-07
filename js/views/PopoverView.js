@@ -7,9 +7,9 @@ define([
 
   var PopoverView = Backbone.Marionette.ItemView.extend({
     popoverPlacement: "bottom",
+    hideOnClose: false,
     constructor: function(options) {
       options = options || {};
-      this.hideOnClose = false;
       _.extend(this, options);
 
       _.bindAll(this, "toggle");
@@ -29,18 +29,18 @@ define([
         self = this;
 
       if (!popoverTemplate) throw new Error("Popover template is required");
-      if ((_.isArray(json) && json.length < 1) || _.isEmpty(json)) return;
+      if ((_.isArray(json) && json.length < 1) || _.isEmpty(json)) { return; }
 
        $.when(this.renderHtml(json))
           .done(function(html) {
             self.popover = $targetEl.data("popover");
-            if (self.popover !== undefined) {
+            if (_.isObject(self.popover)) {
               self.popover.options.content = function() {
                 return html;
               };
             } else {
               $targetEl.popover({
-                title: (self.getPopoverTitle) ? self.getPopoverTitle() : null,
+                title: (_.isFunction(self.getPopoverTitle)) ? self.getPopoverTitle() : null,
                 content: function() {
                   return html;
                 },
@@ -54,18 +54,20 @@ define([
           });
     },
     toggle: function() {
-      var self = this,
-        popover = this.popover ? this.popover : $(this.el).data("popover");
-      if (popover) {
-        $(this.el).popover("toggle");
-        if (popover.enabled) {
-          popover.$tip.find(".close").click(function() {
-            popover.hide();
+      var self = this;
+      var targetPopover = this.popover;
+
+      if (targetPopover) {
+        targetPopover.toggle();
+        if (targetPopover.enabled) {
+          targetPopover.$tip.find(".close").one("click.popover.toggle", function() {
+            $(this).off("click.popover.toggle");
+            targetPopover.hide();
             if (self.onHide) self.onHide();
             self.trigger("hide");
           });
-          if (this.onShow) this.onShow();
-          this.trigger("show");
+          if (self.onShow) self.onShow();
+          self.trigger("show");
         }
       }
     },

@@ -36,23 +36,21 @@ define([
       }
     },
     handleSync: function(nowPlayingModel) {
-      
-      if (_.isUndefined(nowPlayingModel)) return;
+      // Skip processing if no valid model or liked song
+      if (_.isUndefined(nowPlayingModel) || !nowPlayingModel.hasLikedSong()) { return; }
 
       console.debug("[LastFmLikeSyncService] processing nowplaying:like event for song {%s}",
         nowPlayingModel.toDebugString(), nowPlayingModel);
     
-      var likedSong = nowPlayingModel.getLikedSong();
-      if (_.isUndefined(likedSong)) return;
-      
+      var likedSong = nowPlayingModel.likedSong;
       var self = this,
         track = likedSong.get("songTitle"),
         artist = likedSong.get("artist"),
         album = likedSong.get("album"),
         timePlayed = nowPlayingModel.get("timePlayed");
 
-
-      if (_.isEmpty(track) || _.isEmpty(artist)) return;
+      // Skip processing if empty track or artist
+      if (_.isEmpty(track) || _.isEmpty(artist)) { return; }
 
 
       if (this.lastFmConfig.isLikeShareEnabled() &&

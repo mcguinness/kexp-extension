@@ -132,10 +132,10 @@ define([
     handleUpdatedSong: function(model) {
       var key;
       var identityChange = _.any(Object.keys(model.changed), function(key) {
-        return (key === ("album" || "artist" || "songTitle"));
+        return model.frozenAttributeKeys.indexOf(key) !== -1;
       });
       var songChange = _.any(Object.keys(model.changed), function(key) {
-        return (key === ("albumYear" || "albumLabel" || "comments" || "timePlayed"));
+        return model.amendableAttributeKeys.indexOf(key) !== -1;
       });
 
       if (identityChange) {

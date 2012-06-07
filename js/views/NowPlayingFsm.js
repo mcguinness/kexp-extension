@@ -1,11 +1,17 @@
-define(["machina", "jquery", "underscore", "models/LastFmModel"], function(machina, $, _, LastFmModel) {
+define([
+  "machina",
+  "jquery",
+  "underscore",
+  "collections/LikedSongCollection",
+  "models/LastFmModel"
+  ], function(Machina, $, _, LikedSongCollection, LastFmModel) {
 
   var NowPlayingFsm = function(nowPlayingModel) {
 
     // if (nowPlayingModel === undefined) {
     //     throw new Error("NowPlayingFsm requires a valid NowPlayingModel");
     // }
-    var fsm = new machina.Fsm({
+    var fsm = new Machina.Fsm({
 
       initialState: "uninitialized",
       events: ["initialized", "resolve:liked", "resolve:lastfm", "loaded", "error"],
@@ -25,32 +31,45 @@ define(["machina", "jquery", "underscore", "models/LastFmModel"], function(machi
         },
         "initialized": {
           _onEnter: function() {
-            var self = this;
+            var self = this,
+              songTitle = nowPlayingModel.get("songTitle"),
+              artistName = nowPlayingModel.get("artist"),
+              albumName = nowPlayingModel.get("album"),
+              songCollection = new LikedSongCollection(),
+              likedSong;
 
             this.fireEvent("initialized");
 
-            if (nowPlayingModel.get("relLiked")) {
+            if (nowPlayingModel.hasLikedSong()) {
               self.transition("likeResolved");
 
             } else {
-              nowPlayingModel.resolveLikedSong()
-                .fail(function(error, options) {
-                  console.error("Failed to resolve liked song for model %s with error %s", nowPlayingModel.id, error, error, options);
-                })
-                .always(function() {
+              songCollection.fetchSong(songTitle, artistName, albumName, {
+                success: function(collection, resp) {
+                  likedSong = collection.first();
+                  if (likedSong) {
+                    console.debug("Resolved %s for %s", likedSong.toDebugString(), self.toDebugString(), likedSong, self);
+                    self.likedSong = likedSong;
+                  }
                   self.transition("likeResolved");
-                });
+                },
+                error: function(collection, error, options) {
+                  // Error "should" not happen
+                  console.warn("Error {%s} resolving liked song for %s", error, self.toDebugString(), collection, error, options);
+                  self.transition("likeResolved");
+                }
+              });
             }
           }
         },
         "likeResolved": {
           _onEnter: function() {
-            this.fireEvent("resolve:liked", nowPlayingModel.get("relLiked"));
+            this.fireEvent("resolve:liked", nowPlayingModel.likedSong);
 
             var self = this,
               artistName = nowPlayingModel.get("artist"),
               albumName = nowPlayingModel.get("album"),
-              metaCollection = nowPlayingModel.get("relLastFmMeta"),
+              metaCollection = nowPlayingModel.lastFmMeta,
               albumPromise = metaCollection.getOrFetchAlbum(artistName, albumName),
               artistPromise = metaCollection.getOrFetchArtist(artistName),
               cancel;
@@ -73,7 +92,7 @@ define(["machina", "jquery", "underscore", "models/LastFmModel"], function(machi
         },
         "lastfmResolved": {
           _onEnter: function() {
-            this.fireEvent("resolve:lastfm", nowPlayingModel.get("relLastFmMeta"));
+            this.fireEvent("resolve:lastfm", nowPlayingModel.lastFmMeta);
             this.transition("loaded");
           }
         },

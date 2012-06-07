@@ -19,7 +19,7 @@ define([
       }
     },
     render: function() {
-      var lastFmCollection = this.model.getLastFmCollection(),
+      var lastFmCollection = this.model.lastFmMeta,
         lastFmImageModel = lastFmCollection.getImageBySort([
           {
           entity: "album",

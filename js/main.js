@@ -7,10 +7,12 @@ require.config({
     "jquery.dataTables.sort": "plugins/jquery.dataTables.sort",
     "underscore": "libs/underscore-min",
     "backbone": "libs/backbone-min",
+    "backbone-delimit": "plugins/backbone-delimit",
     "backbone-relational": "plugins/backbone-relational",
     "backbone-localstorage": "libs/backbone-localstorage",
     "backbone-kexp": "plugins/backbone-kexp",
     "marionette": "libs/backbone.marionette.min",
+    "marionette-deferredclose": "plugins/backbone.marionette-deferredclose",
     "indexeddb": "libs/backbone-indexeddb",
     "machina": "libs/machina.min",
     "text": "libs/text-min",
@@ -32,7 +34,7 @@ require.config({
     "jquery-kexp": ["jquery", "underscore"],
     "jquery.dataTables": ["jquery"],
     "jquery.dataTables.sort": ["jquery.dataTables"],
-    "backbone-relational": ["backbone", "underscore"],
+    "backbone-relational": ["backbone", "underscore", "backbone-delimit"],
     "bootstrap": ["jquery"]
   }
 });

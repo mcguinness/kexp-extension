@@ -9,22 +9,9 @@ define([
   "collections/LastFmCollection"
   ], function($, Backbone, _, moment, LastFmModel, LikedSongModel, LikedSongCollection, LastFmCollection) {
   
-  var NowPlayingModel = Backbone.RelationalModel.extend({
+  var NowPlayingModel = Backbone.Model.extend({
 
-    relations: [
-      {
-        type: Backbone.HasMany,
-        collectionType: LastFmCollection,
-        key: "relLastFmMeta",
-        relatedModel: LastFmModel
-      },
-      {
-        type: Backbone.HasOne,
-        key: "relLiked",
-        relatedModel: LikedSongModel
-      }
-    ],
-    intialize: function() {
+    intialize: function(options) {
 
     },
     toJSON: function() {
@@ -103,20 +90,14 @@ define([
         return "artist attribute is missing or null";
       }
     },
-    getLikedSong: function() {
-      return this.get("relLiked");
-    },
-    setLikedSong: function(model) {
-      this.set("relLiked", model);
-    },
-    getLastFmCollection: function() {
-      return this.get("relLastFmMeta");
+    hasLikedSong: function() {
+      return _.isObject(this.likedSong);
     },
     getLastFmLikedSongAttributes: function() {
 
       var lastfmModel, track, attributes = {}, self = this;
 
-      _.each(this.getLastFmCollection().models, function(lastfmModel) {
+      _.each(this.lastFmMeta.models, function(lastfmModel) {
         if (lastfmModel.isArtist()) {
           attributes.artistMbid = lastfmModel.get("mbid") || "";
           attributes.artistLastFmUrl = lastfmModel.get("url") || "";
@@ -134,30 +115,6 @@ define([
       });
 
       return attributes;
-    },
-    resolveLikedSong: function() {
-      var self = this,
-        songCollection = new LikedSongCollection(),
-        resolveDeferred = $.Deferred(),
-        likedSong;
-
-      songCollection.fetchSong(this.get("songTitle"), this.get("artist"), this.get("album"), {
-        success: function(collection, resp) {
-          likedSong = collection.first();
-          if (likedSong) {
-            console.debug("Resolved liked song for now playing model", likedSong, self);
-            self.set("relLiked", likedSong);
-          }
-          resolveDeferred.resolve(likedSong);
-        },
-        error: function(collection, error, options) {
-          // Error "should" not happen
-          console.warn("Error resolving liked song for now playing model", self, collection, error, options);
-          resolveDeferred.reject(error, options);
-        }
-      });
-
-      return resolveDeferred.promise();
     },
     toSpotifyUrl: function() {
       return "spotify:search:" + encodeURI('artist:"' + this.get("artist") + '" album:"' + this.get("album") + '"');
@@ -180,5 +137,32 @@ define([
       return new LikedSongModel(song);
     }
   });
+
+  Object.defineProperty(NowPlayingModel.prototype, "lastFmMeta", {
+    get: function() {
+      if (_.isUndefined(this._lastFmCollection)) {
+        this._lastFmCollection = new LastFmCollection();
+      }
+      return this._lastFmCollection;
+    },
+    enumerable : true,
+    configurable : false
+  });
+
+  Object.defineProperty(NowPlayingModel.prototype, "frozenAttributeKeys", {
+    value: ["id", "album", "artist", "songTitle", "timePlayed"],
+    writable: false,
+    enumerable : true,
+    configurable : false
+  });
+
+  Object.defineProperty(NowPlayingModel.prototype, "amendableAttributeKeys", {
+    value: ["albumYear", "albumLabel", "comments"],
+    writable: false,
+    enumerable : true,
+    configurable : false
+  });
+
+
   return NowPlayingModel;
 });

@@ -6,7 +6,7 @@ define([
   "databases/LikedSongDatabase"
   ], function($, Backbone, _, IndexedDBSync, LikedSongDatabase) {
 
-  var LikedSongModel = Backbone.RelationalModel.extend({
+  var LikedSongModel = Backbone.Model.extend({
 
     database: new LikedSongDatabase(),
     storeName: "songs",

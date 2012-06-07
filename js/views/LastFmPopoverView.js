@@ -15,9 +15,7 @@ define([
       this.bindTo(this.vent, "nowplaying:lastfm:popover:toggle", this.toggle, this);
     },
     serializeData: function() {
-      var lastFmCollection = this.model.getLastFmCollection();
-
-      return _.chain(lastFmCollection.models)
+      return _.chain(this.model.lastFmMeta.models)
         .filter(function(model) {
           return _.any(["album", "artist"], function(entity) {
             return model.get("entity") === entity;

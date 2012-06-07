@@ -33,12 +33,10 @@ define([
       "#button-share" : "tooltip"
     },
     serializeData: function() {
-      var likedSong = this.model.getLikedSong();
-
       return {
         model: {
           id: this.model.id,
-          likeCount: likedSong ? likedSong.get("likeCount") : 0,
+          likeCount: this.model.hasLikedSong() ? this.model.likedSong.get("likeCount") : 0,
           likeShareEnabled: this.lastFmConfig.isLikeShareEnabled()
         }
       };
@@ -107,14 +105,14 @@ define([
 
       if (_.isUndefined(targetModel)) return;
 
-      likedSong = targetModel.getLikedSong() || targetModel.toSong();
+      likedSong = targetModel.likedSong || targetModel.toSong();
       likedSong.like();
 
       // Note: collection:change event doesn't seem to fire if model is not new, rel:change event does fire
       // if adding new related model
       if (likedSong.isNew()) {
         likedSong.save();
-        targetModel.setLikedSong(likedSong);
+        targetModel.likedSong = likedSong;
       } else {
         lastfmAttributes = targetModel.getLastFmLikedSongAttributes();
         console.debug("[NowPlaying Like] merging now playing last.fm attributes to existing liked song", lastfmAttributes, likedSong);
