@@ -174,7 +174,6 @@ define([
       if (this.dataTable) {
         this.dataTable.fnDestroy(true);
         delete this.dataTable;
-        delete this.$el.DataTable;
       }
     }
   });

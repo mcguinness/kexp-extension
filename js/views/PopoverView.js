@@ -24,7 +24,7 @@ define([
     },
     render: function() {
       var $targetEl = $(this.el),
-        popoverTemplate = this.getPopoverTemplate();
+        popoverTemplate = this.getPopoverTemplate(),
         json = this.serializeData(),
         view = this;
 

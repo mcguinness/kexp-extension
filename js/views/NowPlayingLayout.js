@@ -42,7 +42,7 @@ define([
         delete this._currentLoader;
       }
       var layout = this,
-        loader = this._currentLoader = new NowPlayingFsm(nowPlayingModel);
+        loader = this._currentLoader = new NowPlayingFsm(nowPlayingModel),
         loaderDfr = $.Deferred().always(function() {
           delete layout._currentLoader;
           loader = null;
