@@ -17,14 +17,14 @@ define([
         }
 
         if (options.popout && window.WebKitMutationObserver) {
-          // console.log("!Width: Outer:[%s] Inner:[%s] Document:[%s] DocElement: [%s] Client:[%s] Body:[%s]",
-          //   window.outerWidth, window.innerWidth, window.document.width, $(window.document.documentElement).width(),
-          //   window.document.documentElement.clientWidth, window.document.body.clientWidth);
+          console.log("!Width: Outer:[%s] Inner:[%s] Document:[%s] DocElement: [%s] Client:[%s] Body:[%s]",
+            window.outerWidth, window.innerWidth, window.document.width, $(window.document.documentElement).width(),
+            window.document.documentElement.clientWidth, window.document.body.clientWidth);
           
-          // Set initial window width to include browser chrome (window width should not change after this)
-          window.resizeBy(window.outerWidth - window.document.width, 0);
-
           this.zoom = DetectZoom.zoom();
+
+          // Set initial window width to include browser chrome (window width should not change after this)
+          window.resizeBy((window.outerWidth - window.document.width) * this.zoom, 0);
 
           this.popoutResizeObserver = new WebKitMutationObserver(this.domObserver);
           this.popoutResizeObserver.observe(document.querySelector("#region-content"), {
@@ -111,6 +111,7 @@ define([
           .pluck("addedNodes")
           .filter(function(nodeList) {
             return _.find(nodeList, function(node) {
+              //console.log('Mutation add element: <%s id="%s" class="%s">', node.tagName, node.id, node.className);
               return (node.className === "container-nowplaying-meta");
             });
           })
@@ -132,8 +133,8 @@ define([
         }
 
         if (windowHeight !== height) {
-          // console.log("Resizing window [%s x %s] to [%s x %s] with zoom: %s",
-          //   windowWidth, windowHeight, width, height, this.zoom, mutations);
+          console.log("Resizing window [%s x %s] to [%s x %s] with zoom: %s",
+            windowWidth, windowHeight, width, height, this.zoom);
           window.resizeTo(windowWidth, height);
         }
       }
