@@ -3852,9 +3852,10 @@ i.enabled {
   -moz-border-radius: 0;
   border-radius: 0;
   border-bottom: 0;
-  padding: 0px 5px 5px 5px;
+  padding: 0px 5px 0px 5px;
   font-size: 18px;
   font-weight: bold;
+  line-height: 22px;
   text-rendering: optimizelegibility;
 }
 .popover.popover-kexp .popover-inner {
@@ -4458,7 +4459,7 @@ body {
   cursor: default;
 }
 .popover.popover-liked .popover-inner {
-  max-width: 550px !important;
+  max-width: 500px !important;
 }
 .popover.popover-liked table {
   margin-bottom: 0px;
