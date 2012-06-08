@@ -5,6 +5,14 @@ define([
   "detectzoom"
   ], function($, _, Service, DetectZoom) {
 
+    var NowPlayingMutationFlags = {
+      None: 0,
+      Song: 1,
+      Footer: 2,
+      Meta: 4,
+      Effects: 8
+    };
+    Object.freeze(NowPlayingMutationFlags);
     
     var PopoutService = Service.extend({
       onStart: function(options) {
@@ -90,68 +98,18 @@ define([
           viewportHeightDelta = Math.round((viewportHeight - documentHeight) * this.zoom),
           width = (viewportWidth === document.width) ? windowWidth :
             document.width + Math.round(((viewportWidth - document.documentElement.clientWidth) * this.zoom)),
-          height = Math.round(documentHeight * this.zoom),
-          skipMutations,
-          nodeList,
-          node,
-          element,
-          foundSkipElement;
+          height = Math.round(documentHeight * this.zoom);
           
         // console.log("Width: Outer:[%s] Inner:[%s] Document:[%s] DocumentElement: [%s] Client:[%s] Body:[%s]",
         //   windowWidth, viewportWidth, document.width, documentWidth, document.documentElement.clientWidth, document.body.clientWidth);
         // console.log("Height: Outer:[%s] Inner:[%s] Document:[%s] DocumentElement: [%s] Client:[%s] Body:[%s]",
         //   windowHeight, viewportHeight, document.height, documentHeight, document.documentElement.clientHeight, document.body.clientHeight);
 
-
-        // Hacky Optimization (could break if browser/assumptions change)
-        // These elements are observed on addition and cause unnecessary resizing of window the messes up look and feel
-
-        // jQuery UI Slide Effect should create the following pattern
-        // Animation Start:
-        //  Add: 2 x div.container-nowplaying-song + 1 x div.ui-effects-wrapper
-        //  Remove: 1 x div.container-nowplaying-song
-        // Animation End:
-        //  Add: 1 x div.container-nowplaying-song
-        //  Remove: 1 x div.container-nowplaying-song + 1 x div.ui-effects-wrapper
-
-        var metaAddMutation = false;
-        slideAddMutations = _.chain(mutations)
-          .pluck("addedNodes")
-          .filter(function(nodeList) {
-            return _.find(nodeList, function(node) {
-              //console.log('Mutation add element: <%s id="%s" class="%s">', node.tagName, node.id, node.className);
-              if (node.tagName === "DIV") {
-                switch (node.className) {
-                  case "ui-effects-wrapper" :
-                    return true;
-                  case "container-nowplaying-song" :
-                    return true;
-                  case "container-nowplaying-meta" :
-                    metaAddMutation = true;
-                    return false;
-                  default :
-                    return false;
-                }
-              }
-            });
-          })
-          .value();
-
-        slideRemoveMutations = _.chain(mutations)
-          .pluck("addedNodes")
-          .filter(function(nodeList) {
-            return _.find(nodeList, function(node) {
-              //console.log('Mutation remove element: <%s id="%s" class="%s">', node.tagName, node.id, node.className);
-              return (node.tagName === "DIV" && node.className === "container-nowplaying-song");
-            });
-          })
-          .value();
-
-        if ((slideAddMutations.length >= 3 && slideRemoveMutations.length > 0) || metaAddMutation) {
-          //console.log("Skipping resizing for animation element mutations");
+        if (this._hackyOptimization(mutations)) {
+          //console.log("Skipping resize for mutations (optimization)...");
           viewportHeightDelta = 0;
         }
-        
+      
         if (viewportHeightDelta > 0) {
           height += windowHeight - (viewportHeightDelta + height);
         }
@@ -167,6 +125,57 @@ define([
             windowWidth, windowHeight, width, height, this.zoom);
           window.resizeTo(windowWidth, height);
         }
+      },
+      _hackyOptimization: function(mutations) {
+        // Hacky Optimization (could break if browser/assumptions change)
+        // These elements are observed on addition and cause unnecessary resizing of window the messes up look and feel
+
+        // jQuery UI Slide Effect should create the following pattern
+        // Animation Start:
+        //  Add: 2 x div.container-nowplaying-song + 1 x div.ui-effects-wrapper
+        //  Remove: 1 x div.container-nowplaying-song
+        // Animation End:
+        //  Add: 1 x div.container-nowplaying-song
+        //  Remove: 1 x div.container-nowplaying-song + 1 x div.ui-effects-wrapper
+
+        var mutationAddState = {
+          listType: "added",
+          flags: 0
+        };
+        var mutationRemoveState = {
+          listType: "removed",
+          flags: 0
+        };
+        var slideAddMutations = _.filter(_.pluck(mutations, "addedNodes"), this._mutationFilter, mutationAddState);
+        var slideRemoveMutations = _.filter(_.pluck(mutations, "removedNodes"), this._mutationFilter, mutationRemoveState);
+
+        // Skip Slide Animation or Meta Image without Footer Additions
+        return (slideAddMutations.length >= 3 && slideRemoveMutations.length > 0) ||
+          ((mutationAddState.flags & NowPlayingMutationFlags.Meta) === NowPlayingMutationFlags.Meta &&
+            (mutationAddState.flags & NowPlayingMutationFlags.Footer) !== NowPlayingMutationFlags.Footer);
+      },
+      _mutationFilter: function(nodeList) {
+        return _.find(nodeList, function(node) {
+          //console.log('Mutation %s element: <%s id="%s" class="%s">', this.listType, node.tagName, node.id, node.className);
+          if (node.tagName === "DIV") {
+            switch (node.className) {
+              case "ui-effects-wrapper" :
+                this.flags |= NowPlayingMutationFlags.Effects;
+                return true;
+              case "container-nowplaying-song" :
+                this.flags |= NowPlayingMutationFlags.Song;
+                return true;
+              case "container-nowplaying-footer" :
+                this.flags |= NowPlayingMutationFlags.Footer;
+                return false;
+              case "container-nowplaying-meta" :
+                this.flags |= NowPlayingMutationFlags.Meta;
+                return false;
+              default :
+                return false;
+            }
+          }
+        }, this);
       }
     });
 
