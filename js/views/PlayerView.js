@@ -57,7 +57,7 @@ define([
 				muted: this.audioEl.muted,
 				paused: (this.playerFsm.state !== "playing")
 			});
-
+			
 			// Bind Model Event Handlers
 			this.bindTo(this.model, "change:message", this.handleModelChangeMessage);
 			this.bindTo(this.model, "change:paused", this.handleModelChangePaused);
@@ -125,7 +125,7 @@ define([
 			var currentVolume = $("#player-volume").val();
 			var calcVolume = (currentVolume === 0) ? 0 : currentVolume / 10;
 			if (this.audioEl.volume !== calcVolume && this.audioEl.muted && calcVolume !== 0) {
-				this.handleToggleMute();
+				this.handleInputToggleMute();
 			}
 			this.audioEl.volume = calcVolume;
 		},
@@ -135,7 +135,7 @@ define([
 		},
 		handleModelChangeMessage: function(model, value, options) {
 			console.log("[Player] Previous Status: " + $("#player-status").text());
-			$("#player-status").text(value);
+			$("#player-status").text(this.audioEl.muted ? value + " (Muted)" : value);
 			console.log("[Player] Current Status: " + $("#player-status").text());
 		},
 		handleModelChangePaused: function(model, value, options) {
@@ -143,6 +143,7 @@ define([
 		},
 		handleModelChangeMuted: function(model, value, options) {
 			$("#player-mute").attr("class", (value ? "icon-volume-off" : "icon-volume-up"));
+			this.model.trigger("change:message", this.model, this.model.get("message"));
 		},
 		handleModelChangeVolume: function(model, value, options) {
 			$("#player-volume").val(value);

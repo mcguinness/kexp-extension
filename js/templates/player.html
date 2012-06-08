@@ -6,6 +6,8 @@
     </button>
     <input id="player-volume" class="slider-volume" type="range" min="0" max="10" value="<%= volume %>" step="1" />
     <i id="player-mute" class="<%= muted ? 'icon-volume-off' : 'icon-volume-up' %>"></i>
-    <span class="player-title"><span class="prefix-accent">\\\</span> <span id="player-status"><%= message %></span></span>
+    <span class="player-title">
+      <span class="prefix-accent">\\\</span> <span id="player-status"><%= muted ? message + " (Muted)" : message %></span>
+    </span>
   <div>
 </div>
