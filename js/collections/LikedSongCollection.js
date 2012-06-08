@@ -33,10 +33,13 @@ define([
     },
     fetchSong: function(song, artist, album, options) {
       var self = this;
+      song = song || "";
+      artist = artist || "";
+      album = album || "";
       options = options ? _.clone(options) : {};
 
       options.conditions = {
-        song: song,
+        songTitle: song,
         artist: artist,
         album: album
       };
