@@ -48,25 +48,25 @@ define([
           loader = null;
         });
 
-      loader.on("initialized", function() {
-        layout.showSongView(nowPlayingModel);
+      loader.on("initialized", function(model) {
+        layout.showSongView(model);
       });
-      loader.on("resolve:liked", function() {
-        layout.showFooterView(nowPlayingModel);
+      loader.on("resolve:liked", function(model) {
+        layout.showFooterView(model);
       });
-      loader.on("resolve:lastfm", function() {
-        layout.showMetaView(nowPlayingModel);
+      loader.on("resolve:lastfm", function(model) {
+        layout.showMetaView(model);
       });
-      loader.on("reconciled", function() {
-        console.log("[Loaded NowPlaying] %s", nowPlayingModel.toDebugString());
-        loaderDfr.resolve(nowPlayingModel);
+      loader.on("reconciled", function(model) {
+        console.log("[Loaded NowPlaying] %s", model.toDebugString());
+        loaderDfr.resolve(model);
       });
-      loader.on("error", function(error) {
+      loader.on("error", function(model, error) {
         layout.vent.trigger("analytics:trackevent", "NowPlaying", "Error",
-          model && _.isFunction(model.toDebugString) ?
+          _.isObject(model) && _.isFunction(model.toDebugString) ?
             model.toDebugString() : "");
         layout.showErrorView();
-        loaderDfr.reject(nowPlayingModel, error);
+        loaderDfr.reject(model, error);
       });
       // Wait for fade out transitions
       $.when(
@@ -88,7 +88,10 @@ define([
       var footerView = new NowPlayingFooterView({
         model: nowPlayingModel
       });
-      return this.footer.show(footerView, "append");
+      
+      var regionView = this.footer.show(footerView, "append");
+      this.footer.$el.toggleClass("hide", false);
+      return regionView;
     },
     showMetaView: function(nowPlayingModel) {
       var metaView = new LastFmMetaView({
@@ -98,6 +101,7 @@ define([
       return this.meta.show(metaView, "append");
     },
     showErrorView: function(nowPlayingModel) {
+      $(this.footer.el).toggleClass("hide", true);
       var errorView = new NowPlayingErrorView();
       return this.song.show(errorView, "append");
     },

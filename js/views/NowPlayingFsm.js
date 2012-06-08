@@ -18,7 +18,7 @@ define([
 
           },
           "initialize": function() {
-            if (nowPlayingModel === undefined) {
+            if (!_.isObject(nowPlayingModel)) {
               this.transition("error");
             } else {
               this.transition("initialized");
@@ -35,7 +35,7 @@ define([
               songCollection = new LikedSongCollection(),
               likedSong;
 
-            this.fireEvent("initialized");
+            this.fireEvent("initialized", nowPlayingModel);
 
             if (nowPlayingModel.hasLikedSong()) {
               fsm.transition("likeResolved");
@@ -61,7 +61,7 @@ define([
         },
         "likeResolved": {
           _onEnter: function() {
-            this.fireEvent("resolve:liked", nowPlayingModel.likedSong);
+            this.fireEvent("resolve:liked", nowPlayingModel);
 
             var fsm = this,
               artistName = nowPlayingModel.get("artist"),
@@ -89,18 +89,18 @@ define([
         },
         "lastfmResolved": {
           _onEnter: function() {
-            this.fireEvent("resolve:lastfm", nowPlayingModel.lastFmMeta);
+            this.fireEvent("resolve:lastfm", nowPlayingModel);
             this.transition("reconciled");
           }
         },
         "reconciled": {
           _onEnter: function() {
-            this.fireEvent("reconciled");
+            this.fireEvent("reconciled", nowPlayingModel);
           }
         },
         "error": {
           _onEnter: function() {
-            this.fireEvent("error");
+            this.fireEvent("error", nowPlayingModel);
           }
         }
       }

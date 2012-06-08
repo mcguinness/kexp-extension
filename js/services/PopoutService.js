@@ -17,9 +17,9 @@ define([
         }
 
         if (options.popout && window.WebKitMutationObserver) {
-          console.log("!Width: Outer:[%s] Inner:[%s] Document:[%s] DocElement: [%s] Client:[%s] Body:[%s]",
-            window.outerWidth, window.innerWidth, window.document.width, $(window.document.documentElement).width(),
-            window.document.documentElement.clientWidth, window.document.body.clientWidth);
+          // console.log("!Width: Outer:[%s] Inner:[%s] Document:[%s] DocElement: [%s] Client:[%s] Body:[%s]",
+          //   window.outerWidth, window.innerWidth, window.document.width, $(window.document.documentElement).width(),
+          //   window.document.documentElement.clientWidth, window.document.body.clientWidth);
           
           this.zoom = DetectZoom.zoom();
 
@@ -105,20 +105,50 @@ define([
 
         // Hacky Optimization (could break if browser/assumptions change)
         // These elements are observed on addition and cause unnecessary resizing of window the messes up look and feel
-        // Skip em... we will get another callback to handle required resize when song-footer is rendered.
-        
-        skipMutations = _.chain(mutations)
+
+        // jQuery UI Slide Effect should create the following pattern
+        // Animation Start:
+        //  Add: 2 x div.container-nowplaying-song + 1 x div.ui-effects-wrapper
+        //  Remove: 1 x div.container-nowplaying-song
+        // Animation End:
+        //  Add: 1 x div.container-nowplaying-song
+        //  Remove: 1 x div.container-nowplaying-song + 1 x div.ui-effects-wrapper
+
+        var metaAddMutation = false;
+        slideAddMutations = _.chain(mutations)
           .pluck("addedNodes")
           .filter(function(nodeList) {
             return _.find(nodeList, function(node) {
               //console.log('Mutation add element: <%s id="%s" class="%s">', node.tagName, node.id, node.className);
-              return (node.className === "container-nowplaying-meta");
+              if (node.tagName === "DIV") {
+                switch (node.className) {
+                  case "ui-effects-wrapper" :
+                    return true;
+                  case "container-nowplaying-song" :
+                    return true;
+                  case "container-nowplaying-meta" :
+                    metaAddMutation = true;
+                    return false;
+                  default :
+                    return false;
+                }
+              }
             });
           })
           .value();
 
-        if (skipMutations.length > 0) {
-          //console.log("Skipping resizing for element mutations", skipMutations, mutations);
+        slideRemoveMutations = _.chain(mutations)
+          .pluck("addedNodes")
+          .filter(function(nodeList) {
+            return _.find(nodeList, function(node) {
+              //console.log('Mutation remove element: <%s id="%s" class="%s">', node.tagName, node.id, node.className);
+              return (node.tagName === "DIV" && node.className === "container-nowplaying-song");
+            });
+          })
+          .value();
+
+        if ((slideAddMutations.length >= 3 && slideRemoveMutations.length > 0) || metaAddMutation) {
+          //console.log("Skipping resizing for animation element mutations");
           viewportHeightDelta = 0;
         }
         

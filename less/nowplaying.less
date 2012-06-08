@@ -5,8 +5,6 @@
 // Manually override bootstrap grid system for the view to optimize sizes
 .span-nowplaying-content {
   width: 367px;
-  //margin-bottom: 10px;
-  min-height: 291px;
 }
 
 .span-nowplaying-meta {
@@ -32,12 +30,14 @@
 // NowPlayingSongView Styles
 /////////////////////////////////////////////
 
-.container-nowplaying-song {
+#region-nowplaying-song {
   min-height: 220px;
+}
+#region-nowplaying-footer {
+  min-height: 71px;
 }
 
 .song {
-  //position:relative;
   .clearfix;
   span {
       display: block;

@@ -4250,7 +4250,6 @@ body {
 }
 .span-nowplaying-content {
   width: 367px;
-  min-height: 291px;
 }
 .span-nowplaying-meta {
   width: 210px;
@@ -4267,8 +4266,11 @@ body {
 .btn-refresh i {
   vertical-align: middle;
 }
-.container-nowplaying-song {
+#region-nowplaying-song {
   min-height: 220px;
+}
+#region-nowplaying-footer {
+  min-height: 71px;
 }
 .song {
   *zoom: 1;
