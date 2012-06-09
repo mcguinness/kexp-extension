@@ -15,49 +15,18 @@ define([
 		
 		initialize: function(options) {
 			this.audioEl = options.audioElement;
-			this.playerFsm = new PlayerFsm(options.audioElement);
-			var self = this;
-
-			this.playerFsm.on("Error", function() {
-				var errorMessage = "Unknown";
-				if (self.audioEl.error) {
-					switch(self.audioEl.error.code) {
-						case 1 :
-							errorMessage = "Aborted";
-							break;
-						case 2 :
-							errorMessage = "Network";
-							break;
-						case 3 :
-							errorMessage = "Decode";
-							break;
-						default :
-							break;
-					}
-				}
-				console.warn("[Player Error:%s]", errorMessage, self.audioEl.error, self.audioEl);
-				self.vent.trigger("analytics:trackevent", "LiveStream", "error", errorMessage);
-			});
-
-			// Bind Background Audio Element Events
-			_.bindAll(this, "handleAudioPlay", "handleAudioPause", "handleAudioBuffer",
-				"handleAudioError", "handleAudioVolumeChange");
-
-			this.audioEl.addEventListener("playing", this.handleAudioPlay);
-			this.audioEl.addEventListener("pause", this.handleAudioPause);
-			this.audioEl.addEventListener("waiting", this.handleAudioBuffer);
-			this.audioEl.addEventListener("error", this.handleAudioError);
-			this.audioEl.addEventListener("volumechange", this.handleAudioVolumeChange);
-
-			// Init State & Model
-			this.playerFsm.handle("initialize");
-
-			this.model = new PlayerModel({
-				volume: this.audioEl.volume * 10,
-				muted: this.audioEl.muted,
-				paused: (this.playerFsm.state !== "playing")
-			});
 			
+			if (!_.isObject(this.model)) {
+				this.model = new PlayerModel({
+					volume: this.audioEl.volume * 10,
+					muted: this.audioEl.muted
+				});
+			}
+
+			this.playerFsm = new PlayerFsm(options.audioElement, this.model);
+			_.bind(this.handleStreamError, this);
+			this.playerFsm.on("error", this.handleStreamError);
+
 			// Bind Model Event Handlers
 			this.bindTo(this.model, "change:message", this.handleModelChangeMessage);
 			this.bindTo(this.model, "change:paused", this.handleModelChangePaused);
@@ -65,58 +34,37 @@ define([
 			this.bindTo(this.model, "change:volume", this.handleModelChangeVolume);
 			this.bindTo(this.model, "change:disabled", this.handleModelChangeDisabled);
 		},
-		beforeClose: function() {
-			this.audioEl.removeEventListener("playing", this.handleAudioPlay);
-			this.audioEl.removeEventListener("pause", this.handleAudioPause);
-			this.audioEl.removeEventListener("waiting", this.handleAudioBuffer);
-			this.audioEl.removeEventListener("error", this.handleAudioError);
-			this.audioEl.removeEventListener("volumechange", this.handleAudioVolumeChange);
-		},
 		events: {
 			"click #player-button": "handleInputTogglePlay",
 			"change #player-volume": "handleInputChangeVolume",
 			"click #player-mute": "handleInputToggleMute"
 		},
-		handleAudioPlay: function(event) {
-			console.debug("[AudioElement] OnPlaying", event);
-			this.model.set({
-				"message": "Live Stream",
-				"paused": false,
-				"disabled": false
-			});
+		beforeRender: function() {
+			// Init State & Model
+			this.playerFsm.handle("initialize");
 		},
-		handleAudioPause: function(event) {
-			console.debug("[AudioElement] OnPause", event);
-			this.model.set({
-				"message": "Paused",
-				"paused": true,
-				"disabled": false
-			});
+		handleStreamError: function(error) {
+			var errorMessage = "Unknown";
+			if (_.isObject(error)) {
+				switch(error.code) {
+					case 1 :
+						errorMessage = "Aborted";
+						break;
+					case 2 :
+						errorMessage = "Network";
+						break;
+					case 3 :
+						errorMessage = "Decode";
+						break;
+					case 4 :
+						errorMessage = "SourceNotSupported";
+						break;
+					default :
+						break;
+				}
+				this.vent.trigger("analytics:trackevent", "LiveStream", "error", errorMessage);
+			}
 		},
-		handleAudioBuffer: function(event) {
-			console.debug("[AudioElement] OnWaiting", event);
-			this.model.set({
-				"message": "Buffering",
-				"disabled": true
-			});
-		},
-		handleAudioError: function(event) {
-			console.warn("[AudioElement] OnError", event);
-			this.model.set({
-				"message": "Stream Error",
-				"paused": true,
-				"disabled": false
-			});
-			this.playerFsm.transition("error");
-		},
-		handleAudioVolumeChange: function(event) {
-			console.debug("[AudioElement] OnVolumeChange", event);
-			this.model.set({
-				"muted": this.audioEl.muted,
-				"volume": this.audioEl.volume * 10
-			});
-		},
-
 		handleInputTogglePlay: function() {
 			this.playerFsm.handle("toggle");
 			this.vent.trigger("analytics:trackevent", "LiveStream", "PlayToggle", this.playerFsm.state);
@@ -150,7 +98,11 @@ define([
 		},
 		handleModelChangeDisabled: function(model, value, options) {
 			var result = value ? $("#player-button").attr("disabled", "disabled") : $("#player-button").removeAttr("disabled");
-		}
+		},
+		beforeClose: function() {
+			this.playerFsm.unbindAudioElEvents();
+			delete this.playerFsm;
+		},
 	});
 
 	return PlayerView;

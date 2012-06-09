@@ -51,8 +51,8 @@ define([
                   fsm.transition("likeResolved");
                 },
                 error: function(collection, error, options) {
-                  // Error "should" not happen
-                  console.warn("Error {%s} resolving liked song for %s", error, nowPlayingModel.toDebugString(), collection, error, options);
+                  // No Cursor Error if Artist & Album are empty
+                  console.log("Error {%s} resolving liked song for %s", error, nowPlayingModel.toDebugString(), collection, error, options);
                   fsm.transition("likeResolved");
                 }
               });

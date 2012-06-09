@@ -1,117 +1,255 @@
 define(["jquery", "underscore", "machina", "moment"], function($, _, Machina, moment) {
 
-  var PlayerFsm = function(audioElement) {
+  var NetworkState = {
+    "NetworkEmpty":     0,  // When set, always in the HAVE_NOTHING state.
+    "NetworkIdle":      1,
+    "NetworkLoading":   2,
+    "NetworkNoSource":  3
+  };
+  Object.freeze(NetworkState);
 
-    if (audioElement === undefined) {
+  // Note: In practice, the difference between HAVE_METADATA and
+  // HAVE_CURRENT_DATA is negligible. Really the only time the difference is
+  // relevant is when painting a video element onto a canvas, where it
+  // distinguishes the case where something will be drawn (HAVE_CURRENT_DATA or
+  // greater) from the case where nothing is drawn (HAVE_METADATA or less).
+  // Similarly, the difference between HAVE_CURRENT_DATA (only the current frame)
+  // and HAVE_FUTURE_DATA (at least this frame and the next) can be negligible
+  // (in the extreme, only one frame). The only time that distinction really
+  // matters is when a page provides an interface for "frame-by-frame"
+  // navigation.
+  var ReadyState = {
+    "HaveNothing":      0, // No information regarding the media resource is available
+    "HaveMetadata":     1, // No media data is available for the immediate current playback position.
+    "HaveCurrentData":  2,
+    "HaveFutureData":   3,
+    "HaveEnoughData":   4
+  };
+  Object.freeze(ReadyState);
+
+  var PlayerFsm = function(audioElement, playerModel) {
+
+    if (!_.isObject(audioElement)) {
       throw new Error("HTMLAudioElement is required.");
     }
-
-    var audioEl = audioElement;
-    var $audioEl = $(audioEl);
-
-    var NetworkStatus = {
-      "NetworkEmpty": 0,
-      "NetworkIdle": 1,
-      "NetworkLoading": 2,
-      "NetworkNoSource": 3
-    };
-    var ReadyStatus = {
-      "HaveNothing": 0,
-      "HaveMetadata": 1,
-      "HaveCurrentData": 2,
-      "HaveFutureData": 3,
-      "HaveEnoughData": 4
-    };
+    if (!_.isObject(playerModel)) {
+      throw new Error("PlayerModel is required.");
+    }
 
     var fsm = new Machina.Fsm({
+      model: playerModel,
+      audioEl: audioElement,
+      $audioEl: $(audioElement),
 
       initialState: "uninitialized",
-      events: ["Buffering", "Playing", "Paused", "Error"],
-      retry: _.once(function() {
-        if (!this.hasValidBuffer()) {
-          console.log("[Player Error:Retry]");
-          this.transition("playing");
-        }
-      }),
-      hasValidBuffer: function() {
-        return (audioEl.networkState !== NetworkStatus.NetworkNoSource &&
-              audioEl.networkState !== NetworkStatus.NetworkEmpty && audioEl.readyState !== ReadyStatus.HaveNothing);
+      events: ["empty", "buffering", "playing", "paused", "error"],
+
+      isPotentiallyPlaying: function() {
+        // http://www.w3.org/TR/html5/media-elements.html#potentially-playing
+
+        // A waiting DOM event can be fired as a result of an element that is potentially
+        // playing stopping playback due to its readyState attribute changing to a value
+        // lower than HAVE_FUTURE_DATA.
+
+        return (!this.audioEl.paused && !this.audioEl.ended && !_.isObject(this.audioEl.error));
+      },
+      hasValidAudioResource: function() {
+        return (this.audioEl.networkState !== NetworkState.NetworkEmpty &&
+          this.audioEl.networkState !== NetworkState.NetworkNoSource &&
+          this.audioEl.readyState !== ReadyState.HaveNothing);
+      },
+      hasValidAudioData: function() {
+        return (this.audioEl.networkState !== NetworkState.NetworkNoSource &&
+              this.audioEl.networkState !== NetworkState.NetworkEmpty &&
+              this.audioEl.readyState >= ReadyState.HaveFutureData);
       },
       hasValidPauseDelta: function() {
-        var pauseISOString = $audioEl.attr("data-pause-time");
+        var pauseISOString = this.$audioEl.attr("data-pause-time");
         var pauseMoment = (pauseISOString) ? moment(pauseISOString) : moment();
         console.log("Stream Pause Time: %s", pauseMoment.toString());
         var pauseDeltaSeconds = moment().diff(pauseMoment, "seconds");
         console.log("Stream Pause Delta Time: %s (seconds)", pauseDeltaSeconds);
 
-        return (pauseDeltaSeconds < 180);
+        return (pauseDeltaSeconds < 300);
+      },
+      canResumeStream: function() {
+        return (!this.audioEl.paused || this.audioEl.paused && this.hasValidPauseDelta()) &&
+          (!this.audioEl.ended && !_.isObject(this.audioEl.error) && this.hasValidAudioData());
+      },
+      pauseStream: function() {
+        console.log("[Player Action:Pause]");
+        this.audioEl.pause();
+        this.$audioEl.attr("data-pause-time", new Date().toISOString());
+      },
+      playStream: function() {
+        if (!this.canResumeStream() || !this.hasValidAudioData()) {
+          console.log("[Player Action:Load]");
+          this.audioEl.load();
+          console.log("[Player Action:Play]");
+          this.audioEl.play();
+        } else {
+          console.log("[Player Action:Play]");
+          if (this.audioEl.paused) {
+            this.audioEl.play();
+          }
+        }
+      },
+      handleAudioEvent: function(event) {
+        switch(event.type) {
+          case "waiting" :
+            console.debug("[AudioElement] OnWaiting");
+            return this.transition("buffering");
+          case "playing" :
+            console.debug("[AudioElement] OnPlaying");
+            return this.transition("playing");
+          case "pause" :
+            console.debug("[AudioElement] OnPaused");
+            return this.transition("paused");
+          case "error" :
+            console.debug("[AudioElement] OnError");
+            return this.transition("error");
+          case "volumechange" :
+            console.debug("[AudioElement] OnVolumeChange");
+            return this.model.set({
+              "muted": this.audioEl.muted,
+              "volume": this.audioEl.volume * 10
+            });
+          case "emptied" :
+            console.debug("[AudioElement] OnEmptied");
+            return;
+          default :
+            return;
+        }
+      },
+      bindAudioElEvents: function() {
+        this.audioEl.addEventListener("playing", this.handleAudioEvent);
+        this.audioEl.addEventListener("pause", this.handleAudioEvent);
+        this.audioEl.addEventListener("waiting", this.handleAudioEvent);
+        this.audioEl.addEventListener("error", this.handleAudioEvent);
+        this.audioEl.addEventListener("volumechange", this.handleAudioEvent);
+        this.audioEl.addEventListener("emptied", this.handleAudioEvent);
+      },
+      unbindAudioElEvents: function() {
+        this.audioEl.removeEventListener("playing", this.handleAudioEvent);
+        this.audioEl.removeEventListener("pause", this.handleAudioEvent);
+        this.audioEl.removeEventListener("waiting", this.handleAudioEvent);
+        this.audioEl.removeEventListener("error", this.handleAudioEvent);
+        this.audioEl.removeEventListener("volumechange", this.handleAudioEvent);
+        this.audioEl.removeEventListener("emptied", this.handleAudioEvent);
       },
       states: {
         "uninitialized": {
           "initialize": function() {
-            if (audioEl.paused || !this.hasValidBuffer()) {
-              this.transition("paused");
-            } else {
+            console.log("[Player State:Initialize] -> NetworkState:%s ReadyState:%s", this.audioEl.networkState, this.audioEl.readyState);
+            if (this.audioEl.paused && _.isObject(this.audioEl.error)) {
+              this.transition("error");
+            } else if (!this.hasValidAudioResource()) {
+              this.transition("empty");
+            } else if (this.isPotentiallyPlaying()) {
               this.transition("playing");
+            } else {
+              this.transition("paused");
             }
+          }
+        },
+        "empty": {
+          _onEnter: function() {
+            console.log("[Player State:Empty] NetworkState:%s ReadyState:%s", this.audioEl.networkState, this.audioEl.readyState);
+            this.model.set({
+              "message": "Live Stream",
+              "disabled": false
+            });
+            this.fireEvent("empty");
+          },
+          "toggle": function() {
+            this.playStream();
+          }
+        },
+        "buffering": {
+          _onEnter: function() {
+            console.log("[Player State:Buffering] NetworkState:%s ReadyState:%s", this.audioEl.networkState, this.audioEl.readyState);
+            this.model.set({
+              "message": "Buffering",
+              "disabled": true
+            });
+
+            this.fireEvent("buffering");
+          },
+          "toggle": function() {
+            // No-Op Disabled
           }
         },
         "playing": {
           _onEnter: function() {
-            console.log("[Player State:Playing] NetworkState:%s ReadyState:%s", audioEl.networkState, audioEl.readyState, audioEl);
-            
-            if (audioEl.paused && this.hasValidPauseDelta() && this.hasValidBuffer()) {
-              console.log("[Player Action:Play]");
-              audioEl.play();
-            } else if (audioEl.paused) {
-              this.fireEvent("Buffering");
-              console.log("[Player Action:Load]");
-              audioEl.load();
-              console.log("[Player Action:Play]");
-              audioEl.play();
-            }
-            this.fireEvent("Playing");
+            var isPotentiallyPlaying = this.isPotentiallyPlaying();
+            var hasValidAudioData = this.hasValidAudioData();
 
+            console.log("[Player State:Playing] NetworkState:%s ReadyState:%s " +
+              "IsPotentiallyPlaying:%s HasValidMediaData:%s",
+              this.audioEl.networkState,
+              this.audioEl.readyState,
+              isPotentiallyPlaying,
+              hasValidAudioData);
+
+            if (isPotentiallyPlaying && hasValidAudioData) {
+              this.model.set({
+                "message": "Live Stream",
+                "paused": false,
+                "disabled": false
+              });
+
+              this.fireEvent("playing");
+            } else {
+              this.playStream();
+            }
           },
           "toggle": function() {
-            this.transition("paused");
+            this.pauseStream();
           }
         },
         "paused": {
           _onEnter: function() {
-            console.log("[Player State:Paused] NetworkState:%s ReadyState:%s", audioEl.networkState, audioEl.readyState, audioEl);
+            var isPotentiallyPlaying = this.isPotentiallyPlaying();
+            console.log("[Player State:Paused] NetworkState:%s ReadyState:%s IsPotentiallyPlaying:%s",
+              this.audioEl.networkState, this.audioEl.readyState, isPotentiallyPlaying);
             
-            $audioEl.attr("data-pause-time", new Date().toISOString());
-            
-            if (!audioEl.paused) {
-              console.log("[Player Action:Pause]");
-              audioEl.pause();
+            if (!isPotentiallyPlaying) {
+              this.model.set({
+                "message": "Paused",
+                "paused": true,
+                "disabled": false
+              });
+
+              this.fireEvent("paused");
+            } else {
+              this.pauseStream();
             }
-            this.fireEvent("Paused");
           },
           "toggle": function() {
-            if (audioEl.paused) {
-              this.transition("playing");
-            }
+            this.playStream();
           }
         },
         "error": {
           _onEnter: function() {
-            console.log("[Player State:Error] -> NetworkState:%s ReadyState:%s", audioEl.networkState, audioEl.readyState, audioEl);
-            //Attemp retry once, if success state will transition, otherwise fire error.
-            this.retry();
-            this.fireEvent("Error");
+            console.log("[Player State:Error] -> NetworkState:%s ReadyState:%s", this.audioEl.networkState, this.audioEl.readyState);
+            this.model.set({
+              "message": "Stream Error",
+              "paused": true,
+              "disabled": false
+            });
+            this.fireEvent("error", this.audioEl.error);
           },
           "toggle": function() {
-            if (audioEl.paused || !this.hasValidBuffer()) {
-              this.transition("playing");
-            } else {
-              this.transition("paused");
-            }
+            this.playStream();
           }
         }
       }
     });
+
+    // Need to bind audio element and set context for event handlers
+    // IMPORTANT!!! do not forget to unbind event handlers when done
+    _.bindAll(fsm);
+    fsm.bindAudioElEvents();
     return fsm;
   };
 
