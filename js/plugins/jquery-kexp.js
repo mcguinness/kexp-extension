@@ -62,14 +62,14 @@ define(["jquery", "underscore"], function($, _) {
         }, timeout || 4000);
 
         $el.queue(function() {
-          console.log('%s queued <%s id="%s" class="%s">', transitionId, $el.prop("tagName").toLowerCase(),
-            $el.prop("id"), $el.prop("className"), $el.queue());
+          // console.log('%s queued <%s id="%s" class="%s">', transitionId, $el.prop("tagName").toLowerCase(),
+          //   $el.prop("id"), $el.prop("className"), $el.queue());
           $el.one(endEvent, function() {
             clearTimeout(timeoutId);
             $el.off(endEvent);
             $el.dequeue();
-            console.log('%s dequeued <%s id="%s" class="%s">', transitionId, $el.prop("tagName").toLowerCase(),
-              $el.prop("id"), $el.prop("className"), $el.queue());
+            // console.log('%s dequeued <%s id="%s" class="%s">', transitionId, $el.prop("tagName").toLowerCase(),
+            //   $el.prop("id"), $el.prop("className"), $el.queue());
             if (_.isFunction(endTransition)) {
               endTransition();
             }
