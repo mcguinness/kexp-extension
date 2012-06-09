@@ -3,11 +3,9 @@ define([
   "backbone-kexp",
   "underscore",
   "moment",
-  "models/LastFmModel",
   "models/LikedSongModel",
-  "collections/LikedSongCollection",
   "collections/LastFmCollection"
-  ], function($, Backbone, _, moment, LastFmModel, LikedSongModel, LikedSongCollection, LastFmCollection) {
+  ], function($, Backbone, _, moment, LikedSongModel, LastFmCollection) {
   
   var NowPlayingModel = Backbone.Model.extend({
 
