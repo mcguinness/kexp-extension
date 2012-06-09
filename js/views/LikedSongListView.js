@@ -154,12 +154,12 @@ define([
         return;
       }
 
-      console.log("Removing liked song with id: {%s}", songId, song);
+      console.log("Removing liked song with id: {%s} [%s]", songId, song.toDebugString());
       // TODO: add error handling
       song.destroy({
         wait: true,
         success: function(model, resp) {
-          console.log("Successfully deleted song with id: {%s}", songId, song);
+          console.log("Successfully deleted song with id: {%s} [%s]", songId, song.toDebugString());
           view.collection.remove(model);
           view.render();
           view.vent.trigger("analytics:trackevent", "LikedSong", "Remove", model.toDebugString());

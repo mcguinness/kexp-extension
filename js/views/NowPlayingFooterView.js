@@ -116,7 +116,7 @@ define([
       } else {
         lastfmAttributes = targetModel.getLastFmLikedSongAttributes();
         console.debug("[NowPlaying Like] merging now playing last.fm attributes [%s] to existing liked song [%s]",
-          lastfmAttributes, JSON.stringify(likedSong));
+          JSON.stringify(lastfmAttributes), JSON.stringify(likedSong));
         likedSong.set(lastfmAttributes);
         likedSong.save();
       }

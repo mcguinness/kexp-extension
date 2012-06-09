@@ -120,7 +120,7 @@ define([
         apiHashInput += (key + params[key]);
       }
       apiHashInput += this.apiSecret;
-      console.log("LastFM API Signature Hash Input: %s", apiHashInput);
+      //console.log("LastFM API Signature Hash Input: %s", apiHashInput);
       return MD5.hex_md5(apiHashInput);
     },
     getAuthToken: function() {
