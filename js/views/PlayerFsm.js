@@ -142,12 +142,18 @@ define(["jquery", "underscore", "machina", "moment"], function($, _, Machina, mo
             console.log("[Player State:Initialize] -> NetworkState:%s ReadyState:%s", this.audioEl.networkState, this.audioEl.readyState);
             if (this.audioEl.paused && _.isObject(this.audioEl.error)) {
               this.transition("error");
-            } else if (!this.hasValidAudioResource()) {
-              this.transition("empty");
             } else if (this.isPotentiallyPlaying()) {
               this.transition("playing");
+            } else if (!this.hasValidAudioResource()) {
+              this.transition("empty");
             } else {
-              this.transition("paused");
+              if (this.canResumeStream()) {
+                this.transition("paused");
+              } else {
+                console.log("[Player Action:Load]");
+                this.audioEl.load();
+                this.transition("empty");
+              }
             }
           }
         },
