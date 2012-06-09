@@ -3845,7 +3845,7 @@ i.enabled {
 .popover.popover-kexp .popover-header .popover-title {
   display: inline-block;
   float: left;
-  width: 90%;
+  max-width: 90%;
   background-color: transparent;
   color: #ffffff;
   -webkit-border-radius: 0;
