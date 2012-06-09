@@ -81,7 +81,15 @@ define([
 
     },
     getPopoverTitle: function() {
-      return this.model.get("songTitle");
+      var title = this.model.get("songTitle");
+      if (_.isEmpty(title)) {
+        title = this.model.get("artist");
+        if (_.isEmpty(title)) {
+          title = this.model.get("album");
+        }
+      }
+
+      return title;
     }
     
   });
