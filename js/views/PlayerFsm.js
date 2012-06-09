@@ -59,8 +59,7 @@ define(["jquery", "underscore", "machina", "moment"], function($, _, Machina, mo
           this.audioEl.readyState !== ReadyState.HaveNothing);
       },
       hasValidAudioData: function() {
-        return (this.audioEl.networkState !== NetworkState.NetworkNoSource &&
-              this.audioEl.networkState !== NetworkState.NetworkEmpty &&
+        return (this.audioEl.networkState === NetworkState.NetworkLoading &&
               this.audioEl.readyState >= ReadyState.HaveFutureData);
       },
       hasValidPauseDelta: function() {
@@ -70,7 +69,7 @@ define(["jquery", "underscore", "machina", "moment"], function($, _, Machina, mo
         var pauseDeltaSeconds = moment().diff(pauseMoment, "seconds");
         console.log("Stream Pause Delta Time: %s (seconds)", pauseDeltaSeconds);
 
-        return (pauseDeltaSeconds < 300);
+        return (pauseDeltaSeconds < 120);
       },
       canResumeStream: function() {
         return (!this.audioEl.paused || this.audioEl.paused && this.hasValidPauseDelta()) &&
