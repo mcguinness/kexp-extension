@@ -7,19 +7,24 @@ define([
   ], function($, _, Backbone, MD5) {
 
   var LastFmApi = function(options) {
-    options = options || {};
+    this.setConfig(options);
 
-    this.apiUrl = "http://ws.audioscrobbler.com/2.0/";
-    this.apiKey = options.apiKey || "10fc31f4ac0c2a4453cab6d75b526c67";
-    this.apiKeyInvalid = false;
-    this.apiKeySuspended = false;
-
-    this.apiSecret = options.apiSecret || "b2dbe4ef99d4cbfd3de034950a0daa4b",
-    this.sessionKey = options.sessionKey || "";
-    this.sessionKeyInvalid = false; // reauth
+    // Backbone Fetch overwrites context, so we need to rebind here
+    this.sync = _.bind(this.sync, this);
   };
 
   _.extend(LastFmApi.prototype, Backbone.Events, {
+    setConfig: function(options) {
+      options || (options = {});
+      this.apiUrl = "http://ws.audioscrobbler.com/2.0/";
+      this.apiKey = options.apiKey || "10fc31f4ac0c2a4453cab6d75b526c67";
+      this.apiKeyInvalid = false;
+      this.apiKeySuspended = false;
+
+      this.apiSecret = options.apiSecret || "b2dbe4ef99d4cbfd3de034950a0daa4b",
+      this.sessionKey = options.sessionKey || "";
+      this.sessionKeyInvalid = false; // reauth
+    },
     deferredApiCall: function(dataParams, options) {
 
       var self = this;
@@ -198,6 +203,118 @@ define([
       };
 
       return this.deferredApiCall(dataParams, options);
+    },
+    getEntityInfo: function(entity, mbid, options) {
+      if (_.isEmpty(entity)) {
+        throw new Error("Entity type is required.");
+      }
+
+      if (_.isEmpty(mbid)) {
+        throw new Error("Entity mbid is required.");
+      }
+
+      switch (entity.toLowerCase()) {
+        case "album":
+          this.callbackApiCall({
+            method: "album.getInfo",
+            mbid: mbid
+          }, options);
+          break;
+        case "artist":
+          this.callbackApiCall({
+            method: "artist.getInfo",
+            mbid: mbid
+          }, options);
+          break;
+        case "track":
+          this.callbackApiCall({
+            method: "track.getInfo",
+            mbid: mbid
+          }, options);
+          break;
+        default:
+          if (_.isObject(options) && _.isFunction(options.error)) {
+            options.error("Last.fm entity type [" + entity + "] is not supported", "invalidoption");
+          }
+          break;
+      }
+    },
+    query: function(options) {
+
+      if (!_.isObject(options) || !_.isObject(options.conditions)) {
+        options.error("Conditions must be specified in options for a collection query.", "invalidoption");
+        return;
+      }
+
+      if (_.isEmpty(options.conditions.entity)) {
+        options.error("Conditions must specify an entity [entity: {name}].", "invalidoption");
+        return;
+      }
+
+      switch (options.conditions.entity.toLowerCase()) {
+      case "album":
+        if (_.isEmpty(options.conditions.artist)) {
+          options.error("Album query requires an artist condition [artist: {name}]", "invalidoption");
+          break;
+        }
+        if (_.isEmpty(options.conditions.album)) {
+          options.error("Album query requires an album condition [album: {name}]", "invalidoption");
+          break;
+        }
+
+        this.callbackApiCall({
+          method: "album.getInfo",
+          artist: options.conditions.artist,
+          album: options.conditions.album,
+          autocorrect: 1
+        }, options);
+        break;
+      case "artist":
+        if (_.isEmpty(options.conditions.artist)) {
+          options.error("Album query requires an artist condition [artist: {name}]", "invalidoption");
+          break;
+        }
+        this.callbackApiCall({
+          method: "artist.getInfo",
+          artist: options.conditions.artist,
+          autocorrect: 1
+        }, options);
+        break;
+      default:
+        options.error("Query condition entity [entity: " + options.conditions.entity + "] is not supported", "invalidoption");
+        break;
+      }
+    },
+    sync: function(method, model, options) {
+
+      options = options ? _.clone(options) : {};
+
+      options.success = _.wrap(options.success, function(callerSuccess, resp, status, xhr) {
+        //console.debug("LastFM API Sync Result Status: [%s] Response: [%s]", status, resp, xhr);
+        if (callerSuccess) {
+          callerSuccess(resp, status, xhr);
+        }
+      });
+
+      options.error = _.wrap(options.error, function(callerError, resp, status, contextOptions) {
+        console.debug("LastFM API Sync Result Status: [%s]", status, resp, contextOptions);
+        if (callerError) {
+          callerError(resp, status, contextOptions);
+        }
+      });
+
+      switch (method) {
+        case "read":
+          if (model && model instanceof Backbone.Model && model.id && model.get("entity")) {
+            this.getInfo(model.get("entity"), model.id, options);
+          } else {
+            this.query(options); // It's a collection
+          }
+          break;
+        default:
+          options.error("Sync method" + method + "is not supported by LastFM sync provider.", "notsupported");
+          break;
+      }
     }
   });
 

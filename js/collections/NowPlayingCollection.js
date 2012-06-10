@@ -8,10 +8,10 @@ define([
   var NowPlayingCollection = Backbone.Collection.extend({
 
     model: NowPlayingModel,
-    initialize: function(options) {
+    initialize: function(models, options) {
       _.bindAll(this, "delimit");
       
-      this.limit = (options !== undefined && options.limit) ? options.limit : 1;
+      this.limit = (_.isObject(options) && options.limit) ? options.limit : 1;
     },
     url: function() {
       return "http://www.kexp.org/s/s.aspx?x=3";
@@ -32,9 +32,7 @@ define([
       }
     },
     fetch: function(options) {
-      if (options === undefined) {
-        options = {};
-      }
+      options || (options = {});
       options.delimit = true;
       return Backbone.Collection.prototype.fetch.call(this, options);
     }

@@ -1,11 +1,11 @@
 define([
   "jquery",
   "underscore",
-  "backbone-kexp",
+  "marionette-kexp",
   "bootstrap" // no need for arg
-  ], function($, _, Backbone) {
+  ], function($, _, Marionette) {
 
-  var PopoverView = Backbone.Marionette.ItemView.extend({
+  var PopoverView = Marionette.ItemView.extend({
     popoverPlacement: "bottom",
     hideOnClose: false,
     constructor: function(options) {
@@ -14,7 +14,7 @@ define([
 
       _.bindAll(this, "getPopoverTemplate", "render", "toggle", "close");
 
-      Backbone.Marionette.ItemView.prototype.constructor.apply(this, arguments);
+      Marionette.ItemView.prototype.constructor.apply(this, arguments);
     },
     tooltips: {
       "this": "popover"

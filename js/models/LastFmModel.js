@@ -1,15 +1,11 @@
 define([
   "jquery",
   "backbone-kexp",
-  "underscore",
-  "databases/LastFmSync"
-  ], function($, Backbone, _, LastFmSync) {
+  "underscore"
+  ], function($, Backbone, _) {
 
   var LastFmModel = Backbone.Model.extend({
-    
-    initialize: function(options) {
-      this.sync = new LastFmSync(options).sync;
-    },
+
     parseEntity: function(entity) {
       var image, track, mapped;
       var result = {
@@ -148,8 +144,8 @@ define([
 
       return image;
     },
-    getTrack: function(trackName, albumName, artistName) {
-      if (_.isEmpty(trackName) || _.isEmpty(albumName) || _.isEmpty(artistName)) return void 0;
+    getTrack: function(trackName, artistName, albumName) {
+      if (_.isEmpty(trackName) || _.isEmpty(artistName) || _.isEmpty(albumName)) { return void 0; }
       
       var tracks = this.get("tracks"),
         modelName = this.get("name") || "",

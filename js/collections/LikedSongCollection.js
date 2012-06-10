@@ -5,16 +5,13 @@ define([
   "indexeddb",
   "databases/LikedSongDatabase",
   "models/LikedSongModel"
-  ], function($, Backbone, _, sync, LikedSongDatabase, LikedSongModel) {
+  ], function($, Backbone, _, IndexedDBSync, LikedSongDatabase, LikedSongModel) {
   var LikedSongCollection = Backbone.Collection.extend({
 
     database: new LikedSongDatabase(),
     storeName: "songs",
     model: LikedSongModel,
-    sync: sync,
-    initialize: function() {
-
-    },
+    sync: IndexedDBSync,
     comparator: function(x, y) {
       if (x.get("likeCount") > y.get("likeCount")) {
         return -1;

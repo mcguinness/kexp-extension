@@ -1,15 +1,14 @@
 define([
   "jquery",
   "underscore",
-  "backbone-kexp",
   "collections/NowPlayingCollection",
   "views/NowPlayingLayout",
   "views/LikedSongListView"
-  ], function($, _, Backbone, NowPlayingCollection,
+  ], function($, _, NowPlayingCollection,
     NowPlayingLayout, LikedSongListView) {
 
-  var KexpAppController = function(kexpApp) {
-    this.kexpApp = kexpApp;
+  var KexpAppController = function(application) {
+    this.app = application;
   };
 
   _.extend(KexpAppController.prototype, {
@@ -20,7 +19,7 @@ define([
       likedSongsView.collection.fetch()
         .then(function(collection, resp) {
           //console.log("[Show LikedSongListView]");
-          self.kexpApp.main.show(likedSongsView);
+          self.app.main.show(likedSongsView);
         });
     },
     showNowPlaying: function() {
@@ -31,11 +30,12 @@ define([
         .always(function() {
           var layout = new NowPlayingLayout({
             collection: collection,
-            vent: self.kexpApp.vent,
-            appConfig: self.kexpApp.appConfig
+            vent: self.app.vent,
+            appConfig: self.app.appConfig,
+            lastFmApi: self.app.lastFmApi
           });
           //console.log("[Show NowPlayingLayout]");
-          self.kexpApp.main.show(layout);
+          self.app.main.show(layout);
           layout.enablePoll(60000);
         });
     }

@@ -1,13 +1,12 @@
 define([
   "jquery",
   "underscore",
-  "backbone-kexp",
-  "models/LikedSongModel",
   "views/PopoverView",
+  "models/LikedSongModel",
   "text!templates/likedsong-popover.html",
   "text!templates/likedsong-popover-info.html",
   "moment"
-  ], function($, _, Backbone, LikedSongModel, PopoverView, PopoverTemplate, PopoverContentTemplate) {
+  ], function($, _, PopoverView, LikedSongModel, PopoverTemplate, PopoverContentTemplate) {
 
   var LikedSongPopoverView = PopoverView.extend({
 

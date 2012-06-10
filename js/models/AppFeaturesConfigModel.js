@@ -3,9 +3,9 @@ define(["jquery", "underscore", "backbone-kexp", "backbone-localstorage"],
   
   var AppFeaturesConfigModel = Backbone.Model.extend({
 
-    initialize: function(options) {
+    initialize: function(attributes, options) {
       
-      options = options || {};
+      options || (options = {});
 
       if (options.localStorage && _.isFunction(options.localStorage.sync)) {
         this.localStorage = options.localStorage;

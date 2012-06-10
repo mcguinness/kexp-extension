@@ -1,13 +1,12 @@
 define([
   "jquery",
-  "backbone-kexp",
   "underscore",
-  "marionette",
+  "marionette-kexp",
   "views/LastFmPopoverView",
   "jquery-kexp" // no need for arg
-  ], function($, Backbone, _, Marionette, LastFmPopoverView) {
+  ], function($, _, Marionette, LastFmPopoverView) {
   
-  var LastFmMetaView = Backbone.Marionette.ItemView.extend({
+  var LastFmMetaView = Marionette.ItemView.extend({
     tagName: "div",
     className: "container-nowplaying-meta",
     initialize: function(options) {

@@ -1,13 +1,13 @@
 define([
   "jquery",
   "underscore",
-  "backbone-kexp",
+  "marionette-kexp",
   "linkify",
   "text!templates/nowplaying-song.html",
   "moment"
-  ], function($, _, Backbone, linkify, ViewTemplate) {
+  ], function($, _, Marionette, linkify, ViewTemplate) {
 
-  var NowPlayingSongView = Backbone.Marionette.ItemView.extend({
+  var NowPlayingSongView = Marionette.ItemView.extend({
     template: ViewTemplate,
     className: "container-nowplaying-song",
     serializeData: function() {

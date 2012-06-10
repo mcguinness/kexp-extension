@@ -1,11 +1,11 @@
 define([
   "jquery",
   "underscore",
-  "backbone-kexp",
+  "marionette-kexp",
   "views/PopoverView",
   "text!templates/nowplaying-popover.html",
   "text!templates/nowplaying-popover-lastfm.html"
-  ], function($, _, Backbone, PopoverView, PopoverTemplate, PopoverContentTemplate) {
+  ], function($, _, Marionette, PopoverView, PopoverTemplate, PopoverContentTemplate) {
 
   var LastFmPopoverView = PopoverView.extend({
 
@@ -39,7 +39,7 @@ define([
         .value();
     },
     renderHtml: function(json) {
-      return Backbone.Marionette.Renderer.render(this.template, {model: json});
+      return Marionette.Renderer.render(this.template, {model: json});
     },
     onEnable: function() {
       this.vent.trigger("nowplaying:lastfm:popover:enabled", {

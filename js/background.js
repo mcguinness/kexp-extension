@@ -1,9 +1,27 @@
 require.config({
   paths: {
-    "gaq": "util/google-analytics"
+    "backbone": "libs/backbone-min",
+    "backbone-kexp": "plugins/backbone-kexp",
+    "backbone-localstorage": "libs/backbone-localstorage",
+    "backbone-replete": "plugins/backbone-replete",
+    "gaq": "util/google-analytics",
+    "jquery": "libs/jquery-1.7.2.min",
+    "underscore": "libs/underscore-min"
   }
 });
 
-require(["gaq"], function(gaq) {
+require(["collections/AppConfigCollection", "gaq"], function(AppConfigCollection, gaq) {
+    
+    var store = {
+        appConfig: new AppConfigCollection()
+    };
+
+    // Save any config changes
+    store.appConfig.on("change", function(model) {
+      console.debug("Configuration model {%s} value has changed, saving changes...", model.id, JSON.stringify(model));
+      model.save();
+    }, this);
+
+    window.KexpStore = store;
     console.log("background page loaded.");
 });

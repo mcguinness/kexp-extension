@@ -1,7 +1,7 @@
 define([
   "jquery",
   "underscore",
-  "backbone-kexp",
+  "marionette-kexp",
   "models/LikedSongModel",
   "collections/LikedSongCollection",
   "views/LikedSongPopoverView",
@@ -12,10 +12,10 @@ define([
   "bootstrap",
   "jquery.dataTables",
   "jquery.dataTables.sort"
-  ], function($, _, Backbone, LikedSongModel, LikedSongCollection,
+  ], function($, _, Marionette, LikedSongModel, LikedSongCollection,
     LikedSongPopoverView, ViewTemplate, EmptyTemplate) {
 
-  var LikedSongListView = Backbone.Marionette.ItemView.extend({
+  var LikedSongListView = Marionette.ItemView.extend({
 
     tagName: "div",
     className: "container-likedsongs",

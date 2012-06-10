@@ -1,13 +1,12 @@
 define([
   "jquery",
-  "backbone-kexp",
   "underscore",
-  "marionette",
+  "marionette-kexp",
   "text!templates/nowplaying-error.html",
   "jquery-ui" // no need for arg
-  ], function($, Backbone, _, Marionette, ViewTemplate) {
+  ], function($, _, Marionette, ViewTemplate) {
 
-  var NowPlayingErrorView = Backbone.Marionette.ItemView.extend({
+  var NowPlayingErrorView = Marionette.ItemView.extend({
     template: ViewTemplate,
     className: "kexp-error kexp-box-striped",
     events: {

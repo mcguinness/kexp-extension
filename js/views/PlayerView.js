@@ -1,14 +1,14 @@
 define([
 	"jquery",
-  "backbone-kexp",
 	"underscore",
-	"marionette",
+	"marionette-kexp",
 	"models/PlayerModel",
+	"models/ShowModel",
 	"views/PlayerFsm",
 	"text!templates/player.html"
-	], function($, Backbone, _, Marionette, PlayerModel, PlayerFsm, ViewTemplate) {
+	], function($, _, Marionette, PlayerModel, ShowModel, PlayerFsm, ViewTemplate) {
 	
-	var PlayerView = Backbone.Marionette.ItemView.extend({
+	var PlayerView = Marionette.ItemView.extend({
 		template: ViewTemplate,
 		tagName: "div",
 		className: "container-player",
@@ -22,7 +22,7 @@ define([
 					muted: this.audioEl.muted
 				});
 			}
-
+			//this.showModel = options.showModel || new ShowModel();
 			this.playerFsm = new PlayerFsm(options.audioElement, this.model);
 			_.bind(this.handleStreamError, this);
 			this.playerFsm.on("error", this.handleStreamError);
@@ -42,6 +42,12 @@ define([
 		beforeRender: function() {
 			// Init State & Model
 			this.playerFsm.handle("initialize");
+		},
+		onShow: function() {
+			// $.when(this.showModel.fetch())
+			// 	.always(function(model) {
+			// 		console.log("Show Model", model);
+			// 	});
 		},
 		handleStreamError: function(error) {
 			var errorMessage = "Unknown";
@@ -102,7 +108,7 @@ define([
 		beforeClose: function() {
 			this.playerFsm.unbindAudioElEvents();
 			delete this.playerFsm;
-		},
+		}
 	});
 
 	return PlayerView;

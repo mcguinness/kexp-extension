@@ -9,9 +9,6 @@ define([
   
   var NowPlayingModel = Backbone.Model.extend({
 
-    intialize: function(options) {
-
-    },
     toJSON: function() {
       var json = Backbone.Model.prototype.toJSON.call(this);
       
@@ -91,29 +88,6 @@ define([
     hasLikedSong: function() {
       return _.isObject(this.likedSong);
     },
-    getLastFmLikedSongAttributes: function() {
-
-      var lastfmModel, track, attributes = {}, self = this;
-
-      _.each(this.lastFmMeta.models, function(lastfmModel) {
-        if (lastfmModel.isArtist()) {
-          attributes.artistMbid = lastfmModel.get("mbid") || "";
-          attributes.artistLastFmUrl = lastfmModel.get("url") || "";
-        }
-        else if (lastfmModel.isAlbum()) {
-          attributes.albumMbid = lastfmModel.get("mbid") || "";
-          attributes.albumLastFmUrl = lastfmModel.get("url") || "";
-          track = lastfmModel.getTrack(self.get("songTitle"), self.get("album"), self.get("artist"));
-          if (track) {
-            attributes.trackMbid = track.mbid || "";
-            attributes.trackLastFmUrl = track.url || "";
-            attributes.trackDownloadUrl = track.downloadurl || "";
-          }
-        }
-      });
-
-      return attributes;
-    },
     toSpotifyUrl: function() {
       return "spotify:search:" + encodeURI('artist:"' + this.get("artist") + '" album:"' + this.get("album") + '"');
     },
@@ -122,7 +96,6 @@ define([
       this.get("album") + "} Song: {" + this.get("songTitle") + "}";
     },
     toSong: function() {
-
       var song = {
         artist: this.get("artist"),
         songTitle: this.get("songTitle"),
@@ -130,8 +103,6 @@ define([
         albumYear: this.get("albumYear"),
         albumLabel: this.get("albumLabel")
       };
-      
-      _.extend(song, this.getLastFmLikedSongAttributes());
       return new LikedSongModel(song);
     }
   });

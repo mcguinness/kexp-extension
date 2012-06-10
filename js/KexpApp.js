@@ -2,103 +2,65 @@ define([
   "jquery",
   "underscore",
   "backbone-kexp",
-  "htmlencoder",
-  "KexpAppController",
+  "marionette-kexp",
+  "models/LastFmModel",
   "collections/AppConfigCollection",
-  "services/NotificationService",
-  "services/LastFmLikeSyncService",
-  "services/AnalyticsService",
-  "services/FeatureManagerService",
-  "services/PopoutService",
-  "services/PopoverCleanupService",
-  "views/NavRegionView",
-  "views/PlayerView"
-  ], function($, _, Backbone, HtmlEncoder,
-    KexpAppController,
-    AppConfigCollection,
-    NotificationService,
-    LastFmLikeSyncService,
-    AnalyticsService,
-    FeatureManagerService,
-    PopoutService,
-    PopoverCleanupService,
-    NavRegionView,
-    PlayerView) {
+  "collections/LastFmCollection",
+  "services/LastFmApi"
+  ], function($, _, Backbone, Marionette, LastFmModel, AppConfigCollection, LastFmCollection, LastFmApi) {
   
-  // Add encoding helpers to view and models
-  Backbone.View.prototype.htmlEncoder = HtmlEncoder;
-  Backbone.Model.prototype.htmlEncoder = HtmlEncoder;
+  var KexpApp = function() {
+    var kexpApp = new Marionette.Application();
 
-  // Create App
-  var kexpApp = new Backbone.Marionette.Application();
+    kexpApp.addInitializer(function(options) {
+      var self = this,
+        getLastFmApiConfig = function(model) {
+          return _.pick(model.toJSON(), "apiKey", "apiSecret", "sessionKey");
+        },
+        lastFmConfig,
+        handleSessionKeyChange;
 
-  kexpApp.addInitializer(function(options) {
-    var self = this;
-    
-    // Add Event Aggregator and Config to Options for future initializers
-    if (!options.vent) options.vent = this.vent;
-    if (!options.appConfig) options.appConfig = new AppConfigCollection();
-    this.appConfig = options.appConfig;
+      _.bindAll(this, "close");
 
-    // Add application event aggregator and config to all views if not specified in options
-    Backbone.Marionette.View.prototype.constructor = function(ctorOptions) {
-      if (!ctorOptions) ctorOptions = {};
-      this.vent = ctorOptions.vent || self.vent;
-      this.appConfig = ctorOptions.appConfig || self.appConfig;
+      // Close app on unload (app/views may have event handlers for background page)
+      $(window).on("unload", function() {
+          self.close();
+      });
 
-      Backbone.Marionette.View.apply(this, arguments);
-    };
+      // Add Event Aggregator and Config to Options for future initializers
+      if (!_.isObject(options.vent)) { options.vent = this.vent; }
+      if (!_.isObject(options.appConfig)) { options.appConfig = new AppConfigCollection(); }
+      this.appConfig = options.appConfig;
+      
+      // Make LastFmApi & Watch for Session Key Changes
+      lastFmConfig = this.appConfig.getLastFm();
+      this.lastFmApi = options.lastFmApi = new LastFmApi(getLastFmApiConfig(lastFmConfig));
+      this.vent.pipe(this.lastFmApi, "all");
+      handleSessionKeyChange = function(model) {
+        self.lastFmApi.setConfig(getLastFmApiConfig(model));
+      };
+      this.bindTo(lastFmConfig, "change:sessionKey", handleSessionKeyChange);
 
-    // Save any config changes
-    this.appConfig.on("change", function(model) {
-      console.debug("Configuration model {%s} value has changed, saving changes...", model.id, model);
-      model.save();
-    }, this);
-  });
+      // Add LastFm Sync to LastFm Collection & Model
+      _.extend(LastFmModel.prototype, {
+        sync: self.lastFmApi.sync
+      });
+      _.extend(LastFmCollection.prototype, {
+        sync: self.lastFmApi.sync
+      });
 
+      // Add application event aggregator and config to all views if not specified in options
+      Marionette.View.prototype.constructor = function(ctorOptions) {
+        if (!ctorOptions) ctorOptions = {};
+        this.vent = ctorOptions.vent || self.vent;
+        this.appConfig = ctorOptions.appConfig || self.appConfig;
 
-  // Add Services to App
-  kexpApp.addService(new NotificationService());
-  kexpApp.addService(new LastFmLikeSyncService());
-  kexpApp.addService(new AnalyticsService());
-  kexpApp.addService(new FeatureManagerService());
-  kexpApp.addService(new PopoutService());
-  kexpApp.addService(new PopoverCleanupService());
-
-  // Add Regions
-  kexpApp.addInitializer(function(options) {
-    this.addRegions({
-      nav: NavRegionView,
-      main: "#region-content",
-      player: "#region-player"
+        Marionette.View.apply(this, arguments);
+      };
     });
 
-    // Marionette.Region does not have Marionette.View as prototype, and we can't pass options through so...
-    _.extend(this.nav, {
-      vent: this.vent,
-      appConfig: this.appConfig
-    });
-    
-  });
+    return kexpApp;
+  };
 
-  // Show Player
-  kexpApp.addInitializer(function(options) {
-    var playerView = new PlayerView(options);
-    this.player.show(playerView);
-  });
-
-  kexpApp.addInitializer(function(options) {
-    var AppRouter = Backbone.Marionette.AppRouter.extend({
-      appRoutes: {
-        "likes": "showLikedSongs",
-        "*other": "showNowPlaying" //Default View
-      },
-      controller: new KexpAppController(this)
-    });
-
-    this.router = new AppRouter();
-    Backbone.history.start();
-  });
-
-  return kexpApp;
+  return KexpApp;
 });

@@ -2,27 +2,23 @@ define([
   "jquery",
   "underscore",
   "services/Service",
+  "services/LastFmApi",
   "models/LikedSongModel",
   "moment"
-  ], function($, _, Service, LikedSongModel) {
+  ], function($, _, Service, LastFmApi, LikedSongModel) {
 
   var LastFmLikeSyncService = Service.extend({
-    onStart: function() {
+    onStart: function(options) {
+      _.bindAll(this, "enableSync", "disableSync", "handleSyncChange");
       var self = this;
-      this.lastFmConfig = this.appConfig.getLastFm();
-      _.bindAll(this, "enableSync", "disableSync", "handleSync");
-      
-      if (this.lastFmConfig.isLikeShareEnabled() || this.lastFmConfig.isLikeScrobbleEnabled()) {
-        console.debug("Enabling Last.fm Sync Service...");
-        
-        this._api = this.lastFmConfig.getApi();
-        this.pipeToVent(this._api, "all");
-        
-        this.enableSync();
-        this.bindTo(this.lastFmConfig, "change:sessionKey", function(model, value) {
-          model.hasAuthorization() ? self.enableSync() : self.disableSync();
-        }, this);
-      }
+      this._lastFmConfig = this.appConfig.getLastFm();
+      this._lastFmApi = options.lastFmApi;
+
+      this.bindTo(this._lastFmConfig, "change:sessionKey", this.handleSyncChange);
+      this.bindTo(this._lastFmConfig, "change:likeShareEnabled", this.handleSyncChange);
+      this.bindTo(this._lastFmConfig, "change:likeScrobbleEnabled", this.handleSyncChange);
+
+      this.handleSyncChange(this._lastFmConfig);
     },
     enableSync: function() {
       if (_.isUndefined(this.handleSyncBinding)) {
@@ -33,6 +29,13 @@ define([
       if (this.handleSyncBinding) {
         this.vent.unbindFrom(this.handleSyncBinding);
         delete this.handleSyncBinding;
+      }
+    },
+    handleSyncChange: function(model) {
+      if (model.hasSharingEnabled()) {
+        this.enableSync();
+      } else {
+        this.disableSync();
       }
     },
     handleSync: function(nowPlayingModel) {
@@ -53,10 +56,10 @@ define([
       if (_.isEmpty(track) || _.isEmpty(artist)) { return; }
 
 
-      if (this.lastFmConfig.isLikeShareEnabled() &&
+      if (this._lastFmConfig.isLikeShareEnabled() &&
         !likedSong.hasLastFmShareStatus(LikedSongModel.LastFmShareStatus.TrackLove)) {
         
-        this._api.loveTrack(track, artist).then(
+        this._lastFmApi.loveTrack(track, artist).then(
           function() {
             likedSong.setLastFmShareStatus(LikedSongModel.LastFmShareStatus.TrackLove);
             likedSong.save();
@@ -71,8 +74,8 @@ define([
         );
       }
 
-      if (this.lastFmConfig.isLikeScrobbleEnabled() && !_.isEmpty(album)) {
-        this._api.scrobbleTrack(track, artist, album, false, timePlayed)
+      if (this._lastFmConfig.isLikeScrobbleEnabled() && !_.isEmpty(album)) {
+        this._lastFmApi.scrobbleTrack(track, artist, album, false, timePlayed)
           .then(
             function() {
               likedSong.scrobble();

@@ -2,14 +2,10 @@ define([
   "jquery",
   "backbone-kexp",
   "underscore",
-  "databases/LastFmSync",
   "models/LastFmModel"
-  ], function($, Backbone, _, LastFmSync, LastFmModel) {
+  ], function($, Backbone, _, LastFmModel) {
   var LastFmCollection = Backbone.Collection.extend({
     model: LastFmModel,
-    initialize: function(options) {
-      this.sync = new LastFmSync(options).sync;
-    },
     url: function() {
       // Replaced by Sync Module but Backbone fetch with throw if empty
       return "http://ws.audioscrobbler.com/2.0/";

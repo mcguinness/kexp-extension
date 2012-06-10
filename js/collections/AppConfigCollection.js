@@ -9,9 +9,9 @@ define([
 
   var AppConfigCollection = Backbone.Collection.extend({
 
-    initialize: function(options) {
+    initialize: function(models, options) {
       
-      options = options || {};
+      options || (options = {});
 
       if (options.localStorage && _.isFunction(options.localStorage.sync)) {
         this.localStorage = options.localStorage;

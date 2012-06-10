@@ -112,6 +112,30 @@ define([
         lastFmShareStatus: this.get("lastFmShareStatus") & flag
       });
     },
+    setLastFmAttributes: function(lastFmCollection, options) {
+      if (lastFmCollection instanceof Backbone.Collection) {
+
+        var lastfmModel, track, attributes = {}, self = this;
+
+        _.each(lastFmCollection.models, function(lastfmModel) {
+          if (lastfmModel.isArtist()) {
+            attributes.artistMbid = lastfmModel.get("mbid") || "";
+            attributes.artistLastFmUrl = lastfmModel.get("url") || "";
+          }
+          else if (lastfmModel.isAlbum()) {
+            attributes.albumMbid = lastfmModel.get("mbid") || "";
+            attributes.albumLastFmUrl = lastfmModel.get("url") || "";
+            track = lastfmModel.getTrack(self.get("songTitle"), self.get("artist") , self.get("album"));
+            if (track) {
+              attributes.trackMbid = track.mbid || "";
+              attributes.trackLastFmUrl = track.url || "";
+              attributes.trackDownloadUrl = track.downloadurl || "";
+            }
+          }
+        });
+        this.set(attributes, options);
+      }
+    },
     toDebugString: function() {
       return "LikedSong - Artist: {" + this.get("artist") + "} Album: {" + this.get("album") +
       "} Song: {" + this.get("songTitle") + "} LikeCount: {" + this.get("likeCount") + "}";

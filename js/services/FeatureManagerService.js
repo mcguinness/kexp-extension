@@ -7,8 +7,8 @@ define([
     var FeatureManagerService = Service.extend({
       onStart: function(options) {
         
-        this.featuresConfig = this.appConfig.getFeatures();
-        if (!this.featuresConfig.get("hasClickedLike")) {
+        this._featuresConfig = this.appConfig.getFeatures();
+        if (!this._featuresConfig.get("hasClickedLike")) {
           this.handleLikeBinding = this.bindTo(this.vent, "nowplaying:like", this.handleLike, this);
         }
 
@@ -17,11 +17,11 @@ define([
         this.bindTo(this.vent, "lastfm:track:scrobble:fail", this.handleScrobbleFail, this);
       },
       handleLike: function() {
-        if (!this.featuresConfig.get("hasClickedLike")) {
+        if (!this._featuresConfig.get("hasClickedLike")) {
           if (!this.appConfig.getLastFm().hasAuthorization()) {
             this.vent.trigger("notification:info", "Enable sharing in options", "Share your \"likes\" with your Last.fm profile!");
           }
-          this.featuresConfig.set({hasClickedLike: true});
+          this._featuresConfig.set({hasClickedLike: true});
         }
         
         if (this.handleLikeBinding) {

@@ -1,15 +1,15 @@
 define([
   "jquery",
   "underscore",
-  "backbone-kexp",
+  "marionette-kexp",
   "text!templates/nowplaying-footer.html",
   "moment",
   "jquery-ui", // no need for arg
   "jquery-kexp", // no need for arg
   "bootstrap" // no need for arg
-  ], function($, _, Backbone, ViewTemplate) {
+  ], function($, _, Marionette, ViewTemplate) {
   
-  var NowPlayingFooterView = Backbone.Marionette.ItemView.extend({
+  var NowPlayingFooterView = Marionette.ItemView.extend({
     template: ViewTemplate,
     className: "container-nowplaying-footer",
     initialize: function(options) {
@@ -19,7 +19,9 @@ define([
       this.bindTo(this.vent, "nowplaying:lastfm:popover:enabled", this.showLastFmButton, this);
       this.bindTo(this.vent, "nowplaying:refresh:background", this.handleBackgroundRefresh, this);
       this.bindTo(this.vent, "lastfm:track:love:success", this.showShareAnimation, this);
-      this.bindTo(this.lastFmConfig, "change:sessionKey", this.handleLastFmAuthorizationChange, this);
+      this.bindTo(this.lastFmConfig, "change:sessionKey", this.handleLastFmShareChange, this);
+      this.bindTo(this.lastFmConfig, "change:likeShareEnabled", this.handleLastFmShareChange, this);
+      this.bindTo(this.lastFmConfig, "change:likeScrobbleEnabled", this.handleLastFmShareChange, this);
 
     },
     events: {
@@ -37,7 +39,7 @@ define([
         model: {
           id: this.model.id,
           likeCount: this.model.hasLikedSong() ? this.model.likedSong.get("likeCount") : 0,
-          likeShareEnabled: this.lastFmConfig.isLikeShareEnabled()
+          likeShareEnabled: this.lastFmConfig.hasSharingEnabled()
         }
       };
     },
@@ -66,12 +68,15 @@ define([
           .tooltip({
             placement: "top",
             title: function() {
-              return view.lastFmConfig.isLikeShareEnabled() ?
-              "<strong>Last.fm Sharing Enabled</strong> - Likes will be shared to your Last.fm profile as 'loves' (See Options)" :
-              "<strong>Last.fm Sharing Disabled</strong> - Likes will only be locally stored and not shared with your Last.fm profile (See Options)";
+              return view.lastFmConfig.hasSharingEnabled() ?
+                view.lastFmConfig.isLikeShareEnabled() && view.lastFmConfig.isLikeScrobbleEnabled() ?
+                  "<strong>Last.fm Sharing Enabled</strong> - Likes will be shared to your Last.fm profile as 'loves' & 'listens' (See Options)" :
+                  (view.lastFmConfig.isLikeShareEnabled() ?
+                    "<strong>Last.fm Sharing Enabled</strong> - Likes will be shared to your Last.fm profile as 'loves' (See Options)" :
+                    "<strong>Last.fm Sharing Enabled</strong> - Likes will be shared to your Last.fm profile as 'listens' (See Options)") :
+                "<strong>Last.fm Sharing Disabled</strong> - Likes will only be locally stored and not shared with your Last.fm profile (See Options)";
             }
           });
-
     },
     onShow: function() {
       var $footer = $(this.el).find("#song-footer");
@@ -107,17 +112,12 @@ define([
 
       likedSong = targetModel.likedSong || targetModel.toSong();
       likedSong.like();
+      likedSong.setLastFmAttributes(targetModel.lastFmMeta);
 
-      // Note: collection:change event doesn't seem to fire if model is not new, rel:change event does fire
-      // if adding new related model
       if (likedSong.isNew()) {
         likedSong.save();
         targetModel.likedSong = likedSong;
       } else {
-        lastfmAttributes = targetModel.getLastFmLikedSongAttributes();
-        console.debug("[NowPlaying Like] merging now playing last.fm attributes [%s] to existing liked song [%s]",
-          JSON.stringify(lastfmAttributes), JSON.stringify(likedSong));
-        likedSong.set(lastfmAttributes);
         likedSong.save();
       }
 
@@ -144,8 +144,8 @@ define([
     handleLastFmPopoverToggle: function() {
       this.vent.trigger("nowplaying:lastfm:popover:toggle");
     },
-    handleLastFmAuthorizationChange: function(model, value, options) {
-      $("#button-share", this.$el).toggleClass("active", model.hasAuthorization());
+    handleLastFmShareChange: function(model, value, options) {
+      $("#button-share", this.$el).toggleClass("active", model.hasSharingEnabled());
     },
     beforeClose: function() {
       

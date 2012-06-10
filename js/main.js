@@ -15,11 +15,11 @@ require.config({
     "jquery-ui": "plugins/jquery-ui-1.8.20.custom.min",
     "jquery.dataTables": "plugins/jquery.dataTables.min",
     "jquery.dataTables.sort": "plugins/jquery.dataTables.sort",
-    "lastfm-api": "services/LastFmApi",
     "linkify": "util/ba-linkify",
     "machina": "libs/machina.min",
     "marionette": "libs/backbone.marionette.min",
     "marionette-deferredclose": "plugins/backbone.marionette-deferredclose",
+    "marionette-kexp": "plugins/backbone.marionette-kexp",
     "md5": "util/md5",
     "moment": "libs/moment.min",
     "mutation-summary" : "libs/mutation_summary",
@@ -37,11 +37,12 @@ require.config({
   }
 });
 
-require(["jquery", "underscore", "KexpApp", "gaq"], function($, _, KexpApp) {
+require(["jquery", "underscore", "PopupApp", "gaq"], function($, _, PopupApp) {
 
   // AudioElement is in background page so music plays when popups are not active
   var backgroundPage = chrome.extension.getBackgroundPage();
   var audioElement = backgroundPage.document.getElementById("background-audio");
+  var kexpStore = backgroundPage.KexpStore;
 
   // Data attributes are used for anchor tags to seperate chrome hosting environment from app
   var backgroundTab = function(href, active, temp) {
@@ -81,18 +82,17 @@ require(["jquery", "underscore", "KexpApp", "gaq"], function($, _, KexpApp) {
     $("body").on("click", "a[data-chrometab]", chromeTab);
     $("body").on("click", ".content-external a", chromeTab);
 
-    window.KexpApp = KexpApp;
+    window.KexpApp = PopupApp;
 
     // Since event handlers can register with background page, we must close the app on unload
     $(window).on("unload", function() {
         _gaq.push(["_trackEvent", "Application", "Close"]);
-        window.KexpApp.close();
-        delete window.KexpApp;
     });
     
     window.KexpApp.start({
       audioElement: audioElement,
       popout: $("body").hasClass("popout"),
+      appConfig: kexpStore.appConfig,
       appUrl: chrome.extension.getURL("popup.html")
     });
   });

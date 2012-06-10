@@ -1,11 +1,10 @@
 define([
   "jquery",
-  "backbone-kexp",
   "underscore",
-  "marionette"
-  ], function($, Backbone, _, Marionette) {
+  "marionette-kexp"
+  ], function($, _, Marionette) {
   
-  var NavRegionView = Backbone.Marionette.Region.extend({
+  var NavRegionView = Marionette.Region.extend({
     el: "#navbar-top",
     initialize: function(options) {
       // Bind before adding hashchange event handler

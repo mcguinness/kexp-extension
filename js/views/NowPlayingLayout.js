@@ -1,7 +1,7 @@
 define([
   "jquery",
   "underscore",
-  "backbone-kexp",
+  "marionette-kexp",
   "views/NowPlayingFsm",
   "views/NowPlayingSongView",
   "views/NowPlayingFooterView",
@@ -9,10 +9,10 @@ define([
   "views/NowPlayingErrorView",
   "collections/NowPlayingCollection",
   "text!templates/nowplaying.html"
-  ], function($, _, Backbone, NowPlayingFsm, NowPlayingSongView, NowPlayingFooterView,
+  ], function($, _, Marionette, NowPlayingFsm, NowPlayingSongView, NowPlayingFooterView,
     LastFmMetaView, NowPlayingErrorView, NowPlayingCollection, LayoutTemplate) {
 
-  var NowPlayingLayout = Backbone.Marionette.Layout.extend({
+  var NowPlayingLayout = Marionette.Layout.extend({
 
     template: LayoutTemplate,
     regions: {

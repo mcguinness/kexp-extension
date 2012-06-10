@@ -1,14 +1,14 @@
 define([
   "jquery",
   "underscore",
-  "backbone-kexp",
-  "lastfm-api",
+  "marionette-kexp",
+  "services/LastFmApi",
   "collections/AppConfigCollection",
   "text!templates/options-lastfm.html",
   "bootstrap" // no need for arg
-  ], function($, _, Backbone, LastFmApi, AppConfigCollection, ViewTemplate) {
+  ], function($, _, Marionette, LastFmApi, AppConfigCollection, ViewTemplate) {
   
-  var LastFmOptionsItemView = Backbone.Marionette.ItemView.extend({
+  var LastFmOptionsItemView = Marionette.ItemView.extend({
     
     template: ViewTemplate,
     modalEl: "#modal-lastfm-authorize",

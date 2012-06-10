@@ -2,9 +2,8 @@ define([
   "jquery",
   "underscore",
   "backbone-kexp",
-  "backbone-localstorage",
-  "lastfm-api"
-  ], function($, _, Backbone, Store, LastFmApi) {
+  "backbone-localstorage"
+  ], function($, _, Backbone, Store) {
 
   var LastFmConfigModel = Backbone.Model.extend({
 
@@ -18,9 +17,9 @@ define([
         likeShareEnabled: true,
         likeScrobbleEnabled: true
       },
-      initialize: function(options) {
+      initialize: function(attributes, options) {
       
-        options = options || {};
+        options || (options = {});
 
         if (options.localStorage && _.isFunction(options.localStorage.sync)) {
           this.localStorage = options.localStorage;
@@ -32,6 +31,9 @@ define([
       },
       hasAuthorization: function() {
         return !_.isEmpty(this.get("sessionKey"));
+      },
+      hasSharingEnabled: function() {
+        return this.hasAuthorization() && (this.isLikeShareEnabled() || this.isLikeScrobbleEnabled());
       },
       disableAuthorization: function() {
         console.debug("[LastFM API Authorization Disabled]");
@@ -51,10 +53,6 @@ define([
       },
       isLikeScrobbleEnabled: function() {
         return (this.get("likeScrobbleEnabled") && this.hasAuthorization());
-      },
-      getApi: function() {
-        var options = _.pick(this.toJSON(), "apiKey", "apiSecret", "sessionKey");
-        return new LastFmApi(options);
       }
   });
 
