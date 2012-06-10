@@ -12,6 +12,7 @@ define([
   "services/FeatureManagerService",
   "services/PopoutService",
   "services/PopoverCleanupService",
+  "services/ChromeTabService",
   "views/NavRegionView",
   "views/PlayerView"
   ], function(
@@ -28,6 +29,7 @@ define([
     FeatureManagerService,
     PopoutService,
     PopoverCleanupService,
+    ChromeTabService,
     NavRegionView,
     PlayerView) {
   
@@ -44,8 +46,8 @@ define([
   popupApp.addService(new FeatureManagerService());
   popupApp.addService(new PopoutService());
   popupApp.addService(new PopoverCleanupService());
+  popupApp.addService(new ChromeTabService());
   
-
   // Add Regions
   popupApp.addInitializer(function(options) {
     this.addRegions({

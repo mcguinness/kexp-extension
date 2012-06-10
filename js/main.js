@@ -44,47 +44,10 @@ require(["jquery", "underscore", "PopupApp", "gaq"], function($, _, PopupApp) {
   var audioElement = backgroundPage.document.getElementById("background-audio");
   var kexpStore = backgroundPage.KexpStore;
 
-  // Data attributes are used for anchor tags to seperate chrome hosting environment from app
-  var backgroundTab = function(href, active, temp) {
-    backgroundPage.chrome.tabs.create({url: href, active: active}, function(tab) {
-      if (temp) {
-        backgroundPage.setTimeout(function() {
-          backgroundPage.chrome.tabs.remove(tab.id);
-        }, 3000);
-      }
-    });
-  };
-
-  var chromeTab = function(event) {
-    var $link = $(this),
-      attrValue = $link.attr("data-chrometab"),
-      active = attrValue ? (attrValue === "active") : true,
-      temp = (attrValue === "temp"),
-      href = $link.attr("href"),
-      chromeMatches = href.match(/(chrome-extension):\/\/([\w\.?=%&=\-@\/$,]+)/);
-
-      if (chromeMatches && chromeMatches.length == 3) {
-        href = chrome.extension.getURL(chromeMatches[2]);
-      }
-
-      _gaq.push(["_trackEvent", "Navigation", "Link", href]);
-
-    if (href) {
-      backgroundPage.setTimeout(backgroundTab, 0, href, temp ? false : active, temp);
-      return false;
-    }
-  };
-
-
   $(document).ready(function() {
-
-    // Find and convert links that should be opened in new chrome tabs
-    $("body").on("click", "a[data-chrometab]", chromeTab);
-    $("body").on("click", ".content-external a", chromeTab);
 
     window.KexpApp = PopupApp;
 
-    // Since event handlers can register with background page, we must close the app on unload
     $(window).on("unload", function() {
         _gaq.push(["_trackEvent", "Application", "Close"]);
     });
