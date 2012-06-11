@@ -4180,7 +4180,7 @@ body {
 }
 .player .slider-volume {
   -webkit-appearance: none !important;
-  width: 110px;
+  width: 112px;
   height: 6px;
   margin-bottom: 0;
   padding: 0 0 0 0;
@@ -4235,6 +4235,9 @@ body {
   text-align: right;
   font-weight: bold;
   width: 100%;
+}
+.player .player-status {
+  cursor: pointer;
 }
 .player .prefix-accent {
   color: #934e1e;

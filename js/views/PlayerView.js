@@ -43,7 +43,8 @@ define([
 		events: {
 			"click #player-button": "handleInputTogglePlay",
 			"change #player-volume": "handleInputChangeVolume",
-			"click #player-mute": "handleInputToggleMute"
+			"click #player-mute": "handleInputToggleMute",
+			"click span.player-status": "handleStatusClick"
 		},
 		beforeRender: function() {
 			// Init State & Model
@@ -95,7 +96,10 @@ define([
 			return _.isObject(this.$statusCycleEl);
 		},
 		pollFetchShow: function() {
-			var view = this, nextPollGraceSeconds = (2 * 60), nextPollSeconds;
+			var view = this,
+				// Add random seconds (up to 1 minute) to poll so not every client hits server at the same time
+				nextPollGraceSeconds = (2 * 60) + Math.round(((Math.random() * 60) + 1)),
+				nextPollSeconds;
 			console.log("Polling kexp show info...");
 			$.when(this.showModel.fetch())
 				.done(function(model) {
@@ -157,6 +161,11 @@ define([
 		handleInputToggleMute: function() {
 			this.vent.trigger("analytics:trackevent", "LiveStream", "Mute", !this.audioEl.muted);
 			this.audioEl.muted = !this.audioEl.muted;
+		},
+		handleStatusClick: function() {
+			if (_.isObject(this.$statusCycleEl)) {
+				this.$statusCycleEl.cycle("next");
+			}
 		},
 		handleModelChangeMessage: function(model, value, options) {
 			this.restartShowStatusCycle();
