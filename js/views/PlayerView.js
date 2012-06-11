@@ -6,6 +6,7 @@ define([
 	"models/ShowModel",
 	"views/PlayerFsm",
 	"text!templates/player.html",
+	"moment", // Global
 	"jquery-cycle" // jQuery Plugin
 	], function($, _, Marionette, PlayerModel, ShowModel, PlayerFsm, ViewTemplate) {
 	
@@ -15,6 +16,9 @@ define([
 		className: "container-player",
 		
 		initialize: function(options) {
+			
+			_.bindAll(this, "handlePlayerError", "disablePollFetchShow", "enablePollFetchShow", "pollFetchShow");
+			
 			this.audioEl = options.audioElement;
 			
 			if (!_.isObject(this.model)) {
@@ -24,11 +28,9 @@ define([
 				});
 			}
 			this.showModel = options.showModel || new ShowModel();
-			this.$statusCycleEl = null;
 
 			this.playerFsm = new PlayerFsm(options.audioElement, this.model);
-			_.bind(this.handleStreamError, this);
-			this.playerFsm.on("error", this.handleStreamError);
+			this.playerFsm.on("error", this.handlePlayerError);
 
 			// Bind Model Event Handlers
 			this.bindTo(this.model, "change:message", this.handleModelChangeMessage);
@@ -62,6 +64,9 @@ define([
 			var timeEl = this.makeStatusEl("player-show-time", "show-time", showModel.formatTimeRange("hA"));
 			var djEl = this.makeStatusEl("player-show-dj", "show-dj", showModel.get("dj"));
 
+			if (_.isObject(this.$statusCycleEl)) {
+				this.$statusCycleEl.cycle("destroy");
+			}
 			this.$statusCycleEl = $("div.container-player-status", this.$el)
 				.append(titleEl, timeEl, djEl)
 				.cycle({
@@ -73,13 +78,49 @@ define([
 				});
 		},
 		onShow: function() {
-			var self = this;
+			this.pollFetchShow();
+		},
+		disablePollFetchShow: function() {
+			if (this._showFetchTimeoutId) {
+				window.clearTimeout(this.showFetchTimeoutId);
+				delete this._showFetchTimeoutId;
+			}
+		},
+		enablePollFetchShow: function(nextPollSeconds) {
+			this.disablePollFetchShow();
+			console.log("Will poll kexp show info in [%s] seconds...", nextPollSeconds);
+			this._showFetchTimeoutId = window.setTimeout(this.pollFetchShow, nextPollSeconds * 1000);
+		},
+		hasRenderedShowStatus: function() {
+			return _.isObject(this.$statusCycleEl);
+		},
+		pollFetchShow: function() {
+			var view = this, nextPollGraceSeconds = (2 * 60), nextPollSeconds;
+			console.log("Polling kexp show info...");
 			$.when(this.showModel.fetch())
 				.done(function(model) {
-					self.renderShowStatus(model);
+					nextPollSeconds = moment(model.get("timeEnd")).diff(moment(), "seconds");
+					nextPollSeconds += nextPollGraceSeconds;
+					if (nextPollSeconds <= 0) {
+						nextPollSeconds = nextPollGraceSeconds;
+					}
+					view.enablePollFetchShow(nextPollSeconds);
+					if (!view.hasRenderedShowStatus()) {
+						view.renderShowStatus(model);
+					}
+				})
+				.fail(function(model, error, options) {
+					console.warn("Error [%s] fetching kexp show", error);
+					view.enablePollFetchShow(nextPollGraceSeconds);
 				});
+
 		},
-		handleStreamError: function(error) {
+		restartShowStatusCycle: function() {
+			if (_.isObject(this.$statusCycleEl)) {
+				this.$statusCycleEl.cycle(0);
+			}
+		},
+		handlePlayerError: function(error) {
 			var errorMessage = "Unknown";
 			if (_.isObject(error)) {
 				switch(error.code) {
@@ -118,9 +159,7 @@ define([
 			this.audioEl.muted = !this.audioEl.muted;
 		},
 		handleModelChangeMessage: function(model, value, options) {
-			if (_.isObject(this.$statusCycleEl)) {
-				this.$statusCycleEl.cycle(0);
-			}
+			this.restartShowStatusCycle();
 			var $titleStatus = $("#player-title span.player-status", this.$el);
 			console.log("[Player] Previous Status: " + $titleStatus.text());
 			$titleStatus.text(this.audioEl.muted ? value + " (Muted)" : value);
@@ -153,6 +192,7 @@ define([
 			}
 		},
 		beforeClose: function() {
+			this.disablePollFetchShow();
 			if (_.isObject(this.$statusCycleEl)) {
 				this.$statusCycleEl.cycle("destroy");
 			}

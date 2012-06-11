@@ -31,6 +31,7 @@ define(["jquery", "backbone-kexp", "underscore", "moment"], function($, Backbone
         if (showHour >= (24 - 8) && currentUtcHour < 8) {
           showMoment.subtract("days", 1);
         }
+        // TODO: Fix issue with time and manually subtracting by 1 (Same as NowPlayingModel)
         return showMoment.local().subtract('hours', 1).toDate();
       };
 
@@ -50,19 +51,19 @@ define(["jquery", "backbone-kexp", "underscore", "moment"], function($, Backbone
     validate: function(attributes) {
       // KEXP feed sometimes returns nulls when there is an error, otherwise expect empty string values for "valid" data
       if (!_.isNumber(attributes.id) || attributes.id === 0) {
-        return "id attribute is missing, null,or 0";
+        return "id attribute is empty, missing, null, or 0";
       }
       if (_.isEmpty(attributes.title)) {
-        return "title attribute is missing or null";
+        return "title attribute is empty, missing or null";
       }
       if (_.isEmpty(attributes.dj)) {
-        return "dj attribute is missing or null";
+        return "dj attribute is empty, missing or null";
       }
       if (!_.isDate(attributes.timeStart)) {
-        return "timeStart attribute is missing or null";
+        return "timeStart attribute is empty, missing or null";
       }
       if (!_.isDate(attributes.timeEnd)) {
-        return "timeEnd attribute is missing or null";
+        return "timeEnd attribute is empty, missing or null";
       }
     },
     formatTimeRange: function(format) {
