@@ -4132,7 +4132,7 @@ body {
   padding: 10px 0px;
 }
 .player {
-  width: 212px;
+  width: 225px;
   display: block;
   margin-left: auto;
   margin-right: auto;
@@ -4180,7 +4180,7 @@ body {
 }
 .player .slider-volume {
   -webkit-appearance: none !important;
-  width: 100px;
+  width: 110px;
   height: 6px;
   margin-bottom: 0;
   padding: 0 0 0 0;
@@ -4231,20 +4231,10 @@ body {
   vertical-align: middle;
   cursor: pointer;
 }
-.player .player-title {
-  clear: both;
-  display: inline-block;
-  float: right;
+.player .container-player-status {
+  text-align: right;
   font-weight: bold;
-  *zoom: 1;
-}
-.player .player-title:before,
-.player .player-title:after {
-  display: table;
-  content: "";
-}
-.player .player-title:after {
-  clear: both;
+  width: 100%;
 }
 .player .prefix-accent {
   color: #934e1e;

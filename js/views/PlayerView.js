@@ -5,7 +5,8 @@ define([
 	"models/PlayerModel",
 	"models/ShowModel",
 	"views/PlayerFsm",
-	"text!templates/player.html"
+	"text!templates/player.html",
+	"jquery-cycle" // jQuery Plugin
 	], function($, _, Marionette, PlayerModel, ShowModel, PlayerFsm, ViewTemplate) {
 	
 	var PlayerView = Marionette.ItemView.extend({
@@ -22,7 +23,9 @@ define([
 					muted: this.audioEl.muted
 				});
 			}
-			//this.showModel = options.showModel || new ShowModel();
+			this.showModel = options.showModel || new ShowModel();
+			this.$statusCycleEl = null;
+
 			this.playerFsm = new PlayerFsm(options.audioElement, this.model);
 			_.bind(this.handleStreamError, this);
 			this.playerFsm.on("error", this.handleStreamError);
@@ -33,6 +36,7 @@ define([
 			this.bindTo(this.model, "change:muted", this.handleModelChangeMuted);
 			this.bindTo(this.model, "change:volume", this.handleModelChangeVolume);
 			this.bindTo(this.model, "change:disabled", this.handleModelChangeDisabled);
+			this.bindTo(this.showModel, "change", this.handleShowModelChange);
 		},
 		events: {
 			"click #player-button": "handleInputTogglePlay",
@@ -43,11 +47,37 @@ define([
 			// Init State & Model
 			this.playerFsm.handle("initialize");
 		},
+		makeStatusEl: function(id, className, message) {
+			return this.make(
+				"div",
+				{
+					"id": id,
+					"class": className
+				},
+				'<span class="prefix-accent">\\\\\\</span> <span class="player-status">'+message+'</span>'
+			);
+		},
+		renderShowStatus: function(showModel) {
+			var titleEl = this.makeStatusEl("player-show-title", "show-title", showModel.get("title"));
+			var timeEl = this.makeStatusEl("player-show-time", "show-time", showModel.formatTimeRange("hA"));
+			var djEl = this.makeStatusEl("player-show-dj", "show-dj", showModel.get("dj"));
+
+			this.$statusCycleEl = $("div.container-player-status", this.$el)
+				.append(titleEl, timeEl, djEl)
+				.cycle({
+					fx:"scrollLeft",
+					speed: 750,
+					timeout: 10000,
+					fit: true,
+					width: "100%"
+				});
+		},
 		onShow: function() {
-			// $.when(this.showModel.fetch())
-			// 	.always(function(model) {
-			// 		console.log("Show Model", model);
-			// 	});
+			var self = this;
+			$.when(this.showModel.fetch())
+				.done(function(model) {
+					self.renderShowStatus(model);
+				});
 		},
 		handleStreamError: function(error) {
 			var errorMessage = "Unknown";
@@ -88,24 +118,44 @@ define([
 			this.audioEl.muted = !this.audioEl.muted;
 		},
 		handleModelChangeMessage: function(model, value, options) {
-			console.log("[Player] Previous Status: " + $("#player-status").text());
-			$("#player-status").text(this.audioEl.muted ? value + " (Muted)" : value);
-			console.log("[Player] Current Status: " + $("#player-status").text());
+			if (_.isObject(this.$statusCycleEl)) {
+				this.$statusCycleEl.cycle(0);
+			}
+			var $titleStatus = $("#player-title span.player-status", this.$el);
+			console.log("[Player] Previous Status: " + $titleStatus.text());
+			$titleStatus.text(this.audioEl.muted ? value + " (Muted)" : value);
+			console.log("[Player] Current Status: " + $titleStatus.text());
 		},
 		handleModelChangePaused: function(model, value, options) {
-			$("#player-button").html(value ? '<i class="icon-play icon-white"></i> Play' : '<i class="icon-pause icon-white"></i> Pause');
+			$("#player-button", this.$el).html(
+				value ?
+				'<i class="icon-play icon-white"></i> Play' :
+				'<i class="icon-pause icon-white"></i> Pause'
+			);
 		},
 		handleModelChangeMuted: function(model, value, options) {
-			$("#player-mute").attr("class", (value ? "icon-volume-off" : "icon-volume-up"));
+			$("#player-mute", this.$el).attr("class", (value ? "icon-volume-off" : "icon-volume-up"));
 			this.model.trigger("change:message", this.model, this.model.get("message"));
 		},
 		handleModelChangeVolume: function(model, value, options) {
-			$("#player-volume").val(value);
+			$("#player-volume", this.$el).val(value);
 		},
 		handleModelChangeDisabled: function(model, value, options) {
-			var result = value ? $("#player-button").attr("disabled", "disabled") : $("#player-button").removeAttr("disabled");
+			var result = value ?
+				$("#player-button", this.$el).attr("disabled", "disabled") :
+				$("#player-button", this.$el).removeAttr("disabled");
+		},
+		handleShowModelChange: function(showModel) {
+			if (_.isObject(this.$statusCycleEl)) {
+				this.$statusCycleEl.find("#player-show-title span.player-status").text(showModel.get("title"));
+				this.$statusCycleEl.find("#player-show-time span.player-status").text(showModel.formatTimeRange("hA"));
+				this.$statusCycleEl.find("#player-show-dj span.player-status").text(showModel.get("dj"));
+			}
 		},
 		beforeClose: function() {
+			if (_.isObject(this.$statusCycleEl)) {
+				this.$statusCycleEl.cycle("destroy");
+			}
 			this.playerFsm.unbindAudioElEvents();
 			delete this.playerFsm;
 		}

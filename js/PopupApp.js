@@ -53,7 +53,7 @@ define([
     this.addRegions({
       nav: NavRegionView,
       main: "#region-content",
-      player: "#region-player"
+      footer: "#region-footer"
     });
 
     // Marionette.Region does not have Marionette.View as prototype, and we can't pass options through so...
@@ -61,13 +61,9 @@ define([
       vent: this.vent,
       appConfig: this.appConfig
     });
-    
-  });
 
-  // Show Player
-  popupApp.addInitializer(function(options) {
-    var playerView = new PlayerView(options);
-    this.player.show(playerView);
+    this.footer.show(new PlayerView(options));
+    
   });
 
   popupApp.addInitializer(function(options) {

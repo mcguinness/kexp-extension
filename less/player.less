@@ -7,7 +7,7 @@
 }
 
 .player {
-  width: 212px;
+  width: 225px;
   .center-block();
   #gradient > .vertical-three-colors(@kexpOrange, @kexpOrange, 33%, darken(@kexpOrange, 8%));
   .clearfix;
@@ -25,7 +25,7 @@
   }
   .slider-volume {
     -webkit-appearance: none !important;
-    width: 100px;
+    width: 110px;
     height: 6px;
     // override bootstrap input default
     margin-bottom: 0;
@@ -43,12 +43,10 @@
     vertical-align: middle;
     cursor: pointer;
   }
-  .player-title {
-    clear: both;
-    display: inline-block;
-    float: right;
+  .container-player-status {
+    text-align: right;
     font-weight: bold;
-    .clearfix;
+    width: 100%;
   }
   .prefix-accent {
     color: @kexpDark;

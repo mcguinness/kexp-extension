@@ -11,6 +11,7 @@ require.config({
     "htmlencoder": "util/htmlencoder",
     "indexeddb": "libs/backbone-indexeddb",
     "jquery": "libs/jquery-1.7.2.min",
+    "jquery-cycle": "plugins/jquery.cycle.all",
     "jquery-kexp": "plugins/jquery-kexp",
     "jquery-ui": "plugins/jquery-ui-1.8.20.custom.min",
     "jquery.dataTables": "plugins/jquery.dataTables.min",
@@ -30,6 +31,7 @@ require.config({
   },
   shim: {
     "bootstrap": ["jquery"],
+    "jquery-cycle": ["jquery"],
     "jquery-kexp": ["jquery", "underscore"],
     "jquery-ui": ["jquery"],
     "jquery.dataTables": ["jquery"],

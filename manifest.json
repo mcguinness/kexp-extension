@@ -1,6 +1,6 @@
 {
   "name": "KEXP Streaming Player (Unsanctioned)",
-  "version": "1.5.0",
+  "version": "1.6.0",
   "description": "background kexp.org streaming audio player with now playing info and likes.",
   "background": {
     "page": "background.html"
