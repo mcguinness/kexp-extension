@@ -31,15 +31,18 @@ define([
       footer: "#region-nowplaying-footer"
     },
     initialize: function(options) {
-      
+      var layout = this;
+
       if (this.collection === undefined) {
         this.collection = new NowPlayingCollection();
       }
-      _.bindAll(this, "pollNowPlaying", "handleManualPageTimeout");
+      _.bindAll(this, "handleManualPageReset");
 
-      this.bindTo(this.collection, "add", this.handleNewSong, this);
-      this.bindTo(this.collection, "change", this.handleUpdatedSong, this);
-      this.bindTo(this.collection, "error", this.handleError, this);
+      this._bindCollection = _.once(function() {
+        layout.bindTo(layout.collection, "add", layout.handleNewSong, layout);
+        layout.bindTo(layout.collection, "change", layout.handleUpdatedSong, layout);
+        layout.bindTo(layout.collection, "error", layout.handleError, layout);
+      });
 
       this.bindTo(this.vent, "nowplaying:refresh:manual", this.handleManualRefresh, this);
       this.bindTo(this.vent, "nowplaying:page:prev", this.handlePagePrev, this);
@@ -48,6 +51,10 @@ define([
     },
     onShow: function() {
       var mostRecentModel = this.collection.last();
+
+      // Bind collection events here incase a fetch is in progress during initialize
+      this._bindCollection();
+
       this.showNowPlaying(mostRecentModel, ShowType.Reset);
       this.vent.trigger("nowplaying:cycle", mostRecentModel);
     },
@@ -112,7 +119,6 @@ define([
       var songView = new NowPlayingSongView({
         model: nowPlayingModel
       });
-
       return this.song.show(songView, "append");
     },
     showFooterView: function(nowPlayingModel) {
@@ -126,6 +132,7 @@ define([
       });
       
       var regionView = this.footer.show(footerView, "append");
+      // Footer is hidden on error (we want full region height)
       this.footer.$el.toggleClass("hide", false);
       return regionView;
     },
@@ -137,27 +144,10 @@ define([
       return this.meta.show(metaView, "append");
     },
     showErrorView: function(nowPlayingModel) {
+      // Footer is hidden on error (we want full region height)
       $(this.footer.el).toggleClass("hide", true);
       var errorView = new NowPlayingErrorView();
       return this.song.show(errorView, "append");
-    },
-    disablePoll: function() {
-      if (this.pollIntervalId !== undefined) {
-        clearInterval(this.pollIntervalId);
-        delete this.pollIntervalId;
-      }
-    },
-    enablePoll: function(intervalMs) {
-      var layout = this;
-      layout.disablePoll();
-      layout.pollIntervalId = setInterval(function() {
-        layout.vent.trigger("nowplaying:refresh:background", layout.collection);
-        layout.pollNowPlaying();
-      }, intervalMs);
-    },
-    pollNowPlaying: function(event) {
-      var collection = (event instanceof Backbone.Collection) ? event : this.collection;
-      collection.fetch({upsert: true});
     },
     hasManualPageEnabled: function() {
       return (!_.isUndefined(this._manualPageTimeoutId));
@@ -170,7 +160,7 @@ define([
     },
     enableManualPage: function() {
       this.disableManualPage();
-      this._manualPageTimeoutId = window.setTimeout(this.handleManualPageTimeout, 30 * 1000);
+      this._manualPageTimeoutId = window.setTimeout(this.handleManualPageReset, 30 * 1000);
     },
     handleError: function(collection, model) {
       console.debug("[Error NowPlaying] - Unable to upsert now playing to view collection");
@@ -199,10 +189,10 @@ define([
       }
     },
     handleManualRefresh: function() {
-      this.handleManualPageTimeout();
-      this.pollNowPlaying();
+      this.handleManualPageReset();
+      this.collection.fetch({upsert: true});
     },
-    handleManualPageTimeout: function() {
+    handleManualPageReset: function() {
       this.disableManualPage();
       var mostRecentNowPlaying = this.collection.last();
       if (this._currentNowPlaying !== mostRecentNowPlaying) {
@@ -214,6 +204,8 @@ define([
       if (songIndex >= 0) {
         this.showNowPlaying(this.collection.at(songIndex), ShowType.Page);
         this.enableManualPage();
+      } else {
+        this.handleManualPageReset();
       }
     },
     handlePageNext: function(model) {
@@ -229,7 +221,6 @@ define([
         this._currentLoader.eventListeners = {};
         delete this._currentLoader;
       }
-      this.disablePoll();
       this.disableManualPage();
     }
   });

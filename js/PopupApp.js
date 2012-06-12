@@ -69,13 +69,12 @@ define([
   popupApp.addInitializer(function(options) {
     var AppRouter = Marionette.AppRouter.extend({
       appRoutes: {
-        "likes": "showLikedSongs",
-        "*other": "showNowPlaying" //Default View
+        "likes": "handleLikesRoute",
+        "*other": "handleDefaultRoute"
       },
       controller: new KexpAppController(this)
     });
-
-    this.router = new AppRouter();
+    this.addRouter(new AppRouter());
     Backbone.history.start();
   });
 

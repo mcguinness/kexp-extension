@@ -22,11 +22,15 @@ define([
   // Add Services & Close to Application
   _.extend(Marionette.Application.prototype, {
     services: [],
+    routers: [],
     addService: function(service) {
       this.addInitializer(function(options) {
         this.services.push(service);
         service.start(options);
       });
+    },
+    addRouter: function(router) {
+      this.routers.push(router);
     },
     close: function() {
       _.each(_.values(this), function(region) {
@@ -39,6 +43,13 @@ define([
       _.each(this.services, function(service) {
         console.debug("Stopping service", service);
         service.stop();
+      });
+
+      _.each(this.routers, function(router) {
+        console.debug("Closing router", router);
+        if (_.isObject(router.controller) && _.isFunction(router.controller.close)) {
+          router.controller.close();
+        }
       });
 
       this.vent.unbindAll();
