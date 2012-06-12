@@ -59,6 +59,7 @@ define([
       });
       loader.on("reconciled", function(model) {
         console.log("[Loaded NowPlaying] %s", model.toDebugString());
+        layout.vent.trigger("nowplaying:load:success", model);
         loaderDfr.resolve(model);
       });
       loader.on("error", function(model, error) {
@@ -66,6 +67,7 @@ define([
           _.isObject(model) && _.isFunction(model.toDebugString) ?
             model.toDebugString() : "");
         layout.showErrorView();
+        layout.vent.trigger("nowplaying:load:error", model, error);
         loaderDfr.reject(model, error);
       });
       // Wait for fade out transitions

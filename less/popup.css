@@ -4073,18 +4073,19 @@ body {
   position: absolute;
   bottom: 79px;
   width: 100%;
+  z-index: 9999;
 }
 .notification-fixed-single {
   position: absolute;
   bottom: 88px;
   width: 100%;
+  z-index: 9999;
 }
 .toast-title {
   font-weight: bold;
 }
 .toast {
   width: 565px;
-  z-index: 9999;
   display: block;
   margin-left: auto;
   margin-right: auto;

@@ -73,7 +73,7 @@ define([
 				.cycle({
 					fx:"scrollLeft",
 					speed: 750,
-					timeout: 10000,
+					timeout: 13000,
 					fit: true,
 					width: "100%"
 				});

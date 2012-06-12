@@ -17,7 +17,8 @@ define(["jquery", "backbone-kexp", "underscore", "moment"], function($, Backbone
 
       var parsedModel = {
           id: resp.ArchiveID,
-          title: resp.ShowTitleFriendly,
+          //title: resp.ShowTitleFriendly,
+          title: resp.Title,
           subTitle: resp.Subtitle,
           dj: resp.ShowDJ
         };
