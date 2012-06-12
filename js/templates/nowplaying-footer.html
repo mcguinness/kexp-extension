@@ -12,8 +12,8 @@
       </button>
       <span id="button-refresh" class="btn-refresh pull-right"><i class="icon-refresh active"></i></span>
       <a href="chrome-extension://options.html" data-chrometab="active">
-        <span id="button-share" class="btn-share <%= (model.likeShareEnabled) ? 'active' : '' %> pull-right">
-          <i class="icon-share"></i>
+        <span id="button-share" class="btn-share pull-right">
+          <i class="icon-share <%= (model.likeShareEnabled) ? 'active' : '' %>"></i>
         </span>
       </a>
       <% if (_.isObject(model.pager) && (model.pager.canPagePrev || model.pager.canPageNext)) { %>

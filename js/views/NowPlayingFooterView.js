@@ -150,7 +150,7 @@ define([
       this.vent.trigger("nowplaying:lastfm:popover:toggle", this.model);
     },
     handleLastFmShareChange: function(model, value, options) {
-      $("#button-share", this.$el).toggleClass("active", model.hasSharingEnabled());
+      $("#button-share i", this.$el).toggleClass("active", model.hasSharingEnabled());
     },
     handlePagePrev: function() {
       this.vent.trigger("nowplaying:page:prev", this.model);
