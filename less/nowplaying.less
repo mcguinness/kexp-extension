@@ -72,7 +72,6 @@
 .song-footer {
   .clearfix;
   .badge {
-    float: left;
     margin-left: 5px;
     background-color: @linkColorHover;
     //padding-bottom: 1px;
@@ -84,26 +83,23 @@
     }
   }
   .btn-like {
-    float: left;
     height: 20px;
     #font > #family .sans-serif();
   }
-  .btn-spotify {
-    float: left;
-  }
-  .btn-lastfm {
-    float: left;
-  }
-  .btn-share {
-    float: right;
-    margin-right: 10px;
+  i {
+    vertical-align: middle;
     .opacity(50);
     &.active {
       .opacity(100);
     }
-    i {
-      vertical-align: middle;
-    }
+    cursor: pointer;
+  }
+  .container-song-pager {
+    display: inline-block;
+    margin-right: 10px;
+  }
+  .btn-share {
+    margin-right: 10px;
   }
   &.fade {
     .transition(opacity .75s ease);

@@ -13,8 +13,10 @@ define([
     template: ViewTemplate,
     className: "container-nowplaying-footer",
     initialize: function(options) {
+      options || (options = {});
       this.collection = this.model.collection;
       this.lastFmConfig = this.appConfig.getLastFm();
+      this.pager = options.pager || {canPagePrev: false, canPageNext:  false};
       
       this.bindTo(this.vent, "nowplaying:lastfm:popover:enabled", this.showLastFmButton, this);
       this.bindTo(this.vent, "nowplaying:refresh:background", this.handleBackgroundRefresh, this);
@@ -27,7 +29,9 @@ define([
     events: {
       "click #button-like": "handleLike",
       "click #button-lastfm": "handleLastFmPopoverToggle",
-      "click #button-refresh": "handleRefresh"
+      "click #button-refresh": "handleRefresh",
+      "click #button-page-prev.active": "handlePagePrev",
+      "click #button-page-next.active": "handlePageNext"
     },
     tooltips: {
       "#button-spotify" : "tooltip",
@@ -39,7 +43,8 @@ define([
         model: {
           id: this.model.id,
           likeCount: this.model.hasLikedSong() ? this.model.likedSong.get("likeCount") : 0,
-          likeShareEnabled: this.lastFmConfig.hasSharingEnabled()
+          likeShareEnabled: this.lastFmConfig.hasSharingEnabled(),
+          pager: this.pager
         }
       };
     },
@@ -142,10 +147,16 @@ define([
       this.vent.trigger("nowplaying:refresh:manual");
     },
     handleLastFmPopoverToggle: function() {
-      this.vent.trigger("nowplaying:lastfm:popover:toggle");
+      this.vent.trigger("nowplaying:lastfm:popover:toggle", this.model);
     },
     handleLastFmShareChange: function(model, value, options) {
       $("#button-share", this.$el).toggleClass("active", model.hasSharingEnabled());
+    },
+    handlePagePrev: function() {
+      this.vent.trigger("nowplaying:page:prev", this.model);
+    },
+    handlePageNext: function() {
+      this.vent.trigger("nowplaying:page:next", this.model);
     },
     beforeClose: function() {
       

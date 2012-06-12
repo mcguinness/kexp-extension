@@ -12,6 +12,16 @@ define([
   ], function($, _, Marionette, NowPlayingFsm, NowPlayingSongView, NowPlayingFooterView,
     LastFmMetaView, NowPlayingErrorView, NowPlayingCollection, LayoutTemplate) {
 
+  // Value is used as mask, so order matters
+  var ShowType = {
+    Reset: 0,
+    Page: 1,
+    Update: 2,
+    New: 3
+  };
+  Object.freeze(ShowType);
+
+
   var NowPlayingLayout = Marionette.Layout.extend({
 
     template: LayoutTemplate,
@@ -25,22 +35,40 @@ define([
       if (this.collection === undefined) {
         this.collection = new NowPlayingCollection();
       }
-
-      _.bindAll(this, "showNowPlaying", "disablePoll", "enablePoll", "pollNowPlaying");
+      _.bindAll(this, "pollNowPlaying", "handleManualPageTimeout");
 
       this.bindTo(this.collection, "add", this.handleNewSong, this);
       this.bindTo(this.collection, "change", this.handleUpdatedSong, this);
       this.bindTo(this.collection, "error", this.handleError, this);
 
-      this.bindTo(this.vent, "nowplaying:refresh:manual", this.pollNowPlaying, this);
+      this.bindTo(this.vent, "nowplaying:refresh:manual", this.handleManualRefresh, this);
+      this.bindTo(this.vent, "nowplaying:page:prev", this.handlePagePrev, this);
+      this.bindTo(this.vent, "nowplaying:page:next", this.handlePageNext, this);
+
     },
     onShow: function() {
-      this.showNowPlaying(this.collection.last());
+      var mostRecentModel = this.collection.last();
+      this.showNowPlaying(mostRecentModel, ShowType.Reset);
+      this.vent.trigger("nowplaying:cycle", mostRecentModel);
     },
-    showNowPlaying: function(nowPlayingModel) {
+    showNowPlaying: function(nowPlayingModel, showType) {
       if (this._currentLoader) {
         delete this._currentLoader;
       }
+
+      showType || (showType = ShowType.New);
+
+      // Skip New or Changed models if Manual page is activated and current page is not the model
+      if (showType > ShowType.Page && this.hasManualPageEnabled() && this._currentNowPlaying !== nowPlayingModel) {
+        return;
+      }
+
+      // Shortcut for Updates
+      if (showType === ShowType.Update && this._currentNowPlaying === nowPlayingModel) {
+        this.showSongView(nowPlayingModel);
+        return;
+      }
+
       var layout = this,
         loader = this._currentLoader = new NowPlayingFsm(nowPlayingModel),
         loaderDfr = $.Deferred().always(function() {
@@ -49,6 +77,8 @@ define([
         });
 
       loader.on("initialized", function(model) {
+        // Set Now Playing Current State
+        layout._currentNowPlaying = model;
         layout.showSongView(model);
       });
       loader.on("resolve:liked", function(model) {
@@ -59,7 +89,6 @@ define([
       });
       loader.on("reconciled", function(model) {
         console.log("[Loaded NowPlaying] %s", model.toDebugString());
-        layout.vent.trigger("nowplaying:load:success", model);
         loaderDfr.resolve(model);
       });
       loader.on("error", function(model, error) {
@@ -67,7 +96,6 @@ define([
           _.isObject(model) && _.isFunction(model.toDebugString) ?
             model.toDebugString() : "");
         layout.showErrorView();
-        layout.vent.trigger("nowplaying:load:error", model, error);
         loaderDfr.reject(model, error);
       });
       // Wait for fade out transitions
@@ -84,11 +112,17 @@ define([
       var songView = new NowPlayingSongView({
         model: nowPlayingModel
       });
+
       return this.song.show(songView, "append");
     },
     showFooterView: function(nowPlayingModel) {
+      var songIndex = this.collection.indexOf(nowPlayingModel);
       var footerView = new NowPlayingFooterView({
-        model: nowPlayingModel
+        model: nowPlayingModel,
+        pager: {
+          canPagePrev: songIndex > 0,
+          canPageNext:  songIndex < this.collection.size() - 1
+        }
       });
       
       var regionView = this.footer.show(footerView, "append");
@@ -125,13 +159,28 @@ define([
       var collection = (event instanceof Backbone.Collection) ? event : this.collection;
       collection.fetch({upsert: true});
     },
+    hasManualPageEnabled: function() {
+      return (!_.isUndefined(this._manualPageTimeoutId));
+    },
+    disableManualPage: function() {
+      if (!_.isUndefined(this._manualPageTimeoutId)) {
+        window.clearTimeout(this._manualPageTimeoutId);
+        delete this._manualPageTimeoutId;
+      }
+    },
+    enableManualPage: function() {
+      this.disableManualPage();
+      this._manualPageTimeoutId = window.setTimeout(this.handleManualPageTimeout, 30 * 1000);
+    },
     handleError: function(collection, model) {
       console.debug("[Error NowPlaying] - Unable to upsert now playing to view collection");
-      this.showNowPlaying(void 0);
+      this.showNowPlaying(void 0, ShowType.Reset);
+      this.vent.trigger("nowplaying:cycle");
     },
     handleNewSong: function(model, collection) {
       console.debug("[New NowPlaying] - Added new %s to view collection", model.toDebugString());
-      this.showNowPlaying(model);
+      this.showNowPlaying(model, ShowType.New);
+      this.vent.trigger("nowplaying:cycle", model);
     },
     handleUpdatedSong: function(model) {
       var key;
@@ -143,10 +192,35 @@ define([
       });
 
       if (identityChange) {
-        this.showNowPlaying(model);
+        this.showNowPlaying(model, ShowType.New);
       } else if (songChange) {
         console.debug("[Updated NowPlaying] - Attributes changed for %s", model.toDebugString());
-        this.showSongView(model);
+        this.showNowPlaying(model, ShowType.Update);
+      }
+    },
+    handleManualRefresh: function() {
+      this.handleManualPageTimeout();
+      this.pollNowPlaying();
+    },
+    handleManualPageTimeout: function() {
+      this.disableManualPage();
+      var mostRecentNowPlaying = this.collection.last();
+      if (this._currentNowPlaying !== mostRecentNowPlaying) {
+        this.showNowPlaying(mostRecentNowPlaying, ShowType.Reset);
+      }
+    },
+    handlePagePrev: function(model) {
+      var songIndex = this.collection.indexOf(model) - 1;
+      if (songIndex >= 0) {
+        this.showNowPlaying(this.collection.at(songIndex), ShowType.Page);
+        this.enableManualPage();
+      }
+    },
+    handlePageNext: function(model) {
+      var songIndex = this.collection.indexOf(model) + 1;
+      if (songIndex > 0 && songIndex <= this.collection.size() - 1) {
+        this.showNowPlaying(this.collection.at(songIndex), ShowType.Page);
+        this.enableManualPage();
       }
     },
     beforeClose: function() {
@@ -156,6 +230,7 @@ define([
         delete this._currentLoader;
       }
       this.disablePoll();
+      this.disableManualPage();
     }
   });
 

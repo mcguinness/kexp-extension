@@ -29,8 +29,7 @@ define([
           //   window.outerWidth, window.innerWidth, window.document.width, $(window.document.documentElement).width(),
           //   window.document.documentElement.clientWidth, window.document.body.clientWidth);
           
-          this.bindTo(this.vent, "nowplaying:load:success", this.updateWindowTitle, this);
-          this.bindTo(this.vent, "nowplaying:load:error", this.updateWindowTitle, this);
+          this.bindTo(this.vent, "nowplaying:cycle", this.updateWindowTitle, this);
 
           this.zoom = DetectZoom.zoom();
 
@@ -89,18 +88,15 @@ define([
       updateWindowTitle: function(nowPlayingModel) {
         var title;
         if (_.isObject(nowPlayingModel)) {
-          title = "KEXP Now Playing » ";
+          title = "KEXP Now Playing: ";
           var songTitle = nowPlayingModel.get("songTitle");
           if (!_.isEmpty(songTitle)) {
             songTitle = "“" + songTitle + "”";
           }
           var artist = nowPlayingModel.get("artist");
-          if (!_.isEmpty(artist)) {
-            artist = "“" + artist + "”";
-          }
 
           if (!_.isEmpty(songTitle) && !_.isEmpty(artist)) {
-            title += songTitle + " by " + artist;
+            title += artist + " - " + songTitle;
           } else {
             title += _.isEmpty(artist) ? songTitle : artist;
           }

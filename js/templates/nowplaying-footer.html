@@ -1,14 +1,26 @@
 <div id="song-footer" class="song-footer kexp-box-striped fade">
     <div class="wrap">
-      <button id="button-like" class="btn btn-mini btn-like btn-inverse btn-kexp-inverse" type="button" data-id="<%= model.id %>">
+      <button id="button-like" class="btn btn-mini btn-like btn-inverse btn-kexp-inverse pull-left" type="button" data-id="<%= model.id %>">
         <span class="prefix-accent">\\\</span> LIKE
       </button>
-      <span class="<%= (model.likeCount > 0) ? 'badge' : 'badge badge-zero' %>"><%= model.likeCount %></span>
-      <a id="button-spotify" class="btn btn-mini btn-spotify" data-chrometab="temp"><span class="spotify-logo"></span></a>
-      <button id="button-lastfm" class="btn btn-mini btn-lastfm hide" type="button"><span class="lastfm-logo"></span></button>
-      <span id="button-refresh" class="btn-refresh"><i class="icon-refresh"></i></span>
-      <a href="chrome-extension://options.html" data-chrometab="active">
-        <span id="button-share" class="btn-share <%= (model.likeShareEnabled) ? 'active' : '' %>"><i class="icon-share"></i></span>
+      <span class="<%= (model.likeCount > 0) ? 'badge' : 'badge badge-zero' %> pull-left "><%= model.likeCount %></span>
+      <a id="button-spotify" class="btn btn-mini btn-spotify pull-left" data-chrometab="temp">
+        <span class="spotify-logo"></span>
       </a>
+      <button id="button-lastfm" class="btn btn-mini btn-lastfm pull-left hide" type="button">
+        <span class="lastfm-logo"></span>
+      </button>
+      <span id="button-refresh" class="btn-refresh pull-right"><i class="icon-refresh active"></i></span>
+      <a href="chrome-extension://options.html" data-chrometab="active">
+        <span id="button-share" class="btn-share <%= (model.likeShareEnabled) ? 'active' : '' %> pull-right">
+          <i class="icon-share"></i>
+        </span>
+      </a>
+      <% if (_.isObject(model.pager) && (model.pager.canPagePrev || model.pager.canPageNext)) { %>
+      <div id="container-song-pager" class="container-song-pager pull-right">
+        <i id="button-page-prev" class="btn-page icon-step-backward <%= (model.pager.canPagePrev) ? 'active' : '' %>"></i>
+        <i id="button-page-next" class="btn-page icon-step-forward <%= (model.pager.canPageNext) ? 'active' : '' %>"></i>
+      </div>
+      <% } %>
     </div>
 </div>

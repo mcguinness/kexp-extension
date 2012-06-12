@@ -11,7 +11,7 @@ define([
     initialize: function(models, options) {
       _.bindAll(this, "delimit");
       
-      this.limit = (_.isObject(options) && options.limit) ? options.limit : 1;
+      this.limit = (_.isObject(options) && options.limit) ? options.limit : 10;
     },
     url: function() {
       return "http://www.kexp.org/s/s.aspx?x=3";

@@ -4324,7 +4324,6 @@ body {
   clear: both;
 }
 .song-footer .badge {
-  float: left;
   margin-left: 5px;
   background-color: #feac31;
 }
@@ -4335,28 +4334,25 @@ body {
   background-color: #333333;
 }
 .song-footer .btn-like {
-  float: left;
   height: 20px;
   font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
 }
-.song-footer .btn-spotify {
-  float: left;
-}
-.song-footer .btn-lastfm {
-  float: left;
-}
-.song-footer .btn-share {
-  float: right;
-  margin-right: 10px;
+.song-footer i {
+  vertical-align: middle;
   opacity: 0.5;
   filter: alpha(opacity=50);
+  cursor: pointer;
 }
-.song-footer .btn-share.active {
+.song-footer i.active {
   opacity: 1;
   filter: alpha(opacity=100);
 }
-.song-footer .btn-share i {
-  vertical-align: middle;
+.song-footer .container-song-pager {
+  display: inline-block;
+  margin-right: 10px;
+}
+.song-footer .btn-share {
+  margin-right: 10px;
 }
 .song-footer.fade {
   -webkit-transition: opacity 0.75s ease;
