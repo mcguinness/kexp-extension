@@ -33,6 +33,10 @@ define([
       this.routers.push(router);
     },
     close: function() {
+      
+      this.vent.trigger("application:before:close");
+      if (_.isFunction(this.beforeClose)) { this.beforeClose(); }
+
       _.each(_.values(this), function(region) {
         if (region instanceof Marionette.Region && _.isFunction(region.close)) {
           console.debug("Closing region {%s}", region.el, region);
@@ -53,6 +57,10 @@ define([
       });
 
       this.vent.unbindAll();
+
+      if (_.isFunction(this.onClose)) { this.onClose(); }
+      this.trigger("close");
+
       this.unbind();
     }
   });
