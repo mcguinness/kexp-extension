@@ -105,7 +105,7 @@ define([
 				.done(function(model) {
 					nextPollSeconds = moment(model.get("timeEnd")).diff(moment(), "seconds");
 					nextPollSeconds += nextPollGraceSeconds;
-					if (nextPollSeconds <= 0) {
+					if (nextPollSeconds <= nextPollGraceSeconds) {
 						nextPollSeconds = nextPollGraceSeconds;
 					}
 					view.enablePollFetchShow(nextPollSeconds);
@@ -180,6 +180,7 @@ define([
 				'<i class="icon-play icon-white"></i> Play' :
 				'<i class="icon-pause icon-white"></i> Pause'
 			);
+			this.vent.trigger("livestream:playing", value, model);
 		},
 		handleModelChangeMuted: function(model, value, options) {
 			$("#player-mute", this.$el).attr("class", (value ? "icon-volume-off" : "icon-volume-up"));
