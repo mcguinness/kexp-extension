@@ -17,11 +17,13 @@ define(["jquery", "backbone-kexp", "underscore", "moment"], function($, Backbone
 
       var parsedModel = {
           id: resp.ArchiveID,
-          //title: resp.ShowTitleFriendly,
-          title: resp.Title,
+          // Feed is not consistent, sometimes show title is the Title field, othertimes ShowTitleFriendly
+          title: (resp.ShowTitleFriendly === "Variety Mix" && resp.Title !== "Variety Mix") ?
+            resp.Title : resp.ShowTitleFriendly,
           subTitle: resp.Subtitle,
           dj: resp.ShowDJ
         };
+
       var utcHourNow = moment().utc().minutes(0).seconds(0).milliseconds(0),
         currentUtcHour = utcHourNow.hours(),
         showStartUtcHour,
