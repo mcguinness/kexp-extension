@@ -2,7 +2,7 @@ define([
   "jquery",
   "backbone-kexp",
   "underscore",
-  "indexeddb",
+  "backbone-indexeddb",
   "databases/LikedSongDatabase",
   "models/LikedSongModel"
   ], function($, Backbone, _, IndexedDBSync, LikedSongDatabase, LikedSongModel) {

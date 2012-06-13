@@ -2,12 +2,12 @@ require.config({
   paths: {
     "backbone": "libs/backbone-min",
     "backbone-kexp": "plugins/backbone-kexp",
+    "backbone-indexeddb": "libs/backbone-indexeddb",
     "backbone-localstorage": "libs/backbone-localstorage",
     "backbone-replete": "plugins/backbone-replete",
     "bootstrap": "plugins/bootstrap.min",
     "ga": "https://ssl.google-analytics.com/ga",
     "gaq": "util/google-analytics",
-    "indexeddb": "libs/backbone-indexeddb",
     "jquery": "libs/jquery-1.7.2.min",
     "jquery-kexp": "plugins/jquery-kexp",
     "jquery-ui": "plugins/jquery-ui-1.8.20.custom.min",
