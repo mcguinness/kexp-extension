@@ -99,6 +99,7 @@ define([
         loaderDfr.resolve(model);
       });
       loader.on("error", function(model, error) {
+        layout._currentNowPlaying = null;
         layout.vent.trigger("analytics:trackevent", "NowPlaying", "Error",
           _.isObject(model) && _.isFunction(model.toDebugString) ?
             model.toDebugString() : "");
@@ -146,7 +147,11 @@ define([
     showErrorView: function(nowPlayingModel) {
       // Footer is hidden on error (we want full region height)
       $(this.footer.el).toggleClass("hide", true);
-      var errorView = new NowPlayingErrorView();
+      var errorView = new NowPlayingErrorView({
+        model: new Backbone.Model({
+          canPagePrev: this.collection.size() > 0
+        })
+      });
       return this.song.show(errorView, "append");
     },
     hasManualPageEnabled: function() {
@@ -189,7 +194,9 @@ define([
       }
     },
     handleManualRefresh: function() {
-      this.handleManualPageReset();
+      if (this.hasManualPageEnabled()) {
+        this.handleManualPageReset();
+      }
       this.collection.fetch({upsert: true});
     },
     handleManualPageReset: function() {

@@ -10,7 +10,13 @@ define([
     template: ViewTemplate,
     className: "kexp-error kexp-box-striped",
     events: {
-      "click #button-refresh": "handleRefresh"
+      "click #button-refresh": "handleRefresh",
+      "click #button-page-prev": "handlePagePrev"
+    },
+    serializeData: function() {
+      return {
+        model: this.model.toJSON()
+      };
     },
     onRender: function() {
         this.$el.hide();
@@ -29,6 +35,9 @@ define([
         });
       }
       this.vent.trigger("nowplaying:refresh:manual");
+    },
+    handlePagePrev: function() {
+      this.vent.trigger("nowplaying:page:prev");
     }
   });
 
