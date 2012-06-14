@@ -21,7 +21,7 @@ define([
         return;
       }
       var overLimitCount = (this.length + models.length) - this.limit;
-      var removeModel, lastFmModels, lastFmModel;
+      var removeModel;
       if (overLimitCount > 0) {
         while (overLimitCount--) {
           removeModel = this.at(0);

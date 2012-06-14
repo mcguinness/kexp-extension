@@ -2,13 +2,14 @@ define([
 	"jquery",
 	"underscore",
 	"marionette-kexp",
+	"backbone-modelbinder",
 	"models/PlayerModel",
 	"models/ShowModel",
 	"views/PlayerFsm",
 	"text!templates/player.html",
 	"moment", // Global
 	"jquery-cycle" // jQuery Plugin
-	], function($, _, Marionette, PlayerModel, ShowModel, PlayerFsm, ViewTemplate) {
+	], function($, _, Marionette, ModelBinder, PlayerModel, ShowModel, PlayerFsm, ViewTemplate) {
 	
 	var PlayerView = Marionette.ItemView.extend({
 		template: ViewTemplate,
@@ -17,8 +18,10 @@ define([
 		
 		initialize: function(options) {
 			
-			_.bindAll(this, "handlePlayerError", "disablePollFetchShow", "enablePollFetchShow", "pollFetchShow");
+			_.bindAll(this);
 			
+			this._playerBinder = new Backbone.ModelBinder();
+			this.showModel = options.showModel || new ShowModel();
 			this.audioEl = options.audioElement;
 			
 			if (!_.isObject(this.model)) {
@@ -27,17 +30,13 @@ define([
 					muted: this.audioEl.muted
 				});
 			}
-			this.showModel = options.showModel || new ShowModel();
-
-			this.playerFsm = new PlayerFsm(options.audioElement, this.model);
-			this.playerFsm.on("error", this.handlePlayerError);
+			this._playerFsm = new PlayerFsm(options.audioElement, this.model);
+			this._playerFsm.on("error", this.handlePlayerError);
 
 			// Bind Model Event Handlers
 			this.bindTo(this.model, "change:message", this.handleModelChangeMessage);
 			this.bindTo(this.model, "change:paused", this.handleModelChangePaused);
 			this.bindTo(this.model, "change:muted", this.handleModelChangeMuted);
-			this.bindTo(this.model, "change:volume", this.handleModelChangeVolume);
-			this.bindTo(this.model, "change:disabled", this.handleModelChangeDisabled);
 			this.bindTo(this.showModel, "change", this.handleShowModelChange);
 		},
 		events: {
@@ -47,8 +46,47 @@ define([
 			"click span.player-status": "handleStatusClick"
 		},
 		beforeRender: function() {
-			// Init State & Model
-			this.playerFsm.handle("initialize");
+			this._playerFsm.handle("initialize");
+		},
+		onRender: function() {
+			var view = this,
+				convertStatusMessage = function(direction, value) {
+					return view.audioEl.muted ? value + " (Muted)" : value;
+				},
+				convertPause = function(direction, value, attribute, model) {
+					return value ?
+						'<i class="icon-play icon-white"></i> Play' :
+						'<i class="icon-pause icon-white"></i> Pause';
+				},
+				convertMuted = function(direction, value) {
+					return value ? "icon-volume-off" : "icon-volume-up";
+				},
+				bindings = {
+					message: {
+						selector: "#player-state span.player-status",
+						converter: convertStatusMessage
+					},
+					paused: {
+						selector: "#player-button",
+						elAttribute: "html",
+						converter: convertPause
+					},
+					disabled: {
+						selector: "#player-button",
+						elAttribute: "disabled"
+					},
+					volume: {
+						selector: "#player-volume",
+						elAttribute: "value"
+					},
+					muted: {
+						selector: "#player-mute",
+						elAttribute: "class",
+						converter: convertMuted
+					}
+				};
+
+			this._playerBinder.bind(this.model, this.$el, bindings);
 		},
 		makeStatusEl: function(id, className, message) {
 			return this.make(
@@ -68,7 +106,7 @@ define([
 			if (_.isObject(this.$statusCycleEl)) {
 				this.$statusCycleEl.cycle("destroy");
 			}
-			this.$statusCycleEl = $("div.container-player-status", this.$el)
+			this.$statusCycleEl = $("#container-player-status", this.$el)
 				.append(titleEl, timeEl, djEl)
 				.cycle({
 					fx:"scrollLeft",
@@ -98,12 +136,12 @@ define([
 		pollFetchShow: function() {
 			var view = this,
 				// Add random seconds (up to 1 minute) to poll so not every client hits server at the same time
-				nextPollGraceSeconds = (2 * 60) + Math.round(((Math.random() * 60) + 1)),
-				nextPollSeconds;
+				nextPollGraceSeconds = (2 * 60) + Math.round(((Math.random() * 60) + 1));
+			
 			console.log("Polling kexp show info...");
 			$.when(this.showModel.fetch())
 				.done(function(model) {
-					nextPollSeconds = moment(model.get("timeEnd")).diff(moment(), "seconds");
+					var nextPollSeconds = moment(model.get("timeEnd")).diff(moment(), "seconds");
 					nextPollSeconds += nextPollGraceSeconds;
 					if (nextPollSeconds <= nextPollGraceSeconds) {
 						nextPollSeconds = nextPollGraceSeconds;
@@ -117,7 +155,6 @@ define([
 					console.warn("Error [%s] fetching kexp show", error);
 					view.enablePollFetchShow(nextPollGraceSeconds);
 				});
-
 		},
 		restartShowStatusCycle: function() {
 			if (_.isObject(this.$statusCycleEl)) {
@@ -147,8 +184,8 @@ define([
 			}
 		},
 		handleInputTogglePlay: function() {
-			this.playerFsm.handle("toggle");
-			this.vent.trigger("analytics:trackevent", "LiveStream", "PlayToggle", this.playerFsm.state);
+			this._playerFsm.handle("toggle");
+			this.vent.trigger("analytics:trackevent", "LiveStream", "PlayToggle", this._playerFsm.state);
 		},
 		handleInputChangeVolume: function() {
 			var currentVolume = $("#player-volume").val();
@@ -169,30 +206,17 @@ define([
 		},
 		handleModelChangeMessage: function(model, value, options) {
 			this.restartShowStatusCycle();
-			var $titleStatus = $("#player-title span.player-status", this.$el);
-			console.log("[Player] Previous Status: " + $titleStatus.text());
-			$titleStatus.text(this.audioEl.muted ? value + " (Muted)" : value);
-			console.log("[Player] Current Status: " + $titleStatus.text());
 		},
 		handleModelChangePaused: function(model, value, options) {
-			$("#player-button", this.$el).html(
-				value ?
-				'<i class="icon-play icon-white"></i> Play' :
-				'<i class="icon-pause icon-white"></i> Pause'
-			);
 			this.vent.trigger("livestream:playing", value, model);
 		},
 		handleModelChangeMuted: function(model, value, options) {
-			$("#player-mute", this.$el).attr("class", (value ? "icon-volume-off" : "icon-volume-up"));
-			this.model.trigger("change:message", this.model, this.model.get("message"));
-		},
-		handleModelChangeVolume: function(model, value, options) {
-			$("#player-volume", this.$el).val(value);
-		},
-		handleModelChangeDisabled: function(model, value, options) {
-			var result = value ?
-				$("#player-button", this.$el).attr("disabled", "disabled") :
-				$("#player-button", this.$el).removeAttr("disabled");
+			// Update Message for Pause Status
+			var messageBinding = this._playerBinder._attributeBindings["message"];
+			if (messageBinding) {
+				this._playerBinder._copyModelToView(messageBinding);
+			}
+			this.restartShowStatusCycle();
 		},
 		handleShowModelChange: function(showModel) {
 			if (_.isObject(this.$statusCycleEl)) {
@@ -202,12 +226,13 @@ define([
 			}
 		},
 		beforeClose: function() {
+			this._playerBinder.unbind();
 			this.disablePollFetchShow();
 			if (_.isObject(this.$statusCycleEl)) {
 				this.$statusCycleEl.cycle("destroy");
 			}
-			this.playerFsm.unbindAudioElEvents();
-			delete this.playerFsm;
+			this._playerFsm.unbindAudioElEvents();
+			delete this._playerFsm;
 		}
 	});
 

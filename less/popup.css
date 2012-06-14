@@ -4133,7 +4133,7 @@ body {
   padding: 10px 0px;
 }
 .player {
-  width: 225px;
+  width: 215px;
   display: block;
   margin-left: auto;
   margin-right: auto;
@@ -4146,21 +4146,11 @@ body {
   background-image: linear-gradient(#feac31, #feac31 33%, #fe9c08);
   background-repeat: no-repeat;
   filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#feac31', endColorstr='#fe9c08', GradientType=0);
-  *zoom: 1;
 }
-.player:before,
-.player:after {
-  display: table;
-  content: "";
-}
-.player:after {
-  clear: both;
-}
-.player input,
-.player button {
+.player .btn-play {
   width: 70px;
 }
-.player .wrap {
+.player .container-player-inner {
   border: 4px solid rgba(0, 0, 0, 0.05);
   -webkit-border-radius: 4px;
   -moz-border-radius: 4px;
@@ -4168,20 +4158,20 @@ body {
   -webkit-box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.05);
   -moz-box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.05);
   box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.05);
-  padding: 5px;
+  padding: 14px 5px 5px 5px;
   *zoom: 1;
 }
-.player .wrap:before,
-.player .wrap:after {
+.player .container-player-inner:before,
+.player .container-player-inner:after {
   display: table;
   content: "";
 }
-.player .wrap:after {
+.player .container-player-inner:after {
   clear: both;
 }
 .player .slider-volume {
   -webkit-appearance: none !important;
-  width: 112px;
+  width: 103px;
   height: 6px;
   margin-bottom: 0;
   padding: 0 0 0 0;
