@@ -24,7 +24,7 @@ define([
       return deferredRegionClose.resolve().promise();
     }
 
-    $.when((view.close) ? view.close() : true)
+    $.when(_.isFunction(view.close) ? view.close() : true)
       .then(function() {
         that.trigger("view:closed", view);
         delete that.currentView;
@@ -53,13 +53,13 @@ define([
     var that = this;
     var deferredClose = $.Deferred();
 
-    $.when((this.beforeClose) ? this.beforeClose() : true)
+    $.when(_.isFunction(this.beforeClose) ? this.beforeClose() : true)
       .then(function() {
-        that.tooltipClose();
+        if (_.isFunction(that.tooltipClose)) { that.tooltipClose(); }
         that.unbindAll();
         that.remove();
 
-        $.when((that.onClose) ? that.onClose() : true)
+        $.when(_.isFunction(that.onClose) ? that.onClose() : true)
           .then(function() {
             that.trigger('close');
             that.unbind();
