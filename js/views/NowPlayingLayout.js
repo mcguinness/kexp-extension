@@ -31,11 +31,15 @@ define([
       footer: "#region-nowplaying-footer"
     },
     initialize: function(options) {
+      options || (options = {});
       var layout = this;
 
       if (this.collection === undefined) {
         this.collection = new NowPlayingCollection();
       }
+      this.popoverEl = options.popoverEl || "#navbar-top";
+      this._currentNowPlaying = null;
+      
       _.bindAll(this, "handleManualPageReset");
 
       this._bindCollection = _.once(function() {
@@ -133,6 +137,7 @@ define([
       });
       
       var regionView = this.footer.show(footerView, "append");
+      
       // Footer is hidden on error (we want full region height)
       this.footer.$el.toggleClass("hide", false);
       return regionView;
@@ -140,13 +145,14 @@ define([
     showMetaView: function(nowPlayingModel) {
       var metaView = new LastFmMetaView({
         model: nowPlayingModel,
-        popoverEl: "#navbar-top"
+        popoverEl: this.popoverEl
       });
       return this.meta.show(metaView, "append");
     },
     showErrorView: function(nowPlayingModel) {
       // Footer is hidden on error (we want full region height)
       $(this.footer.el).toggleClass("hide", true);
+      
       var errorView = new NowPlayingErrorView({
         model: new Backbone.Model({
           canPagePrev: this.collection.size() > 0
@@ -169,7 +175,7 @@ define([
     },
     handleError: function(collection, model) {
       console.debug("[Error NowPlaying] - Unable to upsert now playing to view collection");
-      this.showNowPlaying(void 0, ShowType.Reset);
+      this.showNowPlaying(null, ShowType.Reset);
       this.vent.trigger("nowplaying:cycle");
     },
     handleNewSong: function(model, collection) {
