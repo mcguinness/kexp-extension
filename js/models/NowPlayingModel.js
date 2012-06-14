@@ -35,7 +35,8 @@ define([
           timePlayed: resp.TimePlayed,
           timeLastUpdate: resp.LastUpdate
         },
-        key, value, self = this, nowUtc = moment.utc();
+        self = this,
+        nowUtc = moment.utc();
 
 
       if (parsedModel.timePlayed && !_.isEmpty(parsedModel.timePlayed)) {
@@ -55,7 +56,7 @@ define([
       
       // Feed sometimes encodes some values...its hard to determine when
       _.each(["songTitle", "artist", "album", "albumLabel", "comments"], function(key) {
-        value = parsedModel[key];
+        var value = parsedModel[key];
         if (!_.isEmpty(value) && _.isString(value)) {
           parsedModel[key] = self.htmlEncoder.htmlDecode(value);
           if (!_.isEqual(parsedModel[key], value)) {

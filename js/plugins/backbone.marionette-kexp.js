@@ -94,24 +94,18 @@ define([
     // Exit early if no tooltip hash is defined
     if (!_.isObject(this.tooltips)) { return; }
 
-    var value,
-      selector,
-      splitParts,
-      tooltipKey,
-      waitForHideOnClose = false,
-      yieldOnClose = false,
-      $tooltips,
-      $tooltip,
-      index,
-      data,
-      tooltip,
-      tooltipDfr,
-      tooltipDfrs = [],
-      closeDfr = $.Deferred(),
-      self = this;
-    
+    var tooltipDfrs = [],
+        closeDfr = $.Deferred(),
+        self = this;
+
     _.each(self.tooltips, function(value, selector) {
       
+      var splitParts,
+        tooltipKey,
+        waitForHideOnClose = false,
+        yieldOnClose = false,
+        $tooltips;
+        
       // Validate & Parse Hash Value, continue to next element is not valid
       if (_.isEmpty(value)) { return; }
       splitParts = value.split(tooltipSplitter);
@@ -134,9 +128,12 @@ define([
       $tooltips = (selector === "this") ? self.$el : self.$el.find(selector);
       
       $tooltips.each(function(index) {
-        data = $(this).data() || {};
-        tooltip = data[tooltipKey];
         
+        var data = $(this).data() || {},
+          tooltip = data[tooltipKey],
+          $tooltip,
+          tooltipDfr;
+
         if (_.isObject(tooltip)) {
           $tooltip = tooltip.$tip;
 

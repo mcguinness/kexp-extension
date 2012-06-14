@@ -115,7 +115,7 @@ define([
     setLastFmAttributes: function(lastFmCollection, options) {
       if (lastFmCollection instanceof Backbone.Collection) {
 
-        var lastfmModel, track, attributes = {}, self = this;
+        var attributes = {}, self = this;
 
         _.each(lastFmCollection.models, function(lastfmModel) {
           if (lastfmModel.isArtist()) {
@@ -123,6 +123,7 @@ define([
             attributes.artistLastFmUrl = lastfmModel.get("url") || "";
           }
           else if (lastfmModel.isAlbum()) {
+            var track;
             attributes.albumMbid = lastfmModel.get("mbid") || "";
             attributes.albumLastFmUrl = lastfmModel.get("url") || "";
             track = lastfmModel.getTrack(self.get("songTitle"), self.get("artist") , self.get("album"));

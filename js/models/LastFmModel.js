@@ -7,7 +7,6 @@ define([
   var LastFmModel = Backbone.Model.extend({
 
     parseEntity: function(entity) {
-      var image, track, mapped;
       var result = {
         mbid: entity.mbid || "",
         url: entity.url || "",
@@ -32,7 +31,7 @@ define([
       if (entity.tracks && entity.tracks.track) {
         result.tracks = _.chain(_.isArray(entity.tracks.track) ? entity.tracks.track : [entity.tracks.track])
           .map(function(track) {
-            mapped = _.pick(track, "artist", "mbid", "name", "url", "downloadurl");
+            var mapped = _.pick(track, "artist", "mbid", "name", "url", "downloadurl");
             if (track["@attr"])  mapped.rank = track["@attr"].rank;
             return mapped;
           })
@@ -148,8 +147,7 @@ define([
       if (_.isEmpty(trackName) || _.isEmpty(artistName) || _.isEmpty(albumName)) { return void 0; }
       
       var tracks = this.get("tracks"),
-        modelName = this.get("name") || "",
-        track;
+        modelName = this.get("name") || "";
 
       if (tracks && this.isAlbum() && modelName.toLowerCase() === albumName.toLowerCase()) {
         return _.find(tracks, function(track) {

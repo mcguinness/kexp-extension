@@ -10,11 +10,12 @@ define([
     tagName: "div",
     className: "container-nowplaying-meta",
     initialize: function(options) {
+      var err;
       _.bindAll(this, "render", "beforeClose");
 
       this.popoverEl = options.popoverEl;
       if (!this.popoverEl) {
-        var err = new Error("A popover 'el' must be specified");
+        err = new Error("A popover 'el' must be specified");
         err.name = "NoElError";
         throw err;
       }

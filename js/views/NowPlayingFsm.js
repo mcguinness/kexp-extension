@@ -32,8 +32,7 @@ define([
               songTitle = nowPlayingModel.get("songTitle"),
               artistName = nowPlayingModel.get("artist"),
               albumName = nowPlayingModel.get("album"),
-              songCollection = new LikedSongCollection(),
-              likedSong;
+              songCollection = new LikedSongCollection();
 
             this.fireEvent("initialized", nowPlayingModel);
 
@@ -43,7 +42,7 @@ define([
             } else {
               songCollection.fetchSong(songTitle, artistName, albumName, {
                 success: function(collection, resp) {
-                  likedSong = collection.first();
+                  var likedSong = collection.first();
                   if (likedSong) {
                     console.debug("Resolved %s for %s", likedSong.toDebugString(), nowPlayingModel.toDebugString());
                     nowPlayingModel.likedSong = likedSong;
@@ -68,17 +67,17 @@ define([
               albumName = nowPlayingModel.get("album"),
               metaCollection = nowPlayingModel.lastFmMeta,
               albumPromise = metaCollection.getOrFetchAlbum(artistName, albumName),
-              artistPromise = metaCollection.getOrFetchArtist(artistName),
-              cancel;
+              artistPromise = metaCollection.getOrFetchArtist(artistName);
 
             albumPromise.pipe(
               function(model, resp) {
                 return artistPromise;
               },
               function(model, error, options) {
+                var cancelDfr;
                 if (error && error.error === 6 && error.message === "Artist not found") {
-                  cancel = $.Deferred().reject(model, error);
-                  return cancel.promise();
+                  cancelDfr = $.Deferred().reject(model, error);
+                  return cancelDfr.promise();
                 }
                 return artistPromise;
               })

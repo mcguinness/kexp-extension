@@ -173,7 +173,7 @@ define([
       this.vent.trigger("nowplaying:cycle", model);
     },
     handleUpdatedSong: function(model) {
-      var key;
+
       var identityChange = _.any(Object.keys(model.changed), function(key) {
         return model.frozenAttributeKeys.indexOf(key) !== -1;
       });
