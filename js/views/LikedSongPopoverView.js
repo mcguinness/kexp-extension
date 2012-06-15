@@ -28,8 +28,11 @@ define([
       json.isLikeShareEnabled = this.lastFmConfig.isLikeShareEnabled();
       json.isLikeScrobbleEnabled = this.lastFmConfig.isLikeScrobbleEnabled();
       json.hasLastFmLoveShare = this.model.hasLastFmShareStatus(LikedSongModel.LastFmShareStatus.TrackLove);
+      json.artistKexpUrl = "http://kexp.org/search/search.aspx?q=" + encodeURI(json.artist);
       json.artistSpotifyUrl = "spotify:search:" + encodeURI('artist:"' + json.artist + '"');
+      json.albumKexpUrl = "http://kexp.org/search/search.aspx?q=" + encodeURI(json.album);
       json.albumSpotifyUrl = "spotify:search:" + encodeURI('artist:"' + json.artist + '" album:"' + json.album + '"');
+      json.trackKexpUrl = "http://kexp.org/search/search.aspx?q=" + encodeURI(json.songTitle);
       json.trackSpotifyUrl = "spotify:search:" + encodeURI('artist:"' + json.artist + '" track:"' + json.songTitle + '"');
 
       return { model: json};

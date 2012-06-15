@@ -8,6 +8,10 @@
           <td>
             <div class="pull-left"><%= model.songTitle %></div>
             <div class="info-icon-group pull-right">
+              <% if (!_.isEmpty(model.trackKexpUrl)) { %>
+                <a class="btn-kexp-favicon" href="<%= model.trackKexpUrl %>" 
+                  rel="tooltip" title="Search KEXP for Track" data-chrometab="active"></a>
+              <% } %>
               <% if (!_.isEmpty(model.trackLastFmUrl)) { %>
                 <a class="btn-lastfm-favicon" href="<%= model.trackLastFmUrl %>" 
                   rel="tooltip" title="Last.fm Track Page" data-chrometab="active"></a>
@@ -32,6 +36,10 @@
           <td>
             <div class="pull-left"><%= model.artist %></div>
             <div class="info-icon-group pull-right">
+              <% if (!_.isEmpty(model.artistKexpUrl)) { %>
+                <a class="btn-kexp-favicon" href="<%= model.artistKexpUrl %>" 
+                  rel="tooltip" title="Search KEXP for Artist" data-chrometab="active"></a>
+              <% } %>
               <% if (!_.isEmpty(model.artistLastFmUrl)) { %>
                 <a class="btn-lastfm-favicon" href="<%= model.artistLastFmUrl %>" 
                   rel="tooltip" title="Last.fm Artist Page" data-chrometab="active"></a>
@@ -50,6 +58,10 @@
           <td>
             <div class="pull-left"><%= model.album %></div>
             <div class="info-icon-group pull-right">
+              <% if (!_.isEmpty(model.albumKexpUrl)) { %>
+                <a class="btn-kexp-favicon" href="<%= model.albumKexpUrl %>" 
+                  rel="tooltip" title="Search KEXP for Album" data-chrometab="active"></a>
+              <% } %>
               <% if (!_.isEmpty(model.albumLastFmUrl)) { %>
                 <a class="btn-lastfm-favicon" href="<%= model.albumLastFmUrl %>" 
                   rel="tooltip" title="Last.fm Album Page" data-chrometab="active"></a>
