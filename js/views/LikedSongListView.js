@@ -29,7 +29,8 @@ define([
     },
     events: {
       "click #table-liked i.icon-remove:hover": "removeLike",
-      "click #table-liked i.icon-info-sign:hover": "showInfoPopover"
+      "click #table-liked i.icon-info-sign:hover": "showInfoPopover",
+      "dblclick #table-liked tbody tr": "showInfoPopover"
     },
     getTemplateSelector: function() {
       return (this.collection.length > 0) ? this.template : this.emptyTemplate;
@@ -95,9 +96,13 @@ define([
       };
     },
     showInfoPopover: function(event) {
-      
-      var songId = $(event.currentTarget).parentsUntil("tbody", "[data-id]").attr("data-id"),
-        view = this, closeDfr, model;
+      var $currentTarget = $(event.currentTarget),
+        songId = $currentTarget.is("tr[data-id]") ?
+          $currentTarget.attr("data-id") :
+          $currentTarget.parentsUntil("tbody", "[data-id]").attr("data-id"),
+        view = this,
+        closeDfr,
+        model;
 
       if (_.isEmpty(songId)) {
         console.error("Unable to find the id in the data-id attribute for the clicked row. (Possible Template/Model Error)", event);
