@@ -43,7 +43,7 @@ define([
 			"click #player-button": "handleInputTogglePlay",
 			"change #player-volume": "handleInputChangeVolume",
 			"click #player-mute": "handleInputToggleMute",
-			"click span.player-status": "handleStatusClick"
+			"click div.player-status": "handleStatusClick"
 		},
 		beforeRender: function() {
 			this._playerFsm.handle("initialize");
@@ -63,7 +63,7 @@ define([
 				},
 				bindings = {
 					message: {
-						selector: "#player-state span.player-status",
+						selector: "#player-status-state span.player-status-message",
 						converter: convertStatusMessage
 					},
 					paused: {
@@ -88,20 +88,20 @@ define([
 
 			this._playerBinder.bind(this.model, this.$el, bindings);
 		},
-		makeStatusEl: function(id, className, message) {
+		makeStatusEl: function(id, message) {
 			return this.make(
 				"div",
 				{
 					"id": id,
-					"class": className
+					"class": "player-status"
 				},
-				'<span class="prefix-accent">\\\\\\</span> <span class="player-status">'+message+'</span>'
+				'<span class="prefix-accent">\\\\\\</span> <span class="player-status-message">'+message+'</span>'
 			);
 		},
 		renderShowStatus: function(showModel) {
-			var titleEl = this.makeStatusEl("player-show-title", "show-title", showModel.get("title"));
-			var timeEl = this.makeStatusEl("player-show-time", "show-time", showModel.formatTimeRange("hA"));
-			var djEl = this.makeStatusEl("player-show-dj", "show-dj", showModel.get("dj"));
+			var titleEl = this.makeStatusEl("player-show-title", showModel.get("title"));
+			var timeEl = this.makeStatusEl("player-show-time", showModel.formatTimeRange("hA"));
+			var djEl = this.makeStatusEl("player-show-dj", showModel.get("dj"));
 
 			if (_.isObject(this.$statusCycleEl)) {
 				this.$statusCycleEl.cycle("destroy");
@@ -111,9 +111,10 @@ define([
 				.cycle({
 					fx:"scrollLeft",
 					speed: 750,
-					timeout: 18000,
+					timeout: 16000,
 					fit: true,
-					width: "100%"
+					width: "100%",
+					startingSlide: 1
 				});
 		},
 		onShow: function() {
@@ -220,9 +221,9 @@ define([
 		},
 		handleShowModelChange: function(showModel) {
 			if (_.isObject(this.$statusCycleEl)) {
-				this.$statusCycleEl.find("#player-show-title span.player-status").text(showModel.get("title"));
-				this.$statusCycleEl.find("#player-show-time span.player-status").text(showModel.formatTimeRange("hA"));
-				this.$statusCycleEl.find("#player-show-dj span.player-status").text(showModel.get("dj"));
+				this.$statusCycleEl.find("#player-show-title span.player-status-message").text(showModel.get("title"));
+				this.$statusCycleEl.find("#player-show-time span.player-status-message").text(showModel.formatTimeRange("hA"));
+				this.$statusCycleEl.find("#player-show-dj span.player-status-message").text(showModel.get("dj"));
 			}
 		},
 		beforeClose: function() {

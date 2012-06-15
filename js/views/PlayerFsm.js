@@ -161,7 +161,7 @@ define(["jquery", "underscore", "machina", "moment"], function($, _, Machina, mo
           _onEnter: function() {
             console.log("[Player State:Empty] NetworkState:%s ReadyState:%s", this.audioEl.networkState, this.audioEl.readyState);
             this.model.set({
-              "message": "Live Stream",
+              "message": "Listen Now",
               "disabled": false
             });
             this.fireEvent("empty");
@@ -238,7 +238,7 @@ define(["jquery", "underscore", "machina", "moment"], function($, _, Machina, mo
           _onEnter: function() {
             console.log("[Player State:Error] -> NetworkState:%s ReadyState:%s", this.audioEl.networkState, this.audioEl.readyState);
             this.model.set({
-              "message": "Stream Error",
+              "message": "KEXP Stream Error",
               "paused": true,
               "disabled": false
             });
