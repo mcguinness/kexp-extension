@@ -6,6 +6,7 @@ require.config({
     "backbone-localstorage": "libs/backbone-localstorage",
     "backbone-replete": "plugins/backbone-replete",
     "gaq": "util/google-analytics",
+    "htmlencoder": "util/htmlencoder",
     "jquery": "libs/jquery-1.7.2.min",
     "moment": "libs/moment.min",
     "underscore": "libs/underscore-min"

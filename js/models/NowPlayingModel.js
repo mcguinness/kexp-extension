@@ -9,65 +9,22 @@ define([
   
   var NowPlayingModel = Backbone.Model.extend({
 
-    toJSON: function() {
-      var json = Backbone.Model.prototype.toJSON.call(this);
-      
-      json.timePlayed = _.isDate(this.get("timePlayed")) ?
-        this.get("timePlayed").toISOString() :
-        "";
-      json.timeLastUpdate = _.isDate(this.get("timeLastUpdate")) ?
-        this.get("timeLastUpdate").toISOString() :
-        "";
-      
-      return json;
-    },
-    parse: function(resp, xhr) {
-
-      var parsedModel = {
-          id: resp.PlayID,
-          airBreak: resp.AirBreak || false,
-          songTitle: resp.SongTitle,
-          artist: resp.Artist,
-          album: resp.Album || "",
-          albumYear: resp.ReleaseYear || "",
-          albumLabel: resp.LabelName || "",
-          comments: resp.Comments || "",
-          timePlayed: resp.TimePlayed,
-          timeLastUpdate: resp.LastUpdate
-        },
-        self = this,
-        nowUtc = moment.utc();
-
-
-      if (parsedModel.timePlayed && !_.isEmpty(parsedModel.timePlayed)) {
-        value = moment(parsedModel.timePlayed + "-08:00", "h:mmAZ").utc();
-        value.month(nowUtc.month());
-        value.date(nowUtc.date());
-        value.year(nowUtc.year());
-        // Can't figure out why time is 1 hour off, so hack -1 hour until I figure it out..DST???
-        value.subtract("hours", 1);
-        parsedModel.timePlayed = value.toDate();
+    mappings: [
+      {attribute: "id", target: "PlayID", type: "string"},
+      {attribute: "airBreak", target: "AirBreak", type: "boolean"},
+      {attribute: "songTitle", target: "SongTitle", type: "string", options: {htmlDecode: true}},
+      {attribute: "artist", target: "Artist", type: "string", options: {htmlDecode: true}},
+      {attribute: "album", target: "Album", type: "string", options: {htmlDecode: true}},
+      {attribute: "albumYear", target: "ReleaseYear", type: "string"},
+      {attribute: "albumLabel", target: "LabelName", type: "string", options: {htmlDecode: true}},
+      {attribute: "comments", target: "Comments", type: "string", options: {htmlDecode: true}},
+      {attribute: "timePlayed", target: "TimePlayed", type: "customDate",
+        options: {format: "h:mmA-08:00", addDate: true}
+      },
+      {attribute: "timeLastUpdate", target: "LastUpdate", type: "customDate",
+        options: {format: "M/D/YYYY h:mm:ss A-08:00"}
       }
-
-      if (parsedModel.timeLastUpdate && !_.isEmpty(parsedModel.timeLastUpdate)) {
-        // Can't figure out why time is 1 hour off, so hack -1 hour until I figure it out..DST???
-        parsedModel.timeLastUpdate = moment(parsedModel.timeLastUpdate + "-08:00", "M/D/YYYY h:mm:ss AZ").subtract("hours", 1).utc().toDate();
-      }
-      
-      // Feed sometimes encodes some values...its hard to determine when
-      _.each(["songTitle", "artist", "album", "albumLabel", "comments"], function(key) {
-        var value = parsedModel[key];
-        if (!_.isEmpty(value) && _.isString(value)) {
-          parsedModel[key] = self.htmlEncoder.htmlDecode(value);
-          if (!_.isEqual(parsedModel[key], value)) {
-            console.log("[NowPlayingModel HtmlDecode] response value: " + value + " was decoded to : " + parsedModel[key]);
-          }
-        }
-      });
-
-      //console.debug("NowPlayingModel Parse Result", parsedModel, resp);
-      return parsedModel;
-    },
+    ],
     url: function() {
       return "http://www.kexp.org/s/s.aspx?x=3";
     },

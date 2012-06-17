@@ -1,52 +1,24 @@
 define(["jquery", "backbone-kexp", "underscore", "moment"], function($, Backbone, _) {
   var ShowModel = Backbone.Model.extend({
 
-     toJSON: function() {
-      var json = Backbone.Model.prototype.toJSON.call(this);
-      
-      json.timeStart = _.isDate(this.get("timeStart")) ?
-        this.get("timeStart").toISOString() :
-        "";
-      json.timeEnd = _.isDate(this.get("timeEnd")) ?
-        this.get("timeEnd").toISOString() :
-        "";
-      
-      return json;
-    },
+    mappings: [
+      {attribute: "id", target: "ArchiveID", type: "int"},
+      {attribute: "title", target: "ShowTitleFriendly", type: "string"},
+      {attribute: "subTitle", target: "Subtitle", type: "string"},
+      {attribute: "dj", target: "ShowDJ", type: "string"},
+      {attribute: "timeStart", target: "StartHour", type: "customDate",
+        options: {format: "H-08:00", addDate: true}
+      },
+      {attribute: "timeEnd", target: "EndHour", type: "customDate",
+        options: {format: "H-08:00", addDate: true}
+      }
+    ],
     parse: function(resp, xhr) {
-
-      var parsedModel = {
-          id: resp.ArchiveID,
-          // Feed is not consistent, sometimes show title is the Title field, othertimes ShowTitleFriendly
-          title: (resp.ShowTitleFriendly === "Variety Mix" && resp.Title !== "Variety Mix") ?
-            resp.Title : resp.ShowTitleFriendly,
-          subTitle: resp.Subtitle,
-          dj: resp.ShowDJ
-        };
-
-      var utcHourNow = moment().utc().minutes(0).seconds(0).milliseconds(0),
-        currentUtcHour = utcHourNow.hours(),
-        showStartUtcHour,
-        showEndUtcHour;
-
-      var convertShowHourToDate = function(showHour) {
-        var showMoment = moment(utcHourNow).hours(showHour);
-        if (showHour >= (24 - 8) && currentUtcHour < 8) {
-          showMoment.subtract("days", 1);
-        }
-        // TODO: Fix issue with time and manually subtracting by 1 (Same as NowPlayingModel)
-        return showMoment.local().subtract('hours', 1).toDate();
-      };
-
-      if (_.isNumber(resp.StartHour)) {
-        parsedModel.timeStart = convertShowHourToDate(resp.StartHour + 8);
-      }
-      if (_.isNumber(resp.EndHour)) {
-        parsedModel.timeEnd = convertShowHourToDate(resp.EndHour + 8);
-      }
-        
-      console.debug("ShowModel Parse Result", parsedModel, resp);
-      return parsedModel;
+      var result = Backbone.Model.prototype.parse.apply(this, arguments);
+      // Feed is not consistent, sometimes show title is the Title field, othertimes ShowTitleFriendly
+      result.title = (resp.ShowTitleFriendly === "Variety Mix" && resp.Title !== "Variety Mix") ?
+        resp.Title : resp.ShowTitleFriendly;
+      return result;
     },
     url: function() {
       return "http://www.kexp.org/s/s.aspx?x=5";

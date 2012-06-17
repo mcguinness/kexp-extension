@@ -37,40 +37,15 @@ define([
       timeLastLike: new Date(),
       timeLastFmLoveShare: null
     },
+    mappings: [
+      {attribute: "*"},
+      {attribute: "timeCreated", type: "date"},
+      {attribute: "timeModified", type: "date"},
+      {attribute: "timeLastLike", type: "date"},
+      {attribute: "timeLastFmLoveShare", type: "date"}
+    ],
     initialize: function() {
       this.bind("change", this.updateModifedTime, this);
-    },
-    toJSON: function() {
-      var json = Backbone.Model.prototype.toJSON.call(this);
-
-      json.timeCreated = this.get("timeCreated").toISOString();
-      json.timeModified = this.get("timeModified").toISOString();
-      json.timeLastLike = this.get("timeLastLike").toISOString();
-      // Can be Null
-      json.timeLastFmLoveShare = _.isDate(this.get("timeLastFmLoveShare")) ?
-        this.get("timeLastFmLoveShare").toISOString() :
-        null;
-      return json;
-    },
-    parse: function(resp, xhr) {
-      var parsedModel = _.clone(resp);
-      var date;
-      
-      if (!_.isEmpty(parsedModel.timeCreated) && !_.isDate(parsedModel.timeCreated)) {
-        parsedModel.timeCreated = new Date(Date.parse(parsedModel.timeCreated));
-      }
-      if (!_.isEmpty(parsedModel.timeModified) && !_.isDate(parsedModel.timeModified)) {
-        parsedModel.timeModified = new Date(Date.parse(parsedModel.timeModified));
-      }
-      if (!_.isEmpty(parsedModel.timeLastLike) && !_.isDate(parsedModel.timeLastLike)) {
-        parsedModel.timeLastLike = new Date(Date.parse(parsedModel.timeLastLike));
-      }
-      if (!_.isEmpty(parsedModel.timeLastFmLoveShare) && !_.isDate(parsedModel.timeLastFmLoveShare)) {
-        parsedModel.timeLastFmLoveShare = new Date(Date.parse(parsedModel.timeLastFmLoveShare));
-      }
-
-      //console.debug("LikedSongModel Parse Result", parsedModel, resp);
-      return parsedModel;
     },
     save: function(key, value, options) {
       if (this.isNew()) {

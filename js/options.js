@@ -8,6 +8,7 @@ require.config({
     "bootstrap": "plugins/bootstrap.min",
     "ga": "https://ssl.google-analytics.com/ga",
     "gaq": "util/google-analytics",
+    "htmlencoder": "util/htmlencoder",
     "jquery": "libs/jquery-1.7.2.min",
     "jquery-kexp": "plugins/jquery-kexp",
     "jquery-ui": "plugins/jquery-ui-1.8.20.custom.min",
