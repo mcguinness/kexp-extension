@@ -50,7 +50,7 @@ define([
         
         if (_.isNull(targetVal) || _.isUndefined(targetVal) ||
           (mapping.type !== "string" && _.isString(targetVal) && _.isEmpty(targetVal))) {
-          
+          // Only strings can have empty values
           result[mapping.attribute] = null;
         } else {
           switch (mapping.type) {
@@ -64,18 +64,14 @@ define([
               result[mapping.attribute] = _.isBoolean(targetVal) ? targetVal : Boolean(targetVal);
               break;
             case "customDate" :
-              var nowUtc = moment.utc(),
-                  valMoment = moment(String(targetVal), mapping.options.format || ""),
-                  dateTime;
+              var valMoment = moment(String(targetVal), mapping.options.format || ""),
+                  nowUtc,
+                  valISOString;
               
               if (mapping.options.addDate) {
-                dateTime = nowUtc.subtract("minutes", valMoment.zone()).format("M/D/YYYY") + valMoment.format("h:mmA");
-                valMoment = moment(dateTime, "M/D/YYYYh:mmA" + valMoment.format("Z"));
-              }
-              if (mapping.options.addTime) {
-                valMoment.hours(nowUtc.hours());
-                valMoment.minutes(nowUtc.minutes());
-                valMoment.seconds(nowUtc.seconds());
+                nowUtc = moment.utc();
+                valISOString = nowUtc.subtract("minutes", valMoment.zone()).format("YYYY-MM-DD") + valMoment.format("THH:mm:ssZ");
+                valMoment = moment(valISOString, "YYYY-MM-DDTHH:mm:ss");
               }
               result[mapping.attribute] = mapping.options.toLocal ? valMoment.toDate() : valMoment.utc().toDate();
               break;
@@ -102,7 +98,6 @@ define([
       // Add all unmapped attributes
       if (globMapUndefined) {
         _.each(_.difference(_.keys(resp), mappedAttributes), function(key) {
-          console.debug("Processing unmapped attribute: %s value: %s", key, resp[key]);
           result[key] = resp[key];
         });
       }
