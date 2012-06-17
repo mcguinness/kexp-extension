@@ -66,42 +66,38 @@ define([
     },
     scrobble: function() {
       var scrobbleCount = this.get("lastFmTrackScrobbleCount");
-      this.set({
-        lastFmTrackScrobbleCount: ++scrobbleCount
-      });
+      this.set({lastFmTrackScrobbleCount: ++scrobbleCount});
     },
     hasLastFmShareStatus: function(flag) {
       return (this.get("lastFmShareStatus") & flag) === flag;
     },
     setLastFmShareStatus: function(flag) {
-      var values = {
-        lastFmShareStatus: this.get("lastFmShareStatus") | flag
-      };
+      var values = {lastFmShareStatus: this.get("lastFmShareStatus") | flag};
       if (flag === LikedSongModel.LastFmShareStatus.TrackLove) {
           values.timeLastFmLoveShare = new Date();
       }
       this.set(values);
     },
     unsetLastFmShareStatus: function(flag) {
-      this.set({
-        lastFmShareStatus: this.get("lastFmShareStatus") & flag
-      });
+      this.set({lastFmShareStatus: this.get("lastFmShareStatus") & flag});
     },
     setLastFmAttributes: function(lastFmCollection, options) {
       if (lastFmCollection instanceof Backbone.Collection) {
 
-        var attributes = {}, self = this;
+        var attributes = {},
+            songTitle = this.get("songTitle"),
+            artist = this.get("artist"),
+            album = this.get("album");
 
         _.each(lastFmCollection.models, function(lastfmModel) {
+          var track;
           if (lastfmModel.isArtist()) {
             attributes.artistMbid = lastfmModel.get("mbid") || "";
             attributes.artistLastFmUrl = lastfmModel.get("url") || "";
-          }
-          else if (lastfmModel.isAlbum()) {
-            var track;
+          } else if (lastfmModel.isAlbum()) {
             attributes.albumMbid = lastfmModel.get("mbid") || "";
             attributes.albumLastFmUrl = lastfmModel.get("url") || "";
-            track = lastfmModel.getTrack(self.get("songTitle"), self.get("artist") , self.get("album"));
+            track = lastfmModel.getTrack(songTitle, artist, album);
             if (track) {
               attributes.trackMbid = track.mbid || "";
               attributes.trackLastFmUrl = track.url || "";

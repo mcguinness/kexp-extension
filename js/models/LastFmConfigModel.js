@@ -20,7 +20,7 @@ define([
       initialize: function(attributes, options) {
       
         options || (options = {});
-
+        // TODO: Move to common module
         if (options.localStorage && _.isFunction(options.localStorage.sync)) {
           this.localStorage = options.localStorage;
           this.sync = options.localStorage.sync;

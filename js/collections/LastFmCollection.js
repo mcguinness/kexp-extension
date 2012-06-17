@@ -12,7 +12,7 @@ define([
     },
     getImageBySort: function(sortList) {
 
-      sortList = sortList || [
+      sortList || (sortList = [
         {
         entity: "album",
         imageSort: ["large", "medium", "small"]
@@ -21,7 +21,7 @@ define([
         entity: "artist",
         imageSort: ["extralarge", "large", "medium", "small"]
       }
-      ];
+      ]);
 
       _.each(sortList, function(sortEntry) {
         sortEntry.entity = sortEntry.entity.toLowerCase();
@@ -58,10 +58,10 @@ define([
     getOrFetchAlbum: function(artist, album) {
 
       var self = this,
-        fetchDfr = $.Deferred();
-      var albumModel = _.find(this.models, function(model) {
-        return model.isAlbum();
-      });
+          fetchDfr = $.Deferred(),
+          albumModel = _.find(this.models, function(model) {
+            return model.isAlbum();
+          });
 
       if (albumModel) {
         fetchDfr.resolve(albumModel);
@@ -82,10 +82,10 @@ define([
     getOrFetchArtist: function(artist) {
 
       var self = this,
-        fetchDfr = $.Deferred();
-      var artistModel = _.find(this.models, function(model) {
-        return model.isArtist();
-      });
+          fetchDfr = $.Deferred(),
+          artistModel = _.find(this.models, function(model) {
+            return model.isArtist();
+          });
 
       if (artistModel) {
         fetchDfr.resolve(artistModel);

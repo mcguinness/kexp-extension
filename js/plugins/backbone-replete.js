@@ -61,7 +61,7 @@ define([
 
   // Adds update or insert support to collections
   Backbone.Collection.prototype.upsert = function(models, options) {
-    var i, index, length, existingModel, model, cid, id, cids = {}, ids = {}, dups = [];
+    var i, length, existingModel, model, cid, id, cids = {}, ids = {}, dups = [];
     options || (options = {});
     models = _.isArray(models) ? models.slice() : [models];
 

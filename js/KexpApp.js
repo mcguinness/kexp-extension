@@ -29,7 +29,10 @@ define([
 
       // Add Event Aggregator and Config to Options for future initializers
       if (!_.isObject(options.vent)) { options.vent = this.vent; }
-      if (!_.isObject(options.appConfig)) { options.appConfig = new AppConfigCollection(); }
+      if (!_.isObject(options.appConfig)) { 
+        options.appConfig = new AppConfigCollection();
+        options.appConfig.getDefaults();
+      }
       this.appConfig = options.appConfig;
       
       // Make LastFmApi & Watch for Session Key Changes

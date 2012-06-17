@@ -20,14 +20,9 @@ define([
         this.localStorage = new Store("app.kexp.config");
         this.sync = this.localStorage.sync;
       }
-
-      this.fetch();
-      // init defaults
-      this.getLastFm();
-      this.getFeatures();
     },
     parse: function(resp, xhr) {
-      var item, models = [];
+      var models = [];
 
       if (!_.isArray(resp)) {
         resp = [resp];
@@ -46,6 +41,11 @@ define([
         }
       });
       return models;
+    },
+    getDefaults: function() {
+      this.fetch();
+      this.getLastFm();
+      this.getFeatures();
     },
     getLastFm: function() {
       return this.get("lastfm") || this.create(new LastFmConfigModel());

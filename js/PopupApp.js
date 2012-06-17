@@ -3,7 +3,6 @@ define([
   "underscore",
   "backbone-kexp",
   "marionette-kexp",
-  "htmlencoder",
   "KexpApp",
   "KexpAppController",
   "services/NotificationService",
@@ -20,7 +19,6 @@ define([
     _,
     Backbone,
     Marionette,
-    HtmlEncoder,
     KexpApp,
     KexpAppController,
     NotificationService,
@@ -33,10 +31,6 @@ define([
     NavRegionView,
     PlayerView) {
   
-  // Add encoding helpers to view and models
-  Backbone.View.prototype.htmlEncoder = HtmlEncoder;
-  Backbone.Model.prototype.htmlEncoder = HtmlEncoder;
-
   // Create App
   var popupApp = new KexpApp();
 

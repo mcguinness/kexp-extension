@@ -77,14 +77,15 @@ define([
     },
     fetchAlbum: function(artist, album) {
 
-      var fetchDfr = $.Deferred();
-      var options = {
-        conditions: {
-          entity: "album",
-          artist: artist,
-          album: album
-        }
-      };
+      var fetchDfr = $.Deferred(),
+          options = {
+            conditions: {
+              entity: "album",
+              artist: artist,
+              album: album
+            }
+          };
+
       if (_.isEmpty(artist)) {
         fetchDfr.reject(this, "Artist name is empty", options);
         return fetchDfr.promise();
@@ -97,13 +98,13 @@ define([
     },
     fetchArtist: function(artist) {
 
-      var fetchDfr = $.Deferred();
-      var options = {
-        conditions: {
-          entity: "artist",
-          artist: artist
-        }
-      };
+      var fetchDfr = $.Deferred(),
+          options = {
+            conditions: {
+              entity: "artist",
+              artist: artist
+            }
+          };
 
       if (_.isEmpty(artist)) {
         fetchDfr.reject(this, "Artist name is empty", options);
@@ -115,7 +116,7 @@ define([
     getImageBySize: function(sizeSort) {
 
       var images = this.get("images"),
-        image;
+          image;
 
       if (!_.isArray(images)) {
         return void 0;
@@ -147,7 +148,7 @@ define([
       if (_.isEmpty(trackName) || _.isEmpty(artistName) || _.isEmpty(albumName)) { return void 0; }
       
       var tracks = this.get("tracks"),
-        modelName = this.get("name") || "";
+          modelName = this.get("name") || "";
 
       if (tracks && this.isAlbum() && modelName.toLowerCase() === albumName.toLowerCase()) {
         return _.find(tracks, function(track) {

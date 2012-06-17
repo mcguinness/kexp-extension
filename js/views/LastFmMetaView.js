@@ -11,8 +11,7 @@ define([
     className: "container-nowplaying-meta",
     initialize: function(options) {
       var err;
-      _.bindAll(this, "render", "beforeClose");
-
+      
       this.popoverEl = options.popoverEl;
       if (!this.popoverEl) {
         err = new Error("A popover 'el' must be specified");

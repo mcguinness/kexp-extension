@@ -101,10 +101,10 @@ define([
     _.each(self.tooltips, function(value, selector) {
       
       var splitParts,
-        tooltipKey,
-        waitForHideOnClose = false,
-        yieldOnClose = false,
-        $tooltips;
+          tooltipKey,
+          waitForHideOnClose = false,
+          yieldOnClose = false,
+          $tooltips;
         
       // Validate & Parse Hash Value, continue to next element is not valid
       if (_.isEmpty(value)) { return; }
@@ -130,9 +130,9 @@ define([
       $tooltips.each(function(index) {
         
         var data = $(this).data() || {},
-          tooltip = data[tooltipKey],
-          $tooltip,
-          tooltipDfr;
+            tooltip = data[tooltipKey],
+            $tooltip,
+            tooltipDfr;
 
         if (_.isObject(tooltip)) {
           $tooltip = tooltip.$tip;

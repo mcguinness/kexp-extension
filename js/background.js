@@ -22,6 +22,7 @@ require([
     var store = {
         appConfig: new AppConfigCollection()
     };
+    store.appConfig.getDefaults();
 
     // Save any config changes
     store.appConfig.on("change", function(model) {
