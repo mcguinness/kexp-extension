@@ -4,6 +4,7 @@ require.config({
     "backbone-kexp": "plugins/backbone-kexp",
     "backbone-indexeddb": "libs/backbone-indexeddb",
     "backbone-localstorage": "libs/backbone-localstorage",
+    "backbone-modelbinder": "plugins/Backbone.ModelBinder.min",
     "backbone-replete": "plugins/backbone-replete",
     "bootstrap": "plugins/bootstrap.min",
     "ga": "https://ssl.google-analytics.com/ga",

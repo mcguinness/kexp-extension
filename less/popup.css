@@ -3615,6 +3615,18 @@ button.close {
   border: 0;
   -webkit-appearance: none;
 }
+.alert .close {
+  color: #ffffff;
+  text-shadow: 0 1px 0 rgba(0, 0, 0, 0.5);
+  opacity: 0.6;
+  filter: alpha(opacity=60);
+}
+.alert .close:hover {
+  color: #ffffff;
+  text-shadow: 0 1px 0 rgba(0, 0, 0, 0.5);
+  opacity: 1;
+  filter: alpha(opacity=100);
+}
 .alert-error {
   text-shadow: 0 1px 0 rgba(0, 0, 0, 0.5);
 }

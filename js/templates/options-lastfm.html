@@ -4,25 +4,18 @@
     <label class="control-label" for="btn-lastfm-service">Connected Profile:</label>
     <div id="ctrls-lastfm-service" class="controls">
       <label>
-        <button id="btn-lastfm-service" class="btn btn-kexp-toggle <%= _.isEmpty(model.sessionKey) ? '' : 'active' %>" 
-          type="button">
-            <%= _.isEmpty(model.sessionKey) ? '<i class="icon-user icon-white"></i> Disabled' : '<i class="icon-user"></i> Enabled' %>
-        </button>
+        <button id="btn-lastfm-service" class="btn btn-kexp-toggle" type="button"></button>
       </label>
       <p class="help-block"><em>Allows this extension to access your Last.fm profile</em></p>
     </div>
     <label class="control-label">Share <i class="icon-share"></i>:</label>
     <div id="ctrls-lastfm-features" class="controls">
       <label class="checkbox">
-        <input type="checkbox" id="chkbx-lastfm-share-like"
-        <%= model.likeShareEnabled ? "checked" : '' %>
-        <%= _.isEmpty(model.sessionKey) ? "disabled='disabled'" : '' %>>
+        <input type="checkbox" id="chkbx-lastfm-share-like">
         Share likes with my Last.fm profile (Loves)
       </label>
       <label class="checkbox">
-        <input type="checkbox" id="chkbx-lastfm-scrobble-like"
-        <%= model.likeScrobbleEnabled ? "checked" : '' %>
-        <%= _.isEmpty(model.sessionKey) ? "disabled='disabled'" : '' %>>
+        <input type="checkbox" id="chkbx-lastfm-scrobble-like">
         Scrobble likes with my Last.fm profile (Plays)
       </label>
       <p class="help-block"><strong>Note:</strong> Requires Last.fm app authorization.</p>
