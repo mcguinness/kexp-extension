@@ -10,8 +10,8 @@ define([
     template: ViewTemplate,
     className: "kexp-error kexp-box-striped",
     events: {
-      "click #button-refresh": "handleRefresh",
-      "click #button-page-prev": "handlePagePrev"
+      "click #button-refresh.active": "handleRefresh",
+      "click #button-page-prev.active": "handlePagePrev"
     },
     serializeData: function() {
       return {
@@ -22,12 +22,13 @@ define([
         this.$el.hide();
     },
     onShow: function() {
-        this.$el.show("slide", {
-            direction: "left"
-        }, 500);
+        var view = this;
+        this.$el.show("slide", {direction: "left"}, 500, function() {
+          $("#button-refresh", view.$el).addClass("active");
+        });
     },
     handleRefresh: function() {
-      var $icon = $("#button-refresh i", this.$el);
+      var $icon = $("#button-refresh", this.$el);
       if ($icon.length > 0) {
         $icon.removeClass("rotate");
         _.delay(function() {

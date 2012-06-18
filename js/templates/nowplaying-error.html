@@ -7,9 +7,11 @@
   </p>
   <p><em>Enjoy the music, we will automatically try again shortly!</em></p>
   <p>
-    <span id="button-refresh" class="btn-refresh pull-right"><i class="icon-refresh active"></i></span>
-    <% if (model.canPagePrev) { %>
-    <span id="button-page-prev" class="btn-page pull-right"><i class="icon-step-backward active"></i></span>
-    <% } %>
+    <span class="pull-right">
+      <% if (model.canPagePrev) { %>
+        <i id="button-page-prev" class="btn-page icon-step-backward active"></i>
+      <% } %>
+      <i id="button-refresh" class="btn-refresh icon-refresh"></i>
+    </span>
   </p>
 </div>

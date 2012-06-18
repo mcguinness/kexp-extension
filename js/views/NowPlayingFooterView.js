@@ -91,13 +91,13 @@ define([
 
     },
     showRefreshAnimation: function() {
-      var $icon = $("#button-refresh i", this.$el).removeClass("rotate");
+      var $icon = $("#button-refresh", this.$el).removeClass("rotate");
       _.delay(function() {
         $icon.addClass("rotate");
       });
     },
     showShareAnimation: function() {
-      var $icon = $("#button-share i", this.$el).removeClass("pulse");
+      var $icon = $("#button-share", this.$el).removeClass("pulse");
       _.delay(function() {
         $icon.addClass("pulse");
       });
@@ -150,7 +150,7 @@ define([
       this.vent.trigger("nowplaying:lastfm:popover:toggle", this.model);
     },
     handleLastFmShareChange: function(model, value, options) {
-      $("#button-share i", this.$el).toggleClass("active", model.hasSharingEnabled());
+      $("#button-share", this.$el).toggleClass("active", model.hasSharingEnabled());
     },
     handlePagePrev: function() {
       this.vent.trigger("nowplaying:page:prev", this.model);

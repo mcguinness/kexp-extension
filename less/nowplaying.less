@@ -13,10 +13,8 @@
 }
 
 
-.btn-refresh {
-  .rotate {
-    -webkit-animation: rotate 3s linear;
-  }
+.btn-refresh.rotate {
+  -webkit-animation: rotate 3s linear;
 }
 
 /////////////////////////////////////////////
@@ -67,7 +65,6 @@
   .badge {
     margin-left: 5px;
     background-color: @linkColorHover;
-    //padding-bottom: 1px;
     &:hover {
      cursor: default;
     }
@@ -79,20 +76,11 @@
     height: 20px;
     #font > #family .sans-serif();
   }
-  i {
-    vertical-align: middle;
-    .opacity(50);
-    &.active {
-      .opacity(100);
-    }
-    cursor: pointer;
-  }
-  .container-song-pager {
-    display: inline-block;
-    margin-right: 10px;
+  .btn-refresh {
+    margin-left: 3px;
   }
   .btn-share {
-    margin-right: 10px;
+    margin-left: 10px;
   }
   &.fade {
     .transition(opacity .75s ease);
