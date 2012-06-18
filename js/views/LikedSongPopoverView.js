@@ -38,10 +38,10 @@ define([
       return { model: json};
     },
     onShow: function() {
-      var view = this;
-      var $table = $("#table-liked-info");
-      var hasTrackLoveDate = this.model.hasLastFmShareStatus(LikedSongModel.LastFmShareStatus.TrackLove) &&
-        _.isDate(this.model.get("timeLastFmLoveShare"));
+      var view = this,
+          $table = $("#table-liked-info"),
+          hasTrackLoveDate = this.model.hasLastFmShareStatus(LikedSongModel.LastFmShareStatus.TrackLove) &&
+            _.isDate(this.model.get("timeLastFmLoveShare"));
 
       $table.find("[rel=tooltip]").tooltip();
 

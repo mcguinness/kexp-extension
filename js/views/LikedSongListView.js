@@ -8,10 +8,9 @@ define([
   "text!templates/likedsonglist.html",
   "text!templates/likedsonglist-empty.html",
   "moment", // no need for arg
-  // Must be last as script is not a AMD module
-  "bootstrap",
-  "jquery.dataTables",
-  "jquery.dataTables.sort"
+  "bootstrap", // no need for arg
+  "jquery.dataTables", // no need for arg
+  "jquery.dataTables.sort" // no need for arg
   ], function($, _, Marionette, LikedSongModel, LikedSongCollection,
     LikedSongPopoverView, ViewTemplate, EmptyTemplate) {
 
@@ -23,9 +22,11 @@ define([
     emptyTemplate: EmptyTemplate,
 
     initialize: function(options) {
+      options || (options = {});
       if (this.collection === undefined) {
         this.collection = new LikedSongCollection();
       }
+      this.popoverEl = options.popoverEl || "#navbar-top";
     },
     events: {
       "click #table-liked i.icon-remove:hover": "removeLike",
@@ -36,9 +37,7 @@ define([
       return (this.collection.length > 0) ? this.template : this.emptyTemplate;
     },
     serializeData: function() {
-      return (this.collection.length > 0) ? {
-        model: this.collection.toJSON()
-      } : {};
+      return (this.collection.length > 0) ? {model: this.collection.toJSON()} : {};
     },
     onRender: function() {
       //console.log("[OnRender LikedSongListView]");
@@ -97,12 +96,12 @@ define([
     },
     showInfoPopover: function(event) {
       var $currentTarget = $(event.currentTarget),
-        songId = $currentTarget.is("tr[data-id]") ?
-          $currentTarget.attr("data-id") :
-          $currentTarget.parentsUntil("tbody", "[data-id]").attr("data-id"),
-        view = this,
-        closeDfr,
-        model;
+          songId = $currentTarget.is("tr[data-id]") ?
+            $currentTarget.attr("data-id") :
+            $currentTarget.parentsUntil("tbody", "[data-id]").attr("data-id"),
+          view = this,
+          closeDfr,
+          model;
 
       if (_.isEmpty(songId)) {
         console.error("Unable to find the id in the data-id attribute for the clicked row. (Possible Template/Model Error)", event);
@@ -129,10 +128,8 @@ define([
       $.when(closeDfr).then(
         function() {
           view.popoverView = new LikedSongPopoverView({
-              el: "#navbar-top",
-              model: model,
-              vent: view.vent,
-              appConfig: view.appConfig
+              el: view.popoverEl,
+              model: model
             });
           view.popoverView.render();
           view.popoverView.toggle();
@@ -160,7 +157,6 @@ define([
       }
 
       console.log("Removing liked song with id: {%s} [%s]", songId, song.toDebugString());
-      // TODO: add error handling
       song.destroy({
         wait: true,
         success: function(model, resp) {
@@ -168,6 +164,11 @@ define([
           view.collection.remove(model);
           view.render();
           view.vent.trigger("analytics:trackevent", "LikedSong", "Remove", model.toDebugString());
+        },
+        error: function(model, error, options) {
+          console.error("Unable to delete song with id: {%s} [%s] due to error {%s}", songId, song.toDebugString(), error);
+          view.render();
+          view.vent.trigger("analytics:trackevent", "LikedSong", "Error", JSON.Stringify(error || ""));
         }
       });
     },

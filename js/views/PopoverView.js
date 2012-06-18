@@ -9,11 +9,8 @@ define([
     popoverPlacement: "bottom",
     hideOnClose: false,
     constructor: function(options) {
-      options = options || {};
+      options || (options = {});
       _.extend(this, options);
-
-      _.bindAll(this, "getPopoverTemplate", "render", "toggle", "close");
-
       Marionette.ItemView.prototype.constructor.apply(this, arguments);
     },
     tooltips: {
