@@ -7,6 +7,21 @@ define([
 	], function($, _, Backbone, HtmlEncoder) {
 
 
+  var findDstDate = function(dstMonth, sundayCount, searchStartDate) {
+    searchStartDate || (searchStartDate = (sundayCount * 7));
+    var dstMoment = moment().utc().month(dstMonth).date(searchStartDate).day(0).hours(10);
+    if (dstMoment.month() !== dstMonth) {
+      return findDstDate(year, dstMonth, searchStartDate + 7, sundayCount);
+    }
+    return dstMoment;
+  };
+
+  // This is bad, hardcoding US DST rules which are known to change over time with legislation.
+  //  2 a.m. on the Second Sunday in March to
+  //  2 a.m. on the First Sunday of November.
+  var DST_START = findDstDate(2, 2);
+  var DST_END = findDstDate(10, 1);
+
   _.extend(Backbone.Model.prototype, {
 
     toJSON: function() {
@@ -63,17 +78,23 @@ define([
             case "boolean":
               result[mapping.attribute] = _.isBoolean(targetVal) ? targetVal : Boolean(targetVal);
               break;
-            case "customDate" :
+            case "customPacificTimeDate" :
               var valMoment = moment(String(targetVal), mapping.options.format || ""),
                   nowUtc,
-                  valISOString;
+                  timeZoneOffset;
               
+              // Must convert to UTC manually with DST than convert back to local using local getTimezoneOffset
               if (mapping.options.addDate) {
                 nowUtc = moment.utc();
-                valISOString = nowUtc.subtract("minutes", valMoment.zone()).format("YYYY-MM-DD") + valMoment.format("THH:mm:ssZ");
-                valMoment = moment(valISOString, "YYYY-MM-DDTHH:mm:ss");
+                timeZoneOffset = (nowUtc.diff(DST_START) >= 0 && nowUtc.diff(DST_END) <= 0) ? 420 : 480;
+                valMoment.add("minutes", timeZoneOffset);
+                valMoment = moment.utc(nowUtc.format("YYYY-MM-DD") + valMoment.format("THH:mm:ss"));
+              } else {
+                timeZoneOffset = (valMoment.diff(DST_START) >= 0 && valMoment.diff(DST_END) <= 0) ? 420 : 480;
+                valMoment.add("minutes", timeZoneOffset);
+                valMoment = moment.utc(valMoment.format("YYYY-MM-DDTHH:mm:ss"));
               }
-              result[mapping.attribute] = mapping.options.toLocal ? valMoment.toDate() : valMoment.utc().toDate();
+              result[mapping.attribute] = mapping.options.toLocal ? valMoment.local().toDate() : valMoment.toDate();
               break;
             case "localDate": // Server returns UTC, convert to user's local timezone
               var date = Date.parse(targetVal);
@@ -101,7 +122,7 @@ define([
           result[key] = resp[key];
         });
       }
-      console.debug("Model Parse Result", result, resp);
+      //console.debug("Model Parse Result", result, resp);
 
       return result;
     }

@@ -18,11 +18,11 @@ define([
       {attribute: "albumYear", target: "ReleaseYear", type: "string"},
       {attribute: "albumLabel", target: "LabelName", type: "string", options: {htmlDecode: true}},
       {attribute: "comments", target: "Comments", type: "string", options: {htmlDecode: true}},
-      {attribute: "timePlayed", target: "TimePlayed", type: "customDate",
-        options: {format: "h:mmA-08:00", addDate: true}
+      {attribute: "timePlayed", target: "TimePlayed", type: "customPacificTimeDate",
+        options: {format: "h:mmA", addDate: true}
       },
-      {attribute: "timeLastUpdate", target: "LastUpdate", type: "customDate",
-        options: {format: "M/D/YYYY h:mm:ss A-08:00"}
+      {attribute: "timeLastUpdate", target: "LastUpdate", type: "customPacificTimeDate",
+        options: {format: "M/D/YYYY h:mm:ss A"}
       }
     ],
     url: function() {

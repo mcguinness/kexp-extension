@@ -6,11 +6,11 @@ define(["jquery", "backbone-kexp", "underscore", "moment"], function($, Backbone
       {attribute: "title", target: "ShowTitleFriendly", type: "string"},
       {attribute: "subTitle", target: "Subtitle", type: "string"},
       {attribute: "dj", target: "ShowDJ", type: "string"},
-      {attribute: "timeStart", target: "StartHour", type: "customDate",
-        options: {format: "H-08:00", addDate: true}
+      {attribute: "timeStart", target: "StartHour", type: "customPacificTimeDate",
+        options: {format: "H", addDate: true}
       },
-      {attribute: "timeEnd", target: "EndHour", type: "customDate",
-        options: {format: "H-08:00", addDate: true}
+      {attribute: "timeEnd", target: "EndHour", type: "customPacificTimeDate",
+        options: {format: "H", addDate: true}
       }
     ],
     parse: function(resp, xhr) {
