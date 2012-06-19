@@ -29,6 +29,7 @@ define([
           //   window.outerWidth, window.innerWidth, window.document.width, $(window.document.documentElement).width(),
           //   window.document.documentElement.clientWidth, window.document.body.clientWidth);
           
+          this.defaultWindowTitle = options.defaultWindowTitle || window.document.title;
           this.bindTo(this.vent, "nowplaying:cycle", this.updateWindowTitle, this);
 
           this.zoom = DetectZoom.zoom();
@@ -101,11 +102,10 @@ define([
             title += _.isEmpty(artist) ? songTitle : artist;
           }
         } else {
-          // TODO store app name in options (remove dependency on chrome func)
-          title = chrome.app.getDetails().name;
+          title = this.defaultWindowTitle;
         }
 
-         window.document.title = title;
+        window.document.title = title;
       },
       domObserver: function(mutations) {
 

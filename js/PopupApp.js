@@ -34,14 +34,28 @@ define([
   // Create App
   var popupApp = new KexpApp();
 
-  popupApp.addService(new NotificationService());
-  popupApp.addService(new LastFmLikeSyncService());
-  popupApp.addService(new AnalyticsService());
-  popupApp.addService(new FeatureManagerService());
-  popupApp.addService(new PopoutService());
-  popupApp.addService(new PopoverCleanupService());
-  popupApp.addService(new ChromeTabService());
-  
+  // Create Audio Element is not Chrome Extension w/Background Page
+  popupApp.addInitializer(function(options) {
+    if (!_.isObject(options.audioElement)) {
+      $("#region-footer").append('<audio id="background-audio" src="http://kexp-mp3-2.cac.washington.edu:8000/;" preload="none">');
+      options.audioElement = document.getElementById("background-audio");
+    }
+  });
+
+
+  // Add Services
+  popupApp.addInitializer(function(options) {
+    this.addService(new NotificationService(), options);
+    this.addService(new LastFmLikeSyncService(), options);
+    this.addService(new AnalyticsService(), options);
+    this.addService(new FeatureManagerService(), options);
+    this.addService(new PopoutService(), options);
+    this.addService(new PopoverCleanupService(), options);
+    if (options.chromeExtension) {
+      this.addService(new ChromeTabService(), options);
+    }
+  });
+
   // Add Regions
   popupApp.addInitializer(function(options) {
     this.addRegions({

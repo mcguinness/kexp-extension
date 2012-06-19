@@ -23,11 +23,11 @@ define([
   _.extend(Marionette.Application.prototype, {
     services: [],
     routers: [],
-    addService: function(service) {
-      this.addInitializer(function(options) {
+    addService: function(service, options) {
+      if (_.isObject(service)) {
         this.services.push(service);
         service.start(options);
-      });
+      }
     },
     addRouter: function(router) {
       this.routers.push(router);

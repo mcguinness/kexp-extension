@@ -40,24 +40,14 @@ require([
   "views/OptionsView",
   "twitter"
   ], function($, _, Backbone, Marionette, KexpApp, AnalyticsService, AppConfigCollection, OptionsView) {
-   
+  
+  var chromeExtension = (window.chrome && window.chrome.extension);
+  var kexpStore = chromeExtension ? chrome.extension.getBackgroundPage().KexpStore : {};
   var optionsApp = new KexpApp();
 
-  var AppRouter = Marionette.AppRouter.extend({
-    appRoutes: {
-      "*other": "showOptions" //Default View
-    },
-    controller: {
-      showOptions: function() {
-        var optionsView = new OptionsView({
-          collection: optionsApp.appConfig
-        });
-        optionsApp.main.show(optionsView);
-      }
-    }
+  optionsApp.addInitializer(function(options) {
+    this.addService(new AnalyticsService(), options);
   });
-
-  optionsApp.addService(new AnalyticsService());
 
   optionsApp.addInitializer(function(options) {
     this.addRegions({
@@ -65,12 +55,28 @@ require([
     });
   });
   optionsApp.addInitializer(function(options) {
-    this.router = new AppRouter();
+    var self = this;
+    var AppRouter = Marionette.AppRouter.extend({
+      appRoutes: {
+        "*other": "showOptions" //Default View
+      },
+      controller: {
+        showOptions: function() {
+          var optionsView = new OptionsView({
+            collection: self.appConfig
+          });
+          self.main.show(optionsView);
+        }
+      }
+    });
+
+    this.addRouter(new AppRouter());
     Backbone.history.start();
   });
 
   optionsApp.start({
-    appConfig: chrome.extension.getBackgroundPage().KexpStore.appConfig
+    chromeExtension: chromeExtension,
+    appConfig: kexpStore.appConfig
   });
 
 });

@@ -58,10 +58,12 @@ define([
       authzUrl += "?api_key=" + this.model.get("apiKey");
       authzUrl += "&token=" + token;
 
-      chrome.tabs.create({
-        url: authzUrl,
-        active: true
-      });
+      window.open(authzUrl);
+      
+      // chrome.tabs.create({
+      //   url: authzUrl,
+      //   active: true
+      // });
 
       // Requires Tab Permissions
       // var currentTabId, authzTabId, self = this;

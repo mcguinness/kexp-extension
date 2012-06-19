@@ -41,11 +41,24 @@ require.config({
 
 require(["jquery", "underscore", "PopupApp", "gaq"], function($, _, PopupApp) {
 
-  // AudioElement is in background page so music plays when popups are not active
-  var backgroundPage = chrome.extension.getBackgroundPage();
-  var audioElement = backgroundPage.document.getElementById("background-audio");
-  var kexpStore = backgroundPage.KexpStore;
-
+  var chromeExtension = (window.chrome && window.chrome.extension),
+      backgroundPage,
+      audioElement,
+      kexpStore,
+      appUrl;
+  
+  if (chromeExtension) {
+    // AudioElement is in background page so music plays when popups are not active
+    backgroundPage = chrome.extension.getBackgroundPage();
+    audioElement = backgroundPage.document.getElementById("background-audio");
+    kexpStore = backgroundPage.KexpStore;
+    appUrl = chrome.extension.getURL("popup.html");
+  } else {
+    $("body").addClass("popout");
+    kexpStore = {};
+    appUrl = window.location.toString();
+  }
+  
   $(document).ready(function() {
 
     window.KexpApp = PopupApp;
@@ -55,10 +68,11 @@ require(["jquery", "underscore", "PopupApp", "gaq"], function($, _, PopupApp) {
     });
     
     window.KexpApp.start({
+      chromeExtension: chromeExtension,
       audioElement: audioElement,
       popout: $("body").hasClass("popout"),
       appConfig: kexpStore.appConfig,
-      appUrl: chrome.extension.getURL("popup.html")
+      appUrl: appUrl
     });
   });
 });

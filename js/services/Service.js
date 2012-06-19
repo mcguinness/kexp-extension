@@ -13,8 +13,8 @@ define([
 
       start: function(options) {
         this.options = options || {};
-        this.appConfig = options.appConfig || new AppConfigCollection();
-        this.vent = options.vent || new Marionette.EventAggregator();
+        this.appConfig = options.appConfig;
+        this.vent = options.vent;
         if (this.onStart) { this.onStart(options); }
         this.trigger("start");
       },
