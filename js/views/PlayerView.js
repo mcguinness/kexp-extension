@@ -17,9 +17,7 @@ define([
 		className: "container-player",
 		
 		initialize: function(options) {
-			
-			_.bindAll(this);
-			
+
 			this._playerBinder = new Backbone.ModelBinder();
 			this.showModel = options.showModel || new ShowModel();
 			this.audioEl = options.audioElement;
@@ -31,6 +29,7 @@ define([
 				});
 			}
 			this._playerFsm = new PlayerFsm(options.audioElement, this.model);
+			_.bindAll(this, "handlePlayerError");
 			this._playerFsm.on("error", this.handlePlayerError);
 
 			// Bind Model Event Handlers
@@ -118,44 +117,12 @@ define([
 				});
 		},
 		onShow: function() {
-			this.pollFetchShow();
-		},
-		disablePollFetchShow: function() {
-			if (this._showFetchTimeoutId) {
-				window.clearTimeout(this.showFetchTimeoutId);
-				delete this._showFetchTimeoutId;
+			if (this.showModel.isValid()) {
+				this.renderShowStatus(this.showModel);
 			}
-		},
-		enablePollFetchShow: function(nextPollSeconds) {
-			this.disablePollFetchShow();
-			console.log("Will poll kexp show info in [%s] seconds...", nextPollSeconds);
-			this._showFetchTimeoutId = window.setTimeout(this.pollFetchShow, nextPollSeconds * 1000);
 		},
 		hasRenderedShowStatus: function() {
 			return _.isObject(this.$statusCycleEl);
-		},
-		pollFetchShow: function() {
-			var view = this,
-				// Add random seconds (up to 1 minute) to poll so not every client hits server at the same time
-				nextPollGraceSeconds = (2 * 60) + Math.round(((Math.random() * 60) + 1));
-			
-			console.log("Polling kexp show info...");
-			$.when(this.showModel.fetch())
-				.done(function(model) {
-					var nextPollSeconds = moment(model.get("timeEnd")).diff(moment(), "seconds");
-					nextPollSeconds += nextPollGraceSeconds;
-					if (nextPollSeconds <= nextPollGraceSeconds) {
-						nextPollSeconds = nextPollGraceSeconds;
-					}
-					view.enablePollFetchShow(nextPollSeconds);
-					if (!view.hasRenderedShowStatus()) {
-						view.renderShowStatus(model);
-					}
-				})
-				.fail(function(model, error, options) {
-					console.warn("Error [%s] fetching kexp show", error);
-					view.enablePollFetchShow(nextPollGraceSeconds);
-				});
 		},
 		restartShowStatusCycle: function() {
 			if (_.isObject(this.$statusCycleEl)) {
@@ -220,7 +187,9 @@ define([
 			this.restartShowStatusCycle();
 		},
 		handleShowModelChange: function(showModel) {
-			if (_.isObject(this.$statusCycleEl)) {
+			if (!this.hasRenderedShowStatus()) {
+				this.renderShowStatus(showModel);
+			} else {
 				this.$statusCycleEl.find("#player-show-title span.player-status-message").text(showModel.get("title"));
 				this.$statusCycleEl.find("#player-show-time span.player-status-message").text(showModel.formatTimeRange("hA"));
 				this.$statusCycleEl.find("#player-show-dj span.player-status-message").text(showModel.get("dj"));
@@ -228,7 +197,6 @@ define([
 		},
 		beforeClose: function() {
 			this._playerBinder.unbind();
-			this.disablePollFetchShow();
 			if (_.isObject(this.$statusCycleEl)) {
 				this.$statusCycleEl.cycle("destroy");
 			}

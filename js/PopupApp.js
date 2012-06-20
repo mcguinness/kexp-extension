@@ -69,9 +69,6 @@ define([
       vent: this.vent,
       appConfig: this.appConfig
     });
-
-    this.footer.show(new PlayerView(options));
-    
   });
 
   popupApp.addInitializer(function(options) {
@@ -80,7 +77,7 @@ define([
         "likes": "handleLikesRoute",
         "*other": "handleDefaultRoute"
       },
-      controller: new KexpAppController(this)
+      controller: new KexpAppController(this, options)
     });
     this.addRouter(new AppRouter());
     Backbone.history.start();

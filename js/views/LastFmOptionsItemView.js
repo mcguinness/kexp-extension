@@ -37,7 +37,7 @@ define([
           convertCheckboxDisable = function(direction, value) {
             return _.isEmpty(value);
           },
-          bindings = { // Order is important, checkbox selectors will also match sessionKey selector
+          bindings = { // Order is important, checkbox selectors will also match sessionKey selector (Fixed in next release)
             likeShareEnabled: {selector: "#chkbx-lastfm-share-like"},
             likeScrobbleEnabled: {selector: "#chkbx-lastfm-scrobble-like"},
             sessionKey: [

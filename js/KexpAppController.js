@@ -1,19 +1,48 @@
 define([
   "jquery",
   "underscore",
+  "models/ShowModel",
   "collections/NowPlayingCollection",
+  "views/PlayerView",
   "views/NowPlayingLayout",
-  "views/LikedSongListView"
-  ], function($, _, NowPlayingCollection,
-    NowPlayingLayout, LikedSongListView) {
+  "views/LikedSongListView",
+  "moment"
+  ], function($, _, ShowModel, NowPlayingCollection,
+    PlayerView, NowPlayingLayout, LikedSongListView) {
 
-  var KexpAppController = function(application) {
+  var KexpAppController = function(application, options) {
+    options || (options = {});
+    var playerOptions = _.clone(options);
+    
     this.app = application;
+    this._fetchNowPlayingOptions = {
+      upsert: true
+    };
+    this._fetchShowOptions = {};
+    if (!options.chromeExtension) {
+      // KEXP curently doesn't support CORS Access-Control-Allow-Origin or JSONP (CRITICAL)
+      //this._fetchNowPlayingOptions.dataType = "jsonp";
+      //this._fetchShowOptions.dataType = "jsonp";
+    }
+
+    // Controller State
     this.collections = {
       nowPlaying: new NowPlayingCollection()
     };
-    
-    this.enablePoll(60000);
+    this.models = {
+      show: new ShowModel()
+    };
+
+    // Player Region is static across all routers
+    playerOptions.showModel = this.models.show;
+    this.views = {
+      player: new PlayerView(playerOptions)
+    };
+    application.footer.show(this.views.player);
+
+    _.bindAll(this, "handleFetchShowPoll");
+    this.handleFetchShowPoll();
+    this.enableFetchNowPlayingPoll(60000);
   };
 
   _.extend(KexpAppController.prototype, {
@@ -33,24 +62,24 @@ define([
         self.showNowPlaying();
       } else {
         // Wait for Fetch (Success or Error)
-        self.collections.nowPlaying.fetch({upsert: true})
+        self.collections.nowPlaying.fetch(self._fetchNowPlayingOptions)
           .always(function() {
             self.showNowPlaying();
           });
       }
     },
-    disablePoll: function() {
+    disableFetchNowPlayingPoll: function() {
       if (this._pollIntervalId !== undefined) {
         clearInterval(this._pollIntervalId);
         delete this._pollIntervalId;
       }
     },
-    enablePoll: function(intervalMs) {
+    enableFetchNowPlayingPoll: function(intervalMs) {
       var self = this;
-      self.disablePoll();
+      self.disableFetchNowPlayingPoll();
       self._pollIntervalId = setInterval(function() {
         self.app.vent.trigger("nowplaying:refresh:background", self.collections.nowPlaying);
-        self.collections.nowPlaying.fetch({upsert: true});
+        self.collections.nowPlaying.fetch(self._fetchNowPlayingOptions);
       }, intervalMs);
     },
     showNowPlaying: function() {
@@ -60,8 +89,40 @@ define([
       });
       this.app.main.show(layout);
     },
+    disableFetchShowPoll: function() {
+      if (this._showFetchTimeoutId) {
+        window.clearTimeout(this.showFetchTimeoutId);
+        delete this._showFetchTimeoutId;
+      }
+    },
+    enableFetchShowPoll: function(nextPollSeconds) {
+      this.disableFetchShowPoll();
+      console.log("Will poll kexp show info in [%s] seconds...", nextPollSeconds);
+      this._showFetchTimeoutId = window.setTimeout(this.handleFetchShowPoll, nextPollSeconds * 1000);
+    },
+    handleFetchShowPoll: function() {
+      var self = this,
+          // Add random seconds (up to 1 minute) to poll so not every client hits server at the same time
+          nextPollGraceSeconds = (2 * 60) + Math.round(((Math.random() * 60) + 1));
+      
+      console.log("Polling kexp show info...");
+      $.when(this.models.show.fetch(this._fetchShowOptions))
+        .done(function(model) {
+          var nextPollSeconds = moment(model.get("timeEnd")).diff(moment(), "seconds");
+          nextPollSeconds += nextPollGraceSeconds;
+          if (nextPollSeconds <= nextPollGraceSeconds) {
+            nextPollSeconds = nextPollGraceSeconds;
+          }
+          self.enableFetchShowPoll(nextPollSeconds);
+        })
+        .fail(function(model, error, options) {
+          console.warn("Error [%s] fetching kexp show", error);
+          self.enableFetchShowPoll(nextPollGraceSeconds);
+        });
+    },
     close: function() {
-      this.disablePoll();
+      this.disableFetchNowPlayingPoll();
+      this.disableFetchShowPoll();
     }
   });
 
