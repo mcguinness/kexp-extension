@@ -7,7 +7,7 @@ define([
   ], function($, _, Backbone, MD5) {
 
   function InvalidOptionError(message) {
-      this.name = "MissingOptionError";
+      this.name = "InvalidOptionError";
       this.message = message;
   }
   InvalidOptionError.prototype = new Error();
