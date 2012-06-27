@@ -1,0 +1,45 @@
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>KEXP Streaming Player (Unsanctioned Edition) Tests</title>
+  <link rel="stylesheet" href="mocha.css" />
+  <script src="../js/libs/require.js"></script>
+  <script src="libs/mocha.js"></script>
+  <script src="libs/sinon.js"></script>
+  <script src="../js/require-config.js"></script>
+</head>
+<body>
+  <script>
+    requirejs.config({
+      baseUrl: "../js",
+      paths: {
+        "chai": "../test/libs/chai",
+        "sinon-chai": "../test/libs/sinon-chai"
+      }
+    });
+    
+    require(["chai", "sinon-chai"], function(chai, sinonChai) {
+    
+      //chai.Assertion.includeStack = true;
+      chai.use(sinonChai);
+      window.expect = chai.expect;
+      window.should = chai.should();
+      
+      mocha.setup({
+          ui: 'bdd',
+          ignoreLeaks: true // Resolve Error: global leak detected: XMLHttpRequest for Fake XHR
+      });
+      
+      require([
+        "../test/specs/LastFmModel.spec",
+        "../test/specs/PlayerModel.spec",
+        "../test/specs/backbone-replete.spec",
+        "../test/specs/LastFmApi.spec"
+
+
+        ], mocha.run);
+    });
+  </script>
+  <div id="mocha"></div>
+</body>
+</html>

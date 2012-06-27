@@ -100,14 +100,21 @@ define([
   Backbone.Collection.prototype.fetch = function(options) {
     options = options ? _.clone(options) : {};
     if (options.parse === undefined) options.parse = true;
-    var collection = this;
-    var fetchDfr = $.Deferred();
+    
+    var collection = this,
+        fetchDfr = $.Deferred();
 
-    if (options.success) {
+    if (_.isFunction(options.success)) {
       fetchDfr.done(options.success);
     }
-    fetchDfr.fail(Backbone.wrapError(options.error, collection, options));
-
+    if (_.isFunction(options.error)) {
+      fetchDfr.fail(options.error);
+    } else {
+      fetchDfr.fail(function(collection, resp) {
+        collection.trigger('error', collection, resp, options);
+      });
+    }
+    
     options.success = function(resp, status, xhr) {
       try {
         collection[options.add ? 'add' : (options.upsert ? "upsert" : 'reset')](collection.parse(resp, xhr), options);
@@ -118,8 +125,8 @@ define([
         fetchDfr.reject(collection, e, options);
       }
     };
-    options.error = function(collection, error, options) {
-      fetchDfr.reject(collection, error, options);
+    options.error = function(xhr, textStatus, errorThrown) {
+      fetchDfr.reject(collection, errorThrown || textStatus, options);
     };
 
     (this.sync || Backbone.sync).call(this, 'read', this, options);
@@ -130,13 +137,20 @@ define([
   Backbone.Model.prototype.fetch = function(options) {
     options = options ? _.clone(options) : {};
     if (options.parse === undefined) options.parse = true;
-    var model = this;
-    var fetchDfr = $.Deferred();
+    
+    var model = this,
+        fetchDfr = $.Deferred();
 
-    if (options.success) {
+    if (_.isFunction(options.success)) {
       fetchDfr.done(options.success);
     }
-    fetchDfr.fail(Backbone.wrapError(options.error, model, options));
+    if (_.isFunction(options.error)) {
+      fetchDfr.fail(options.error);
+    } else {
+      fetchDfr.fail(function(model, resp) {
+        model.trigger('error', model, resp, options);
+      });
+    }
 
     options.success = function(resp, status, xhr) {
       try {
@@ -148,8 +162,8 @@ define([
         fetchDfr.reject(model, e, options);
       }
     };
-    options.error = function(model, error, options) {
-      fetchDfr.reject(model, error, options);
+    options.error = function(xhr, textStatus, errorThrown) {
+      fetchDfr.reject(model, errorThrown || textStatus, options);
     };
 
     (this.sync || Backbone.sync).call(this, 'read', this, options);
