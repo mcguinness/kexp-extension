@@ -13,14 +13,8 @@ define([
     getImageBySort: function(sortList) {
 
       sortList || (sortList = [
-        {
-        entity: "album",
-        imageSort: ["large", "medium", "small"]
-      },
-        {
-        entity: "artist",
-        imageSort: ["extralarge", "large", "medium", "small"]
-      }
+        {entity: "album", imageSort: ["large", "medium", "small"]},
+        {entity: "artist", imageSort: ["extralarge", "large", "medium", "small"]}
       ]);
 
       _.each(sortList, function(sortEntry) {
@@ -66,7 +60,7 @@ define([
       if (albumModel) {
         fetchDfr.resolve(albumModel);
       } else {
-        albumModel = new LastFmModel();
+        albumModel = new this.model();
         albumModel.fetchAlbum(artist, album)
           .done(function(model, resp) {
             self.add(model);
@@ -90,7 +84,7 @@ define([
       if (artistModel) {
         fetchDfr.resolve(artistModel);
       } else {
-        artistModel = new LastFmModel();
+        artistModel = new this.model();
         artistModel.fetchArtist(artist)
           .done(function(model, resp) {
             self.add(model);

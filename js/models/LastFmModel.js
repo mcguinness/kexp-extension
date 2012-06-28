@@ -10,7 +10,7 @@ define([
       var result = {
         mbid: entity.mbid || "",
         url: entity.url || "",
-        id: entity.id || entity.url || "",
+        id: entity.id || entity.url || _.uniqueId("lastfm_"),
         name: entity.name || ""
       };
 
