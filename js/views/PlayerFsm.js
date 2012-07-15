@@ -27,9 +27,9 @@ define(["jquery", "underscore", "machina", "moment"], function($, _, Machina, mo
   };
   Object.freeze(ReadyState);
 
-  var PlayerFsm = function(audioElement, playerModel) {
+  var PlayerFsm = function(liveStreamEl, playerModel) {
 
-    if (!_.isObject(audioElement)) {
+    if (!_.isObject(liveStreamEl)) {
       throw new Error("HTMLAudioElement is required.");
     }
     if (!_.isObject(playerModel)) {
@@ -38,8 +38,8 @@ define(["jquery", "underscore", "machina", "moment"], function($, _, Machina, mo
 
     var fsm = new Machina.Fsm({
       model: playerModel,
-      audioEl: audioElement,
-      $audioEl: $(audioElement),
+      audioEl: liveStreamEl,
+      $audioEl: $(liveStreamEl),
 
       initialState: "uninitialized",
       events: ["empty", "buffering", "playing", "paused", "error"],

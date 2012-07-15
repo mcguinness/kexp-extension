@@ -25,7 +25,7 @@ define([
     // Player Region is static across all routers
     this.views = {
       player: new PlayerView({
-        audioElement: options.audioElement,
+        liveStreamEl: options.liveStreamEl,
         showModel: this.models.show
       })
     };

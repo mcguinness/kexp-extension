@@ -22,7 +22,7 @@ define([
       this.bindTo(this.vent, "nowplaying:lastfm:popover:enabled", this.showLastFmButton, this);
       this.bindTo(this.vent, "nowplaying:refresh:background", this.handleBackgroundRefresh, this);
       this.bindTo(this.vent, "lastfm:track:love:success", this.showShareAnimation, this);
-      this.bindTo(this.vent, "nowplaying:like", this.handleLikeCountChange, this);
+      this.bindTo(this.model, "change:like", this.handleLikeCountChange, this);
       this.bindTo(this.lastFmConfig, "change:sessionKey", this.handleLastFmShareChange, this);
       this.bindTo(this.lastFmConfig, "change:likeShareEnabled", this.handleLastFmShareChange, this);
       this.bindTo(this.lastFmConfig, "change:likeScrobbleEnabled", this.handleLastFmShareChange, this);
@@ -135,6 +135,7 @@ define([
 
       this.vent.trigger("analytics:trackevent", "NowPlaying", "Like", targetModel.toDebugString(), likedSong.get("likeCount"));
       this.vent.trigger("nowplaying:like", targetModel);
+      targetModel.trigger("change:like", targetModel, likedSong);
     },
     handleBackgroundRefresh: function() {
       $("#button-refresh", this.$el).tooltip("hide");
@@ -146,8 +147,8 @@ define([
       
       this.vent.trigger("nowplaying:refresh:manual");
     },
-    handleLikeCountChange: function(model) {
-      $(".badge", this.$el).toggleClass("badge-zero", false).text(model.likedSong.get("likeCount"));
+    handleLikeCountChange: function(model, value) {
+      $(".badge", this.$el).toggleClass("badge-zero", false).text(value.get("likeCount"));
     },
     handleLastFmPopoverToggle: function() {
       this.vent.trigger("nowplaying:lastfm:popover:toggle", this.model);

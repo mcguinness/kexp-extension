@@ -36,9 +36,9 @@ define([
 
   // Create Audio Element is not Chrome Extension w/Background Page
   popupApp.addInitializer(function(options) {
-    if (!_.isObject(options.audioElement)) {
+    if (!_.isObject(options.liveStreamEl)) {
       $("#region-footer").append('<audio id="background-audio" src="http://kexp-mp3-2.cac.washington.edu:8000/;" preload="none">');
-      options.audioElement = document.getElementById("background-audio");
+      options.liveStreamEl = document.getElementById("background-audio");
     }
   });
 

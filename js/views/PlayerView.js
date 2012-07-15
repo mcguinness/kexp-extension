@@ -20,7 +20,7 @@ define([
 
 			this._playerBinder = new Backbone.ModelBinder();
 			this.showModel = options.showModel || new ShowModel();
-			this.audioEl = options.audioElement;
+			this.audioEl = options.liveStreamEl;
 			
 			if (!_.isObject(this.model)) {
 				this.model = new PlayerModel({
@@ -28,7 +28,7 @@ define([
 					muted: this.audioEl.muted
 				});
 			}
-			this._playerFsm = new PlayerFsm(options.audioElement, this.model);
+			this._playerFsm = new PlayerFsm(options.liveStreamEl, this.model);
 			_.bindAll(this, "handlePlayerError");
 			this._playerFsm.on("error", this.handlePlayerError);
 

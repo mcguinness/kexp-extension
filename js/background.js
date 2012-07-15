@@ -3,37 +3,38 @@ require([
   "KexpApp",
   "NowPlayingPollFsm",
   "collections/NowPlayingCollection",
+  "services/AnalyticsService",
   "services/LastFmScrobbleService",
   "gaq"
-  ], function($, KexpApp, NowPlayingPollFsm, NowPlayingCollection, LastFmScrobbleService, gaq) {
+  ], function($, KexpApp, NowPlayingPollFsm, NowPlayingCollection, LastFmScrobbleService, AnalyticsService, gaq) {
     
-    $(document).ready(function() {
+  $(document).ready(function() {
 
-      var backgroundApp;
-      window.KexpBackgroundApp = backgroundApp = new KexpApp();
+    var backgroundApp;
+    window.KexpBackgroundApp = backgroundApp = new KexpApp();
 
-      backgroundApp.addInitializer(function(options) {
-        var self = this;
-        this.audioEl = options.audioEl = document.getElementById("background-audio");
-        this.nowPlayingCollection = options.nowPlayingCollection = new NowPlayingCollection();
-        this.pollFsm = new NowPlayingPollFsm(backgroundApp.audioEl, backgroundApp.nowPlayingCollection);
+    backgroundApp.addInitializer(function(options) {
+      var self = this;
+      this.liveStreamEl = options.liveStreamEl = document.getElementById("background-audio");
+      this.nowPlayingCollection = options.nowPlayingCollection = new NowPlayingCollection();
+      this.pollFsm = new NowPlayingPollFsm(backgroundApp.liveStreamEl, backgroundApp.nowPlayingCollection);
 
-        window.chrome.extension.onConnect.addListener(function(port) {
-          if (port.name == "kexp.app.view") {
-            self.pollFsm.attachView();
-            port.onDisconnect.addListener(function() {
-              self.pollFsm.detachView();
-              _gaq.push(["_trackEvent", "Application", "Close"]);
-            });
-          }
-        });
+      window.chrome.extension.onConnect.addListener(function(port) {
+        if (port.name == "kexp.app.view") {
+          self.pollFsm.attachView();
+          port.onDisconnect.addListener(function() {
+            self.pollFsm.detachView();
+          });
+        }
       });
-
-      backgroundApp.addInitializer(function(options) {
-        this.addService(new LastFmScrobbleService(), options);
-      });
-
-      backgroundApp.start({});
-      console.log("background page loaded.");
     });
+
+    backgroundApp.addInitializer(function(options) {
+      this.addService(new LastFmScrobbleService(), options);
+      this.addService(new AnalyticsService(), options);
+    });
+
+    backgroundApp.start({});
+    console.log("background page loaded.");
+  });
 });

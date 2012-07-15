@@ -4,10 +4,10 @@ define([
   "underscore"
   ], function(Machina, $, _) {
 
-  var NowPlayingPollFsm = function(audioElement, nowPlayingCollection) {
+  var NowPlayingPollFsm = function(liveStreamEl, nowPlayingCollection) {
 
     var nowPlayingFsm = new Machina.Fsm({
-      audioEl: audioElement,
+      audioEl: liveStreamEl,
       collection: nowPlayingCollection,
       attachedViewCount: 0,
       pollIntervalMs: 60000,
