@@ -67,7 +67,7 @@ define([
             fetchDfr.resolve(model, resp);
           })
           .fail(function(model, error, options) {
-            console.info("fetch album error [%s] for [%s] by artist [%s]", error, album, artist);
+            console.info("fetch album error [%s] for [%s] by artist [%s]", JSON.stringify(error), album, artist);
             fetchDfr.reject(model, error, options);
           });
       }
@@ -91,7 +91,7 @@ define([
             fetchDfr.resolve(model, resp);
           })
           .fail(function(model, error, options) {
-            console.info("fetch artist error [%s] for artist [%s]", error, artist);
+            console.info("fetch artist error [%s] for artist [%s]", JSON.stringify(error), artist);
             fetchDfr.reject(model, error, options);
           });
       }

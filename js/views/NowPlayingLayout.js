@@ -32,14 +32,15 @@ define([
     },
     initialize: function(options) {
       options || (options = {});
-      var layout = this;
-
+      
       if (this.collection === undefined) {
         this.collection = new NowPlayingCollection();
       }
       this.popoverEl = options.popoverEl || "#navbar-top";
       this._currentNowPlaying = null;
-      
+    },
+    initialEvents: function() {
+      var layout = this;
       _.bindAll(this, "handleManualPageReset");
 
       this._bindCollection = _.once(function() {
@@ -51,16 +52,15 @@ define([
       this.bindTo(this.vent, "nowplaying:refresh:manual", this.handleManualRefresh, this);
       this.bindTo(this.vent, "nowplaying:page:prev", this.handlePagePrev, this);
       this.bindTo(this.vent, "nowplaying:page:next", this.handlePageNext, this);
-
     },
     onShow: function() {
       var mostRecentModel = this.collection.last();
 
-      // Bind collection events here incase a fetch is in progress during initialize
-      this._bindCollection();
-
       this.showNowPlaying(mostRecentModel, ShowType.Reset);
       this.vent.trigger("nowplaying:cycle", mostRecentModel);
+
+      // Bind collection events here incase a fetch is in progress during initialize
+      this._bindCollection();
     },
     showNowPlaying: function(nowPlayingModel, showType) {
       if (this._currentLoader) {

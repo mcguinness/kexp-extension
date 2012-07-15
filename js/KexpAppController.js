@@ -12,37 +12,28 @@ define([
 
   var KexpAppController = function(application, options) {
     options || (options = {});
-    var playerOptions = _.clone(options);
-    
+
     this.app = application;
-    this._fetchNowPlayingOptions = {
-      upsert: true
-    };
-    this._fetchShowOptions = {};
-    if (!options.chromeExtension) {
-      // KEXP curently doesn't support CORS Access-Control-Allow-Origin or JSONP (CRITICAL)
-      //this._fetchNowPlayingOptions.dataType = "jsonp";
-      //this._fetchShowOptions.dataType = "jsonp";
-    }
 
     // Controller State
     this.collections = {
-      nowPlaying: new NowPlayingCollection()
+      nowPlaying: options.nowPlayingCollection || new NowPlayingCollection()
     };
     this.models = {
       show: new ShowModel()
     };
-
     // Player Region is static across all routers
-    playerOptions.showModel = this.models.show;
     this.views = {
-      player: new PlayerView(playerOptions)
+      player: new PlayerView({
+        audioElement: options.audioElement,
+        showModel: this.models.show
+      })
     };
     application.footer.show(this.views.player);
 
     _.bindAll(this, "handleFetchShowPoll");
     this.handleFetchShowPoll();
-    this.enableFetchNowPlayingPoll(60000);
+    //this.enableFetchNowPlayingPoll(60000);
   };
 
   _.extend(KexpAppController.prototype, {
@@ -62,7 +53,7 @@ define([
         self.showNowPlaying();
       } else {
         // Wait for Fetch (Success or Error)
-        self.collections.nowPlaying.fetch(self._fetchNowPlayingOptions)
+        self.collections.nowPlaying.fetch({upsert: true})
           .always(function() {
             self.showNowPlaying();
           });
@@ -79,7 +70,7 @@ define([
       self.disableFetchNowPlayingPoll();
       self._pollIntervalId = setInterval(function() {
         self.app.vent.trigger("nowplaying:refresh:background", self.collections.nowPlaying);
-        self.collections.nowPlaying.fetch(self._fetchNowPlayingOptions);
+        self.collections.nowPlaying.fetch({upsert: true});
       }, intervalMs);
     },
     showNowPlaying: function() {
@@ -106,7 +97,7 @@ define([
           nextPollGraceSeconds = (2 * 60) + Math.round(((Math.random() * 60) + 1));
       
       console.log("Polling kexp show info...");
-      $.when(this.models.show.fetch(this._fetchShowOptions))
+      $.when(this.models.show.fetch())
         .done(function(model) {
           var nextPollSeconds = moment(model.get("timeEnd")).diff(moment(), "seconds");
           nextPollSeconds += nextPollGraceSeconds;

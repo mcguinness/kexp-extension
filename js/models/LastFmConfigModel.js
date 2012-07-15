@@ -15,7 +15,8 @@ define([
         userName: "",
         authUrl: "http://www.last.fm/api/auth/",
         likeShareEnabled: true,
-        likeScrobbleEnabled: true
+        likeScrobbleEnabled: true,
+        playScrobleEnabled: false
       },
       initialize: function(attributes, options) {
       
@@ -33,7 +34,8 @@ define([
         return !_.isEmpty(this.get("sessionKey"));
       },
       hasSharingEnabled: function() {
-        return this.hasAuthorization() && (this.isLikeShareEnabled() || this.isLikeScrobbleEnabled());
+        return this.hasAuthorization() &&
+        (this.isLikeShareEnabled() || this.isLikeScrobbleEnabled() || this.isPlayScrobbleEnabled());
       },
       disableAuthorization: function() {
         console.debug("[LastFM API Authorization Disabled]");
@@ -53,6 +55,9 @@ define([
       },
       isLikeScrobbleEnabled: function() {
         return (this.get("likeScrobbleEnabled") && this.hasAuthorization());
+      },
+      isPlayScrobbleEnabled: function() {
+        return (this.get("playScrobbleEnabled") && this.hasAuthorization());
       }
   });
 

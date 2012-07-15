@@ -1,19 +1,39 @@
 require([
-  "collections/AppConfigCollection",
+  "jquery",
+  "KexpApp",
+  "NowPlayingPollFsm",
+  "collections/NowPlayingCollection",
+  "services/LastFmScrobbleService",
   "gaq"
-  ], function(AppConfigCollection, gaq) {
+  ], function($, KexpApp, NowPlayingPollFsm, NowPlayingCollection, LastFmScrobbleService, gaq) {
     
-    var store = {
-        appConfig: new AppConfigCollection()
-    };
-    store.appConfig.getDefaults();
+    $(document).ready(function() {
 
-    // Save any config changes
-    store.appConfig.on("change", function(model) {
-      console.debug("Configuration model {%s} value has changed, saving changes...", model.id, JSON.stringify(model));
-      model.save();
-    }, this);
+      var backgroundApp;
+      window.KexpBackgroundApp = backgroundApp = new KexpApp();
 
-    window.KexpStore = store;
-    console.log("background page loaded.");
+      backgroundApp.addInitializer(function(options) {
+        var self = this;
+        this.audioEl = options.audioEl = document.getElementById("background-audio");
+        this.nowPlayingCollection = options.nowPlayingCollection = new NowPlayingCollection();
+        this.pollFsm = new NowPlayingPollFsm(backgroundApp.audioEl, backgroundApp.nowPlayingCollection);
+
+        window.chrome.extension.onConnect.addListener(function(port) {
+          if (port.name == "kexp.app.view") {
+            self.pollFsm.attachView();
+            port.onDisconnect.addListener(function() {
+              self.pollFsm.detachView();
+              _gaq.push(["_trackEvent", "Application", "Close"]);
+            });
+          }
+        });
+      });
+
+      backgroundApp.addInitializer(function(options) {
+        this.addService(new LastFmScrobbleService(), options);
+      });
+
+      backgroundApp.start({});
+      console.log("background page loaded.");
+    });
 });

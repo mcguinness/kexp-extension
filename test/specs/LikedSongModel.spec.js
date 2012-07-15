@@ -38,6 +38,35 @@ define(["models/LikedSongModel", "collections/LastFmCollection"], function(Liked
       expect(this.model.get("timeLastFmLoveShare")).to.be.null;
     });
 
+    it("should parse json model with ISOString and serialize to ISOString", function() {
+      var json = {"artist":"Beach House","artistMbid":"d5cc67b8-1cc4-453b-96e8-44487acdebea","artistLastFmUrl":"http://www.last.fm/music/Beach+House","songTitle":"The Hours","trackMbid":"","trackLastFmUrl":"","trackDownloadUrl":"","album":"Bloom","albumLastFmUrl":"http://www.last.fm/music/Beach+House/Bloom","albumMbid":"24c99b7d-b243-450d-8477-46dfd4a8bfa3","albumYear":"2012","albumLabel":"Sub Pop","likeCount":3,"lastFmShareStatus":1,"lastFmTrackScrobbleCount":1,"timeCreated":"2012-06-02T05:13:00.197Z","timeModified":"2012-06-09T06:55:16.823Z","timeLastLike":"2012-06-09T06:55:16.305Z","timeLastFmLoveShare":"2012-06-09T06:55:16.823Z","id":"a40a94d8-9083-c023-c6de-1a50068ba3f2"}
+      this.model = new LikedSongModel(this.model.parse(json));
+
+      this.model.id.should.equal("a40a94d8-9083-c023-c6de-1a50068ba3f2");
+      this.model.get("artist").should.equal("Beach House");
+      this.model.get("artistMbid").should.equal("d5cc67b8-1cc4-453b-96e8-44487acdebea");
+      this.model.get("artistLastFmUrl").should.equal("http://www.last.fm/music/Beach+House");
+      this.model.get("songTitle").should.equal("The Hours");
+      this.model.get("trackMbid").should.be.empty;
+      this.model.get("trackLastFmUrl").should.be.empty;
+      this.model.get("trackDownloadUrl").should.be.empty;
+      this.model.get("album").should.equal("Bloom");
+      this.model.get("albumLastFmUrl").should.equal("http://www.last.fm/music/Beach+House/Bloom");
+      this.model.get("albumMbid").should.equal("24c99b7d-b243-450d-8477-46dfd4a8bfa3");
+      this.model.get("albumYear").should.equal("2012");
+      this.model.get("albumLabel").should.equal("Sub Pop");
+      this.model.get("likeCount").should.equal(3);
+      this.model.get("lastFmShareStatus").should.equal(1);
+      this.model.get("lastFmTrackScrobbleCount").should.equal(1);
+      this.model.get("timeCreated").should.be.a("date");
+      this.model.get("timeModified").should.be.a("date");
+      this.model.get("timeLastLike").should.be.a("date");
+      this.model.get("timeLastFmLoveShare").should.be.a("date");
+
+      this.model.toJSON().should.eql(json);
+    });
+
+
     it("should update {timeModified} when model attributes are updated", function() {
       var originalTimeModifed = this.model.get("timeModified");
       this.model.set("artist", "Modest Mouse");

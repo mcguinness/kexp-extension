@@ -17,14 +17,15 @@ define([
       this.collection = this.model.collection;
       this.lastFmConfig = this.appConfig.getLastFm();
       this.pager = options.pager || {canPagePrev: false, canPageNext:  false};
-      
+    },
+    initialEvents: function() {
       this.bindTo(this.vent, "nowplaying:lastfm:popover:enabled", this.showLastFmButton, this);
       this.bindTo(this.vent, "nowplaying:refresh:background", this.handleBackgroundRefresh, this);
       this.bindTo(this.vent, "lastfm:track:love:success", this.showShareAnimation, this);
+      this.bindTo(this.vent, "nowplaying:like", this.handleLikeCountChange, this);
       this.bindTo(this.lastFmConfig, "change:sessionKey", this.handleLastFmShareChange, this);
       this.bindTo(this.lastFmConfig, "change:likeShareEnabled", this.handleLastFmShareChange, this);
       this.bindTo(this.lastFmConfig, "change:likeScrobbleEnabled", this.handleLastFmShareChange, this);
-
     },
     events: {
       "click #button-like": "handleLike",
@@ -42,6 +43,7 @@ define([
       return {
         model: {
           id: this.model.id,
+          airBreak: this.model.get("airBreak"),
           likeCount: this.model.hasLikedSong() ? this.model.likedSong.get("likeCount") : 0,
           likeShareEnabled: this.lastFmConfig.hasSharingEnabled(),
           pager: this.pager
@@ -132,8 +134,6 @@ define([
       }
 
       this.vent.trigger("analytics:trackevent", "NowPlaying", "Like", targetModel.toDebugString(), likedSong.get("likeCount"));
-
-      $(".badge", this.$el).toggleClass("badge-zero", false).text(likedSong.get("likeCount"));
       this.vent.trigger("nowplaying:like", targetModel);
     },
     handleBackgroundRefresh: function() {
@@ -145,6 +145,9 @@ define([
       this.handleBackgroundRefresh();
       
       this.vent.trigger("nowplaying:refresh:manual");
+    },
+    handleLikeCountChange: function(model) {
+      $(".badge", this.$el).toggleClass("badge-zero", false).text(model.likedSong.get("likeCount"));
     },
     handleLastFmPopoverToggle: function() {
       this.vent.trigger("nowplaying:lastfm:popover:toggle", this.model);

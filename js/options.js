@@ -10,8 +10,14 @@ require([
   "twitter"
   ], function($, _, Backbone, Marionette, KexpApp, AnalyticsService, AppConfigCollection, OptionsView) {
   
-  var chromeExtension = (window.chrome && window.chrome.extension);
-  var kexpStore = chromeExtension ? chrome.extension.getBackgroundPage().KexpStore : {};
+  var options = {chromeExtension: (window.chrome && window.chrome.extension)},
+      backgroundApp;
+
+  if (options.chromeExtension) {
+    backgroundApp = chrome.extension.getBackgroundPage().KexpBackgroundApp;
+    options.appConfig = backgroundApp.appConfig,
+  }
+
   var optionsApp = new KexpApp();
 
   optionsApp.addInitializer(function(options) {
@@ -43,9 +49,6 @@ require([
     Backbone.history.start();
   });
 
-  optionsApp.start({
-    chromeExtension: chromeExtension,
-    appConfig: kexpStore.appConfig
-  });
+  optionsApp.start(options);
 
 });

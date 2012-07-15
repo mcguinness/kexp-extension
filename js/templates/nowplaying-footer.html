@@ -1,5 +1,6 @@
 <div id="song-footer" class="song-footer kexp-box-striped fade">
     <div class="wrap">
+      <% if (!model.airBreak) { %>
       <button id="button-like" class="btn btn-mini btn-like btn-inverse btn-kexp-inverse pull-left" type="button" data-id="<%= model.id %>">
         <span class="prefix-accent">\\\</span> LIKE
       </button>
@@ -10,6 +11,7 @@
       <button id="button-lastfm" class="btn btn-mini btn-lastfm pull-left hide" type="button">
         <span class="lastfm-logo"></span>
       </button>
+      <% } %>
       <span class="kexp-icon-button-group pull-right">
         <% if (_.isObject(model.pager) && (model.pager.canPagePrev || model.pager.canPageNext)) { %>
         <span>

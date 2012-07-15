@@ -3,8 +3,9 @@ define([
   "jquery",
   "underscore",
   "collections/LikedSongCollection",
+  "collections/LastFmCollection",
   "models/LastFmModel"
-  ], function(Machina, $, _, LikedSongCollection, LastFmModel) {
+  ], function(Machina, $, _, LikedSongCollection, LastFmCollection, LastFmModel) {
 
   var NowPlayingFsm = function(nowPlayingModel) {
 
@@ -62,6 +63,10 @@ define([
           _onEnter: function() {
             this.fireEvent("resolve:liked", nowPlayingModel);
 
+            if (_.isUndefined(nowPlayingModel.lastFmMeta)) {
+              nowPlayingModel.lastFmMeta = new LastFmCollection();
+            }
+            
             var fsm = this,
               artistName = nowPlayingModel.get("artist"),
               albumName = nowPlayingModel.get("album"),

@@ -3,12 +3,10 @@ define([
   "backbone-kexp",
   "underscore",
   "moment",
-  "models/LikedSongModel",
-  "collections/LastFmCollection"
-  ], function($, Backbone, _, moment, LikedSongModel, LastFmCollection) {
+  "models/LikedSongModel"
+  ], function($, Backbone, _, moment, LikedSongModel) {
   
   var NowPlayingModel = Backbone.Model.extend({
-
     mappings: [
       {attribute: "id", target: "PlayID", type: "string"},
       {attribute: "airBreak", target: "AirBreak", type: "boolean"},
@@ -33,9 +31,9 @@ define([
       if (attributes.id === undefined || attributes.id === null) {
         return "id attribute is missing or null";
       }
-      if (attributes.timeLastUpdate === undefined || attributes.timeLastUpdate === null) {
-        return "timeLastUpdate attribute is missing or null";
-      }
+      // if (attributes.timeLastUpdate === undefined || attributes.timeLastUpdate === null) {
+      //   return "timeLastUpdate attribute is missing or null";
+      // }
       if (attributes.songTitle === undefined || attributes.songTitle === null) {
         return "songTitle attribute is missing or null";
       }
@@ -63,17 +61,6 @@ define([
       };
       return new LikedSongModel(song);
     }
-  });
-
-  Object.defineProperty(NowPlayingModel.prototype, "lastFmMeta", {
-    get: function() {
-      if (_.isUndefined(this._lastFmCollection)) {
-        this._lastFmCollection = new LastFmCollection();
-      }
-      return this._lastFmCollection;
-    },
-    enumerable : true,
-    configurable : false
   });
 
   Object.defineProperty(NowPlayingModel.prototype, "frozenAttributeKeys", {

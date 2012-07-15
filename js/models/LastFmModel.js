@@ -5,7 +5,10 @@ define([
   ], function($, Backbone, _) {
 
   var LastFmModel = Backbone.Model.extend({
-
+    url: function() {
+      // Replaced by Sync Module but Backbone fetch with throw if empty
+      return "http://ws.audioscrobbler.com/2.0/";
+    },
     parseEntity: function(entity) {
       var result = {
         mbid: entity.mbid || "",

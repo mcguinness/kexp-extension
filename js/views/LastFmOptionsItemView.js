@@ -23,6 +23,7 @@ define([
       "click #btn-lastfm-service": "handleAuthorizationToggle",
       "click #chkbx-lastfm-share-like": "handleLikeShareCheck",
       "click #chkbx-lastfm-scrobble-like": "handleLikeScrobbleCheck",
+      "click #chkbx-lastfm-scrobble-play": "handlePlayScrobbleCheck",
       "click #modal-lastfm-authorize button.accept": "acceptAuthorization"
     },
     onRender: function() {
@@ -40,6 +41,7 @@ define([
           bindings = { // Order is important, checkbox selectors will also match sessionKey selector (Fixed in next release)
             likeShareEnabled: {selector: "#chkbx-lastfm-share-like"},
             likeScrobbleEnabled: {selector: "#chkbx-lastfm-scrobble-like"},
+            playScrobbleEnabled: {selector: "#chkbx-lastfm-scrobble-play"},
             sessionKey: [
               {selector: "#btn-lastfm-service", elAttribute: "class", converter: convertAuthzButtonClass},
               {selector: "#btn-lastfm-service", elAttribute: "html", converter: convertAuthzButtonHtml},
@@ -168,6 +170,10 @@ define([
     handleLikeScrobbleCheck: function(event) {
       var checked = $(event.currentTarget).is(":checked");
       this.vent.trigger("analytics:trackevent", "Feature", "LastFmLikeScrobble", checked ? "Enabled" : "Disabled");
+    },
+    handlePlayScrobbleCheck: function(event) {
+      var checked = $(event.currentTarget).is(":checked");
+      this.vent.trigger("analytics:trackevent", "Feature", "LastFmPlayScrobble", checked ? "Enabled" : "Disabled");
     }
   });
 
