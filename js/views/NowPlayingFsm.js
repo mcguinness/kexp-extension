@@ -69,6 +69,22 @@ define([
             }
 
             if (nowPlayingModel.get("airBreak")) {
+
+              nowPlayingModel.lastFmMeta.add(
+              {
+                  "mbid": "",
+                  "url": "http://www.kexp.org/",
+                  "id": "",
+                  "name": "KEXP",
+                   "images": [
+                      {
+                          "url": "./img/kexp40years.jpg",
+                          "size": "large"
+                      }
+                  ],
+                  "entity": "artist"
+              });
+
               return this.transition("lastfmResolved");
             }
             

@@ -13,8 +13,14 @@
     <% } %>
     <p class="bottom"><span class="timeplayed">► <%- model.timePlayed %></span></p>
   <% } else { %>
-    <p><span class="artist">Air Break</span></p>
-    <p><span class="timeplayed">► <%- model.timePlayed %></span></p>
+    <p>
+      <span class="artist">Air Break</span>
+      <span class="song-title">KEXP</span>
+    </p>
     <p></p>
+    <blockquote class="comment">The innovative music heard everyday on KEXP is made possible through the support of listeners like you.<br>
+      <a href="http://kexp.org/donate/" data-chrometab="active">Help keep KEXP listener-powered!</a>  
+    </blockquote>
+    <p class="bottom"><span class="timeplayed">► <%- model.timePlayed %></span></p>
   <% } %>
 </div

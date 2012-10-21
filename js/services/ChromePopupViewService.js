@@ -27,7 +27,7 @@ define([
       },
       handleMessage : function(message) {
         var collection;
-
+        //console.log("received message => %s", JSON.stringify(message));
         if (message.type === "event") {
           switch (message.target) {
             case "NowPlayingCollection" :
@@ -62,7 +62,7 @@ define([
 
         switch (eventName) {
           case "add" :
-            collection.add(eventData, parseOptions);
+            collection.upsert(eventData, parseOptions);
             break;
           case "remove" :
             collection.remove(eventData);
