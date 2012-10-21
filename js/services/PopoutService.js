@@ -200,6 +200,9 @@ define([
             }
           }
         }, this);
+      },
+      toString: function() {
+        return "PopoutService";
       }
     });
 

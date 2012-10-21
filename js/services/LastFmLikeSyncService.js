@@ -90,6 +90,9 @@ define([
             }
           );
       }
+    },
+    toString: function() {
+      return "LastFmLikeSyncService";
     }
   });
   return LastFmLikeSyncService;

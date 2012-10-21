@@ -18,7 +18,6 @@ define([
       }
 
       if (_.isDate(this.model.get("timeLastUpdate"))) {
-        // Can't figure out why time is 1 hour off, so hack -1 hour until I figure it out
         json.timeLastUpdate = moment.utc(this.model.get("timeLastUpdate")).local().format("M/D/YYYY h:mm:ss A");
       }
 
@@ -33,6 +32,9 @@ define([
       return {
         model: json
       };
+    },
+    initialEvents: function() {
+      // No Model Events
     },
     onRender: function() {
       this.$el.hide();

@@ -30,6 +30,9 @@ define([
         this.bindTo(this.vent, "notification:error", function(message, title) {
           showNotification("error", message, '<i class="icon-exclamation-sign"></i> ' + title);
         }, this);
+      },
+      toString: function() {
+        return "NotificationService";
       }
     });
 

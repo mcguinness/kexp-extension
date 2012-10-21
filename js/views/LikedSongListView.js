@@ -139,7 +139,8 @@ define([
     },
     removeLike: function(event) {
       var view = this;
-      var songId = $(event.currentTarget).parentsUntil("tbody", "[data-id]").attr("data-id");
+      var $row = $(event.currentTarget).parentsUntil("tbody", "[data-id]");
+      var songId = $row.attr("data-id");
 
       if (_.isEmpty(songId)) {
         console.error("Unable to find the id in the data-id attribute for the clicked row. (Possible Template/Model Error)", event);
@@ -163,6 +164,9 @@ define([
           console.log("Successfully deleted song with id: {%s} [%s]", songId, song.toDebugString());
           view.collection.remove(model);
           view.render();
+
+          view.dataTable.fnDeleteRow($row);
+
           view.vent.trigger("analytics:trackevent", "LikedSong", "Remove", model.toDebugString());
         },
         error: function(model, error, options) {

@@ -29,6 +29,7 @@ define([
         },
         "initialized": {
           _onEnter: function() {
+            
             var fsm = this,
               songTitle = nowPlayingModel.get("songTitle"),
               artistName = nowPlayingModel.get("artist"),
@@ -37,7 +38,7 @@ define([
 
             this.fireEvent("initialized", nowPlayingModel);
 
-            if (nowPlayingModel.hasLikedSong()) {
+            if (nowPlayingModel.get("airBreak") || nowPlayingModel.hasLikedSong()) {
               fsm.transition("likeResolved");
 
             } else {
@@ -65,6 +66,10 @@ define([
 
             if (_.isUndefined(nowPlayingModel.lastFmMeta)) {
               nowPlayingModel.lastFmMeta = new LastFmCollection();
+            }
+
+            if (nowPlayingModel.get("airBreak")) {
+              return this.transition("lastfmResolved");
             }
             
             var fsm = this,

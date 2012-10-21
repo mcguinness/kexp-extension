@@ -20,10 +20,51 @@ require([
       this.pollFsm = new NowPlayingPollFsm(backgroundApp.liveStreamEl, backgroundApp.nowPlayingCollection);
 
       window.chrome.extension.onConnect.addListener(function(port) {
-        if (port.name == "kexp.app.view") {
+        if (port.name === "kexp.popup.view") {
           self.pollFsm.attachView();
+
+          var nowPlayingEventHandle = self.bindTo(self.nowPlayingCollection, "all", function(eventName, model) {
+            port.postMessage({
+              type: "event",
+              name: eventName,
+              target: "NowPlayingCollection",
+              data: model.toJSON()
+            });
+          }, this);
+
+          var appConfigEventHandle = self.bindTo(self.appConfig, "all", function(eventName, model) {
+            port.postMessage({
+              type: "event",
+              name: eventName,
+              target: "AppConfigCollection",
+              data: model.toJSON()
+            });
+          }, this);
+
+          port.onMessage.addListener(function(message) {
+            if (message.type === "fetch" && message.target === "NowPlayingCollection") {
+              port.postMessage({
+                type: "fetch",
+                target: "NowPlayingCollection",
+                data: self.nowPlayingCollection.toJSON()
+              });
+            }
+          });
+          
           port.onDisconnect.addListener(function() {
+            self.unbindFrom(nowPlayingEventHandle);
+            self.unbindFrom(appConfigEventHandle);
+            nowPlayingEventHandle = null;
+            appConfigEventHandle = null;
             self.pollFsm.detachView();
+            port = null;
+          });
+        } else if (port.name === "kexp.options.view") {
+
+          port.onMessage.addListener(function(message) {
+            if (message.type === "event" && message.name === "change" && message.target === "AppConfigCollection") {
+              self.appConfig.upsert(message.data);
+            }
           });
         }
       });

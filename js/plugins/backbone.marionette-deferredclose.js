@@ -53,6 +53,8 @@ define([
     var that = this;
     var deferredClose = $.Deferred();
 
+    console.log("closing %s: {%s:%s}", this.cid, this.el, this.className);
+
     $.when(_.isFunction(this.beforeClose) ? this.beforeClose() : true)
       .then(function() {
         if (_.isFunction(that.tooltipClose)) { that.tooltipClose(); }

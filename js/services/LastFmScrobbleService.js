@@ -38,6 +38,7 @@ define([
       }
     },
     handlePlayScrobble: function(nowPlayingModel) {
+      // Only process event for valid state
       if (!this._lastFmConfig.isPlayScrobbleEnabled() || this._audioEl.paused || _.isUndefined(nowPlayingModel) ||
         nowPlayingModel.get("airBreak")) { return; }
     
@@ -53,6 +54,10 @@ define([
         this._lastFmApi.scrobbleTrack(track, artist, album, false, timePlayed)
           .then(
             function() {
+              if (_.isObject(nowPlayingModel.likedSong)) {
+                nowPlayingModel.likedSong.scrobble();
+                nowPlayingModel.likedSong.save();
+              }
               self.vent.trigger("lastfm:track:scrobble:success", nowPlayingModel);
               self.vent.trigger("analytics:trackevent", "LastFm", "Scrobble", nowPlayingModel.toDebugString());
             },
@@ -64,6 +69,9 @@ define([
           );
 
       }
+    },
+    toString: function() {
+      return "LastFmScrobbleService";
     }
   });
   return LastFmScrobbleService;

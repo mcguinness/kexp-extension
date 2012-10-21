@@ -1,4 +1,4 @@
-require.config({
+var require = {
   paths: {
     "backbone": "libs/backbone-min",
     "backbone-kexp": "plugins/backbone-kexp",
@@ -38,4 +38,4 @@ require.config({
     "jquery.dataTables": ["jquery"],
     "jquery.dataTables.sort": ["jquery.dataTables"]
   }
-});
+};

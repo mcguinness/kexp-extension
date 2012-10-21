@@ -50,6 +50,9 @@ define([
         this.vent.trigger("notification:error",
           'Last.fm error "' + resp.message + '"',
           "Unable to scrobble like to your Last.fm profile!");
+      },
+      toString: function() {
+        return "FeatureManagerService";
       }
     });
 

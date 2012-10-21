@@ -12,6 +12,8 @@ define([
   "services/PopoutService",
   "services/PopoverCleanupService",
   "services/ChromeTabService",
+  "services/ChromePopupViewService",
+  "collections/NowPlayingCollection",
   "views/NavRegionView",
   "views/PlayerView"
   ], function(
@@ -28,13 +30,15 @@ define([
     PopoutService,
     PopoverCleanupService,
     ChromeTabService,
+    ChromePopupViewService,
+    NowPlayingCollection,
     NavRegionView,
     PlayerView) {
   
   // Create App
   var popupApp = new KexpApp();
 
-  // Create Audio Element is not Chrome Extension w/Background Page
+  // Create Audio Element if not Chrome Extension w/Background Page
   popupApp.addInitializer(function(options) {
     if (!_.isObject(options.liveStreamEl)) {
       $("#region-footer").append('<audio id="background-audio" src="http://kexp-mp3-2.cac.washington.edu:8000/;" preload="none">');
@@ -42,6 +46,11 @@ define([
     }
   });
 
+  popupApp.addInitializer(function(options) {
+    if (!_.isObject(options.nowPlayingCollection)) {
+      options.nowPlayingCollection = new NowPlayingCollection();
+    }
+  });
 
   // Add Services
   popupApp.addInitializer(function(options) {
@@ -53,6 +62,7 @@ define([
     this.addService(new PopoverCleanupService(), options);
     if (options.chromeExtension) {
       this.addService(new ChromeTabService(), options);
+      this.addService(new ChromePopupViewService(), options);
     }
   });
 

@@ -3,10 +3,11 @@ define([
   "backbone-kexp",
   "underscore",
   "backbone-indexeddb",
-  "databases/LikedSongDatabase"
-  ], function($, Backbone, _, IndexedDBSync, LikedSongDatabase) {
+  "databases/LikedSongDatabase",
+  "models/MappingParseModel"
+  ], function($, Backbone, _, IndexedDBSync, LikedSongDatabase, MappingParseModel) {
 
-  var LikedSongModel = Backbone.Model.extend({
+  var LikedSongModel = MappingParseModel.extend({
 
     database: new LikedSongDatabase(),
     storeName: "songs",

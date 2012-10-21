@@ -1,5 +1,12 @@
-define(["jquery", "backbone-kexp", "underscore", "moment"], function($, Backbone, _) {
-  var ShowModel = Backbone.Model.extend({
+define([
+  "jquery",
+  "backbone-kexp",
+  "underscore",
+  "models/MappingParseModel",
+  "moment"
+  ], function($, Backbone, _, MappingParseModel) {
+  
+  var ShowModel = MappingParseModel.extend({
 
     mappings: [
       {attribute: "id", target: "ArchiveID", type: "int"},
@@ -14,7 +21,7 @@ define(["jquery", "backbone-kexp", "underscore", "moment"], function($, Backbone
       }
     ],
     parse: function(resp, xhr) {
-      var result = Backbone.Model.prototype.parse.apply(this, arguments);
+      var result = MappingParseModel.prototype.parse.apply(this, arguments);
       // Feed is not consistent, sometimes show title is the Title field, othertimes ShowTitleFriendly
       result.title = (resp.ShowTitleFriendly === "Variety Mix" && resp.Title !== "Variety Mix") ?
         resp.Title : resp.ShowTitleFriendly;

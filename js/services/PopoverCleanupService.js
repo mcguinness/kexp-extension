@@ -21,6 +21,9 @@ define([
           data.popover.hide();
           delete data.popover;
         }
+      },
+      toString: function() {
+        return "PopoverCleanupService";
       }
     });
 

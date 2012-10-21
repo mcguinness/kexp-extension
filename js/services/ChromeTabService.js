@@ -47,6 +47,9 @@ define([
           this.backgroundPage.setTimeout(this.createTab, 0, href, temp ? false : active, temp);
           return false;
         }
+      },
+      toString: function() {
+        return "ChromeTabService";
       }
     });
 

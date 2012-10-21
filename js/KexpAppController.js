@@ -33,7 +33,6 @@ define([
 
     _.bindAll(this, "handleFetchShowPoll");
     this.handleFetchShowPoll();
-    //this.enableFetchNowPlayingPoll(60000);
   };
 
   _.extend(KexpAppController.prototype, {
@@ -58,20 +57,6 @@ define([
             self.showNowPlaying();
           });
       }
-    },
-    disableFetchNowPlayingPoll: function() {
-      if (this._pollIntervalId !== undefined) {
-        clearInterval(this._pollIntervalId);
-        delete this._pollIntervalId;
-      }
-    },
-    enableFetchNowPlayingPoll: function(intervalMs) {
-      var self = this;
-      self.disableFetchNowPlayingPoll();
-      self._pollIntervalId = setInterval(function() {
-        self.app.vent.trigger("nowplaying:refresh:background", self.collections.nowPlaying);
-        self.collections.nowPlaying.fetch({upsert: true});
-      }, intervalMs);
     },
     showNowPlaying: function() {
       var layout = new NowPlayingLayout({
@@ -112,8 +97,16 @@ define([
         });
     },
     close: function() {
-      this.disableFetchNowPlayingPoll();
+      Backbone.history.stop();
       this.disableFetchShowPoll();
+
+      _.each(this.views, function(view) {
+        view.close();
+        delete this.views;
+      });
+
+      delete this.models;
+      delete this.collections;
     }
   });
 

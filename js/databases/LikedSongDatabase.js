@@ -9,34 +9,53 @@ define([], function() {
         {
           version: 1,
           migrate: function(transaction, next) {
-            var store = transaction.db.createObjectStore("songs");
-            store.createIndex("artistIndex", "artist", {
+
+            var store;
+            if (!transaction.db.objectStoreNames.contains("songs")) {
+              store = transaction.db.createObjectStore("songs");
+            } else {
+              store = transaction.objectStore("songs");
+            }
+
+            var tryCreateIndex = function(name, keyPath, options) {
+              try {
+                store.createIndex(name, keyPath, options);
+              } catch (e) {
+                if (e.name !== "ConstraintError") {
+                  throw e;
+                }
+              }
+            };
+
+            tryCreateIndex("artistIndex", "artist", {
               unique: false
             });
-            store.createIndex("artistMbidIndex", "artistMbid", {
+
+            tryCreateIndex("artistMbidIndex", "artistMbid", {
               unique: false
             });
-            store.createIndex("artistLastFmUrlIndex", "artistLastFmUrl", {
+            tryCreateIndex("artistLastFmUrlIndex", "artistLastFmUrl", {
               unique: false
             });
-            store.createIndex("songTitleIndex", "songTitle", {
+            tryCreateIndex("songTitleIndex", "songTitle", {
               unique: false
             });
-            store.createIndex("albumIndex", "album", {
+            tryCreateIndex("albumIndex", "album", {
               unique: false
             });
-            store.createIndex("albumMbidIndex", "albumMbid", {
+            tryCreateIndex("albumMbidIndex", "albumMbid", {
               unique: false
             });
-            store.createIndex("albumLastFmUrlIndex", "albumLastFmUrl", {
+            tryCreateIndex("albumLastFmUrlIndex", "albumLastFmUrl", {
               unique: false
             });
-            store.createIndex("albumLabelIndex", "albumLabel", {
+            tryCreateIndex("albumLabelIndex", "albumLabel", {
               unique: false
             });
-            store.createIndex("likeCountIndex", "likeCount", {
+            tryCreateIndex("likeCountIndex", "likeCount", {
               unique: false
             });
+
             next();
           }
         }

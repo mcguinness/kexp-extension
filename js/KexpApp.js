@@ -15,7 +15,7 @@ define([
     kexpApp.addInitializer(function(options) {
       var self = this;
       // Close app on unload (app/views may have event handlers for background page)
-      window.addEventListener("pagehide", function() {
+      window.addEventListener("unload", function() {
           self.close();
       });
     });
@@ -28,7 +28,8 @@ define([
       if (!_.isObject(options.appConfig)) {
         options.appConfig = new AppConfigCollection();
         options.appConfig.getDefaults();
-        options.appConfig.on("change", function(model) {
+        
+        this.bindTo(options.appConfig, "change", function(model) {
             console.debug("Configuration model {%s} value has changed, saving changes...", model.id, JSON.stringify(model));
             model.save();
           }, this);

@@ -24,6 +24,9 @@ define([
         _.defer(function() {
           window._gaq.push(eventParams);
         });
+      },
+      toString: function() {
+        return "AnalyticsService";
       }
     });
 

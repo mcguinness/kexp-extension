@@ -11,7 +11,6 @@
     factory(window.Backbone, window._);
   }
 }(function(Backbone, _) {
-
     // Generate four random hex digits.
     function S4() {
         return (((1 + Math.random()) * 0x10000) | 0).toString(16).substring(1);
@@ -27,14 +26,6 @@
      var IDBTransaction = window.IDBTransaction || window.webkitIDBTransaction; // No prefix in moz
      var IDBKeyRange = window.IDBKeyRange || window.webkitIDBKeyRange ; // No prefix in moz
 
-     /* Horrible Hack to prevent ' Expected an identifier and instead saw 'continue' (a reserved word).'*/
-     if (window.indexedDB) {
-         indexedDB.prototype._continue =  indexedDB.prototype.continue;
-     } else if (window.webkitIDBRequest) {
-         webkitIDBRequest.prototype._continue = webkitIDBRequest.prototype.continue;
-     }
-
-     window.indexedDB = indexedDB;
      window.IDBCursor = window.IDBCursor || window.webkitIDBCursor ||  window.mozIDBCursor ||  window.msIDBCursor ;
     
 
@@ -42,15 +33,16 @@
     // That's the interesting part.
     // There is a driver for each schema provided. The schema is a te combination of name (for the database), a version as well as migrations to reach that 
     // version of the database.
-    function Driver(schema, ready) {
+    function Driver(schema, ready, nolog) {
         this.schema         = schema;
         this.ready          = ready;
         this.error          = null;
         this.transactions   = []; // Used to list all transactions and keep track of active ones.
         this.db             = null;
+        this.nolog          = nolog;
         this.supportOnUpgradeNeeded = false;
         var lastMigrationPathVersion = _.last(this.schema.migrations).version;
-        debugLog("opening database " + this.schema.id + " in version #" + lastMigrationPathVersion);
+        if (!this.nolog) debugLog("opening database " + this.schema.id + " in version #" + lastMigrationPathVersion);
         this.dbRequest      = indexedDB.open(this.schema.id,lastMigrationPathVersion); //schema version need to be an unsigned long
 
         this.launchMigrationPath = function(dbVersion) {
@@ -66,25 +58,26 @@
         };
 
         this.dbRequest.onblocked = function(event){
-            debugLog("blocked");
+            if (!this.nolog) debugLog("blocked");
         }
 
         this.dbRequest.onsuccess = function (e) {
             this.db = e.target.result; // Attach the connection ot the queue.
-
             if(!this.supportOnUpgradeNeeded)
             {
                 var currentIntDBVersion = (parseInt(this.db.version) ||  0); // we need convert beacuse chrome store in integer and ie10 DP4+ in int;
+                var lastMigrationInt = (parseInt(lastMigrationPathVersion) || 0);  // And make sure we compare numbers with numbers.
 
-                if (currentIntDBVersion === lastMigrationPathVersion) { //if support new event onupgradeneeded will trigger the ready function
+                if (currentIntDBVersion === lastMigrationInt) { //if support new event onupgradeneeded will trigger the ready function
                     // No migration to perform!
+
                     this.ready();
-                } else if (currentIntDBVersion < lastMigrationPathVersion ) {
+                } else if (currentIntDBVersion < lastMigrationInt ) {
                     // We need to migrate up to the current migration defined in the database
                     this.launchMigrationPath(currentIntDBVersion);
                 } else {
                     // Looks like the IndexedDB is at a higher version than the current driver schema.
-                    this.error = "Database version is greater than current code " + currentIntDBVersion + " expected was " + lastMigrationPathVersion;
+                    this.error = "Database version is greater than current code " + currentIntDBVersion + " expected was " + lastMigrationInt;
                 }
             };
         }.bind(this);
@@ -108,7 +101,7 @@
 
             this.supportOnUpgradeNeeded = true;
 
-            debugLog("onupgradeneeded = " + iDBVersionChangeEvent.oldVersion + " => " + iDBVersionChangeEvent.newVersion);
+            if (!this.nolog) debugLog("onupgradeneeded = " + iDBVersionChangeEvent.oldVersion + " => " + iDBVersionChangeEvent.newVersion);
             this.launchMigrationPath(iDBVersionChangeEvent.oldVersion);
 
 
@@ -141,13 +134,13 @@
 
         // Performs all the migrations to reach the right version of the database.
         migrate: function (migrations, version, options) {
-            debugLog("Starting migrations from " + version);
+            if (!this.nolog) debugLog("Starting migrations from " + version);
             this._migrate_next(migrations, version, options);
         },
 
         // Performs the next migrations. This method is private and should probably not be called.
         _migrate_next: function (migrations, version, options) {
-            debugLog("_migrate_next begin version from #" + version);
+            if (!this.nolog) debugLog("_migrate_next begin version from #" + version);
             var that = this;
             var migration = migrations.shift();
             if (migration) {
@@ -164,23 +157,23 @@
                         };
                     }
                     // First, let's run the before script
-                    debugLog("_migrate_next begin before version #" + migration.version);
+                    if (!this.nolog) debugLog("_migrate_next begin before version #" + migration.version);
                     migration.before(function () {
-                        debugLog("_migrate_next done before version #" + migration.version);
+                        if (!this.nolog) debugLog("_migrate_next done before version #" + migration.version);
 
                         var continueMigration = function (e) {
-                            debugLog("_migrate_next continueMigration version #" + migration.version);
+                            if (!this.nolog) debugLog("_migrate_next continueMigration version #" + migration.version);
 
                             var transaction = this.dbRequest.transaction || versionRequest.result;
-                            debugLog("_migrate_next begin migrate version #" + migration.version);
+                            if (!this.nolog) debugLog("_migrate_next begin migrate version #" + migration.version);
 
                             migration.migrate(transaction, function () {
-                                debugLog("_migrate_next done migrate version #" + migration.version);
+                                if (!this.nolog) debugLog("_migrate_next done migrate version #" + migration.version);
                                 // Migration successfully appliedn let's go to the next one!
-                                debugLog("_migrate_next begin after version #" + migration.version);
+                                if (!this.nolog) debugLog("_migrate_next begin after version #" + migration.version);
                                 migration.after(function () {
-                                    debugLog("_migrate_next done after version #" + migration.version);
-                                    debugLog("Migrated to " + migration.version);
+                                    if (!this.nolog) debugLog("_migrate_next done after version #" + migration.version);
+                                    if (!this.nolog) debugLog("Migrated to " + migration.version);
 
                                     //last modification occurred, need finish
                                     if(migrations.length ==0) {
@@ -190,11 +183,11 @@
                                             options.success();
                                         }
                                         else{*/
-                                            debugLog("_migrate_next setting transaction.oncomplete to finish  version #" + migration.version);
+                                            if (!this.nolog) debugLog("_migrate_next setting transaction.oncomplete to finish  version #" + migration.version);
                                             transaction.oncomplete = function() {
-                                                debugLog("_migrate_next done transaction.oncomplete version #" + migration.version);
+                                                if (!that.nolog) debugLog("_migrate_next done transaction.oncomplete version #" + migration.version);
 
-                                                debugLog("Done migrating");
+                                                if (!that.nolog) debugLog("Done migrating");
                                                 // No more migration
                                                 options.success();
                                             }
@@ -202,9 +195,9 @@
                                     }
                                     else
                                     {
-                                        debugLog("_migrate_next setting transaction.oncomplete to recursive _migrate_next  version #" + migration.version);
+                                        if (!this.nolog) debugLog("_migrate_next setting transaction.oncomplete to recursive _migrate_next  version #" + migration.version);
                                         transaction.oncomplete = function() {
-                                           debugLog("_migrate_next end from version #" + version + " to " + migration.version);
+                                           if (!this.nolog) debugLog("_migrate_next end from version #" + version + " to " + migration.version);
                                            that._migrate_next(migrations, version, options);
                                        }
                                     }
@@ -214,7 +207,7 @@
                         }.bind(this);
 
                         if(!this.supportOnUpgradeNeeded){
-                            debugLog("_migrate_next begin setVersion version #" + migration.version);
+                            if (!this.nolog) debugLog("_migrate_next begin setVersion version #" + migration.version);
                             var versionRequest = this.db.setVersion(migration.version);
                             versionRequest.onsuccess = continueMigration;
                             versionRequest.onerror = options.error;
@@ -226,7 +219,7 @@
                     }.bind(this));
                 } else {
                     // No need to apply this migration
-                    debugLog("Skipping migration " + migration.version);
+                    if (!this.nolog) debugLog("Skipping migration " + migration.version);
                     this._migrate_next(migrations, version, options);
                 }
             }
@@ -234,10 +227,10 @@
 
         // This is the main method, called by the ExecutionQueue when the driver is ready (database open and migration performed)
         execute: function (storeName, method, object, options) {
-            debugLog("execute : " + method +  " on " + storeName + " for " + object.id);
+            if (!this.nolog) debugLog("execute : " + method +  " on " + storeName + " for " + object.id);
             switch (method) {
             case "create":
-                this.write(storeName, object, options);
+                this.create(storeName, object, options);
                 break;
             case "read":
                 if (object.id || object.cid) {
@@ -247,7 +240,7 @@
                 }
                 break;
             case "update":
-                this.write(storeName, object, options); // We may want to check that this is not a collection. TOFIX
+                this.update(storeName, object, options); // We may want to check that this is not a collection. TOFIX
                 break;
             case "delete":
                 this.delete(storeName, object, options); // We may want to check that this is not a collection. TOFIX
@@ -257,17 +250,46 @@
             }
         },
 
-        // Writes the json to the storeName in db.
+        // Writes the json to the storeName in db. It is a create operations, which means it will fail if the key already exists
         // options are just success and error callbacks.
-        write: function (storeName, object, options) {
-            var writeTransaction = this.db.transaction([storeName], IDBTransaction.READ_WRITE);
+        create: function (storeName, object, options) {
+            var writeTransaction = this.db.transaction([storeName], "readwrite");
             //this._track_transaction(writeTransaction);
             var store = writeTransaction.objectStore(storeName);
             var json = object.toJSON();
+            var writeRequest;
+
+            if (json.id === undefined) json.id = guid();
+            if (json.id === null) delete json.id;
+            
+            if (!store.keyPath)
+              writeRequest = store.add(json, json.id);
+            else
+              writeRequest = store.add(json);
+
+            writeRequest.onerror = function (e) {
+                options.error(e);
+            };
+            writeRequest.onsuccess = function (e) {
+                options.success(json);
+            };
+        },
+        
+        // Writes the json to the storeName in db. It is an update operation, which means it will overwrite the value if the key already exist
+        // options are just success and error callbacks.
+        update: function (storeName, object, options) {
+            var writeTransaction = this.db.transaction([storeName], "readwrite");
+            //this._track_transaction(writeTransaction);
+            var store = writeTransaction.objectStore(storeName);
+            var json = object.toJSON();
+            var writeRequest;
 
             if (!json.id) json.id = guid();
 
-            var writeRequest = store.put(json, json.id);
+            if (!store.keyPath)
+              writeRequest = store.put(json, json.id);
+            else
+              writeRequest = store.put(json);
 
             writeRequest.onerror = function (e) {
                 options.error(e);
@@ -279,7 +301,7 @@
 
         // Reads from storeName in db with json.id if it's there of with any json.xxxx as long as xxx is an index in storeName 
         read: function (storeName, object, options) {
-            var readTransaction = this.db.transaction([storeName], IDBTransaction.READ_ONLY);
+            var readTransaction = this.db.transaction([storeName], "readonly");
             this._track_transaction(readTransaction);
 
             var store = readTransaction.objectStore(storeName);
@@ -316,7 +338,7 @@
 
         // Deletes the json.id key and value in storeName from db.
         delete: function (storeName, object, options) {
-            var deleteTransaction = this.db.transaction([storeName], IDBTransaction.READ_WRITE);
+            var deleteTransaction = this.db.transaction([storeName], "readwrite");
             //this._track_transaction(deleteTransaction);
 
             var store = deleteTransaction.objectStore(storeName);
@@ -340,7 +362,7 @@
         query: function (storeName, collection, options) {
             var elements = [];
             var skipped = 0, processed = 0;
-            var queryTransaction = this.db.transaction([storeName], IDBTransaction.READ_ONLY);
+            var queryTransaction = this.db.transaction([storeName], "readonly");
             //this._track_transaction(queryTransaction);
 
             var readCursor = null;
@@ -367,7 +389,7 @@
                                 // We want ASC order
                                 readCursor = index.openCursor(bounds, window.IDBCursor.NEXT);
                             }
-                        } else if (options.conditions[index.keyPath]) {
+                        } else if (options.conditions[index.keyPath] != undefined) {
                             bounds = IDBKeyRange.only(options.conditions[index.keyPath]);
                             readCursor = index.openCursor(bounds);
                         }
@@ -453,8 +475,8 @@
     // ExecutionQueue object
     // The execution queue is an abstraction to buffer up requests to the database.
     // It holds a "driver". When the driver is ready, it just fires up the queue and executes in sync.
-    function ExecutionQueue(schema,next) {
-        this.driver     = new Driver(schema, this.ready.bind(this));
+    function ExecutionQueue(schema,next,nolog) {
+        this.driver     = new Driver(schema, this.ready.bind(this), nolog);
         this.started    = false;
         this.stack      = [];
         this.version    = _.last(schema.migrations).version;
@@ -500,7 +522,8 @@
             _.each(Databases,function(database){
                 database.close();
             });
-
+            // Clean up active databases object.
+            Databases = {}
             return;
         }
 
@@ -517,7 +540,7 @@
         };
 
         if (!Databases[schema.id]) {
-              Databases[schema.id] = new ExecutionQueue(schema,next);
+              Databases[schema.id] = new ExecutionQueue(schema,next,schema.nolog);
             }else
         {
             next();
@@ -534,5 +557,6 @@
     } else {
       Backbone.sync = sync;
     }
+    
     //window.addEventListener("unload",function(){Backbone.sync("closeall")})
 }));

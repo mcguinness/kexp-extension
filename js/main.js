@@ -2,22 +2,26 @@ require(["jquery", "underscore", "PopupApp", "gaq"], function($, _, PopupApp) {
 
   var options = {chromeExtension: (window.chrome && window.chrome.extension)},
       backgroundApp,
-      port;
+      handleStart;
 
   if (options.chromeExtension) {
     backgroundApp = chrome.extension.getBackgroundPage().KexpBackgroundApp;
-    options.liveStreamEl = backgroundApp.liveStreamEl,
-    options.appConfig = backgroundApp.appConfig,
-    options.nowPlayingCollection = backgroundApp.nowPlayingCollection;
+    //window.console = chrome.extension.getBackgroundPage().console;
+    options.liveStreamEl = backgroundApp.liveStreamEl;
     options.appUrl = chrome.extension.getURL("popup.html");
-    port = chrome.extension.connect({name: "kexp.app.view"});
+    
   } else {
     $("body").addClass("popout");
     options.appUrl = window.location.toString();
   }
-  
+
+  window.KexpApp = PopupApp;
+  window.addEventListener("unload", function() {
+    console.log("closing popup");
+    delete window.KexpApp;
+  });
+
   $(document).ready(function() {
-    window.KexpApp = PopupApp;
     options.popout = $("body").hasClass("popout");
     window.KexpApp.start(options);
   });

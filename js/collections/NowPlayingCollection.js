@@ -20,6 +20,13 @@ define([
       if (models === undefined) {
         return;
       }
+
+      // Remove previous airbreak song if exists...
+      var lastModel = this.last();
+      if (_.isObject(lastModel) && lastModel.get("airBreak")) {
+        this.remove(lastModel);
+      }
+
       var overLimitCount = (this.length + models.length) - this.limit;
       var removeModel;
       if (overLimitCount > 0) {

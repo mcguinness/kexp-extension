@@ -29,6 +29,8 @@ define([
 				});
 			}
 			this._playerFsm = new PlayerFsm(options.liveStreamEl, this.model);
+		},
+		initialEvents: function() {
 			_.bindAll(this, "handlePlayerError");
 			this._playerFsm.on("error", this.handlePlayerError);
 
@@ -201,7 +203,6 @@ define([
 				this.$statusCycleEl.cycle("destroy");
 			}
 			this._playerFsm.unbindAudioElEvents();
-			delete this._playerFsm;
 		}
 	});
 

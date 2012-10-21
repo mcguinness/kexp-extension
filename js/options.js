@@ -5,23 +5,20 @@ require([
   "marionette-kexp",
   "KexpApp",
   "services/AnalyticsService",
+  "services/ChromeOptionsViewService",
   "collections/AppConfigCollection",
   "views/OptionsView",
   "twitter"
-  ], function($, _, Backbone, Marionette, KexpApp, AnalyticsService, AppConfigCollection, OptionsView) {
+  ], function($, _, Backbone, Marionette, KexpApp, AnalyticsService, ChromeOptionsViewService, AppConfigCollection, OptionsView) {
   
-  var options = {chromeExtension: (window.chrome && window.chrome.extension)},
-      backgroundApp;
-
-  if (options.chromeExtension) {
-    backgroundApp = chrome.extension.getBackgroundPage().KexpBackgroundApp;
-    options.appConfig = backgroundApp.appConfig,
-  }
-
+  var options = {chromeExtension: (window.chrome && window.chrome.extension)};
   var optionsApp = new KexpApp();
 
   optionsApp.addInitializer(function(options) {
     this.addService(new AnalyticsService(), options);
+    if (options.chromeExtension) {
+      this.addService(new ChromeOptionsViewService(), options);
+    }
   });
 
   optionsApp.addInitializer(function(options) {

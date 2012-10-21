@@ -39,18 +39,18 @@ define([
 
       _.each(_.values(this), function(region) {
         if (region instanceof Marionette.Region && _.isFunction(region.close)) {
-          console.debug("Closing region {%s}", region.el, region);
+          console.debug("Closing region {%s}", region.el);
           region.close();
         }
       });
 
       _.each(this.services, function(service) {
-        console.debug("Stopping service", service);
+        console.debug("Stopping service {%s}", service.toString());
         service.stop();
       });
 
       _.each(this.routers, function(router) {
-        console.debug("Closing router", router);
+        console.debug("Closing router");
         if (_.isObject(router.controller) && _.isFunction(router.controller.close)) {
           router.controller.close();
         }

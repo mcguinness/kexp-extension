@@ -129,6 +129,7 @@ define([
       fetchDfr.reject(collection, errorThrown || textStatus, options);
     };
 
+    this.trigger("sync:before", this, options);
     (this.sync || Backbone.sync).call(this, 'read', this, options);
     return fetchDfr.promise();
   };
@@ -166,6 +167,7 @@ define([
       fetchDfr.reject(model, errorThrown || textStatus, options);
     };
 
+    this.trigger("sync:before", this, options);
     (this.sync || Backbone.sync).call(this, 'read', this, options);
     return fetchDfr.promise();
   };

@@ -232,7 +232,6 @@ define([
       // Song "could" be loading during close.  This should kill any event handlers
       if (this._currentLoader) {
         this._currentLoader.eventListeners = {};
-        delete this._currentLoader;
       }
       this.disableManualPage();
     }

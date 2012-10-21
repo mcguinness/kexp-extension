@@ -3,10 +3,11 @@ define([
   "backbone-kexp",
   "underscore",
   "moment",
+  "models/MappingParseModel",
   "models/LikedSongModel"
-  ], function($, Backbone, _, moment, LikedSongModel) {
+  ], function($, Backbone, _, moment, MappingParseModel, LikedSongModel) {
   
-  var NowPlayingModel = Backbone.Model.extend({
+  var NowPlayingModel = MappingParseModel.extend({
     mappings: [
       {attribute: "id", target: "PlayID", type: "string"},
       {attribute: "airBreak", target: "AirBreak", type: "boolean"},
