@@ -4346,6 +4346,9 @@ body {
 .song-footer:after {
   clear: both;
 }
+.song-footer .wrap {
+  height: 21px;
+}
 .song-footer .badge {
   margin-left: 5px;
   background-color: #feac31;
