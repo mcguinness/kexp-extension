@@ -1,6 +1,6 @@
 {
   "name": "KEXP Streaming Player (Unsanctioned)",
-  "version": "1.8",
+  "version": "1.9",
   "minimum_chrome_version": "22",
   "description": "background kexp.org streaming audio player with now playing info and likes.",
   "manifest_version": 2,
@@ -9,7 +9,10 @@
   },
   "options_page": "options.html",
   "browser_action": {
-    "default_icon": "img/favicon2.ico",
+    "default_icon": {
+       "19": "img/favicon14.png",
+       "38": "img/favicon48.png"
+    },
     "default_title": "Now Playing on KEXP",
     "default_popup": "popup.html"
   },
