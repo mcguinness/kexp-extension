@@ -4,9 +4,10 @@ define([
   "marionette-kexp",
   "collections/AppConfigCollection",
   "views/LastFmOptionsItemView",
+  "views/SpotifyOptionsItemView",
   "text!templates/options.html"
   ], function($, _, Marionette, AppConfigCollection,
-    LastFmOptionsItemView, ViewTemplate) {
+    LastFmOptionsItemView, SpotifyOptionsItemView, ViewTemplate) {
 
   var OptionsView = Marionette.CompositeView.extend({
     tagName: "div",
@@ -20,14 +21,24 @@ define([
     },
     buildItemView: function(item, ItemView){
       var view;
-      if (item.id === "lastfm") {
-        view = new LastFmOptionsItemView({
-          model: item,
-          collection: this.collection
-        });
+
+      switch (item.id.toLowerCase()) {
+        case "lastfm" :
+          view = new LastFmOptionsItemView({
+            model: item,
+            collection: this.collection
+          });
+          break;
+        case "spotify" :
+          view = new SpotifyOptionsItemView({
+            model: item,
+            collection: this.collection
+          });
+          break;
+        default :
+          throw new Error("Unable to determine view for item " + item.id)
       }
 
-      if (!view) throw new Error("Unable to determine view for item " + item.id);
       return view;
     },
     addItemView: function(item, ItemView) {

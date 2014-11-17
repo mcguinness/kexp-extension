@@ -4,8 +4,9 @@ define([
   "backbone-kexp",
   "backbone-localstorage",
   "models/LastFmConfigModel",
+  "models/SpotifyConfigModel",
   "models/AppFeaturesConfigModel"
-  ], function($, _, Backbone, Store, LastFmConfigModel, AppFeaturesConfigModel) {
+  ], function($, _, Backbone, Store, LastFmConfigModel, SpotifyConfigModel, AppFeaturesConfigModel) {
 
   var AppConfigCollection = Backbone.Collection.extend({
 
@@ -29,15 +30,20 @@ define([
       }
 
       _.each(resp, function(item) {
-        if (item.id === "lastfm") {
-          models.push(new LastFmConfigModel(item));
-        }
-        else if (item.id === "features") {
-          models.push(new AppFeaturesConfigModel(item));
-        }
-        else {
-          console.error("Unknown config item: " + item.id, item);
-          throw new Error("Unknown config item: " + item.id);
+
+        switch (item.id.toLowerCase()) {
+          case "lastfm" :
+            models.push(new LastFmConfigModel(item));
+            break;
+          case "spotify" :
+            models.push(new SpotifyConfigModel(item));
+            break;
+          case "features" :
+            models.push(new AppFeaturesConfigModel(item));
+            break;
+          default :
+            console.error("Unknown config item: " + item.id, item);
+            throw new Error("Unknown config item: " + item.id);
         }
       });
       return models;
@@ -45,10 +51,14 @@ define([
     getDefaults: function() {
       this.fetch();
       this.getLastFm();
+      this.getSpotify();
       this.getFeatures();
     },
     getLastFm: function() {
       return this.get("lastfm") || this.create(new LastFmConfigModel());
+    },
+    getSpotify: function() {
+      return this.get("spotify") || this.create(new SpotifyConfigModel());
     },
     getFeatures: function() {
       return this.get("features") || this.create(new AppFeaturesConfigModel());
