@@ -1,7 +1,7 @@
 {
   "name": "KEXP Streaming Player (Unsanctioned)",
-  "version": "1.9",
-  "minimum_chrome_version": "22",
+  "version": "2.0.0",
+  "minimum_chrome_version": "33",
   "description": "background kexp.org streaming audio player with now playing info and likes.",
   "manifest_version": 2,
   "background": {
@@ -22,8 +22,10 @@
     "128": "img/icon128.png" 
   },
   "permissions": [
+    "identity",
     "*://*.kexp.org/",
-    "*://*.audioscrobbler.com/"
+    "*://*.audioscrobbler.com/",
+    "*://*.spotify.com/"
   ],
   "content_security_policy": "script-src 'self' 'unsafe-eval' https://ssl.google-analytics.com https://platform.twitter.com; object-src 'self'"
 }
