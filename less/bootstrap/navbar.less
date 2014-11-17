@@ -161,8 +161,8 @@
 }
 
 .navbar-fixed-top .container,
-.navbar-fixed-bottom .container {
-  #grid > .core > .span(@gridColumns);
+.navbar-fixed-bottom .container { 
+  width: (@gridColumnWidth * @gridColumns) + (@gridGutterWidth * (@gridColumns - 1));
 }
 
 // Fixed to top
