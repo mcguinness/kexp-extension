@@ -65,14 +65,14 @@ define([
   });
 
   Object.defineProperty(NowPlayingModel.prototype, "frozenAttributeKeys", {
-    value: ["id", "album", "artist", "songTitle", "timePlayed"],
+    value: ["id", "album", "artist", "songTitle"],
     writable: false,
     enumerable : true,
     configurable : false
   });
 
   Object.defineProperty(NowPlayingModel.prototype, "amendableAttributeKeys", {
-    value: ["albumYear", "albumLabel", "comments"],
+    value: ["timePlayed", "albumYear", "albumLabel", "comments"],
     writable: false,
     enumerable : true,
     configurable : false

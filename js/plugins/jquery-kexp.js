@@ -53,8 +53,8 @@ define(["jquery", "underscore"], function($, _) {
         }()) + ".queueTransition";
 
         timeoutId = setTimeout(function() {
-          console.log('%s aborted <%s id="%s" class="%s">', transitionId, $el.prop("tagName").toLowerCase(),
-              $el.prop("id"), $el.prop("className"), $el.queue());
+          //console.log('%s aborted <%s id="%s" class="%s">', transitionId, $el.prop("tagName").toLowerCase(),
+          //    $el.prop("id"), $el.prop("className"), $el.queue());
           $el.off(endEvent);
           if (_.isFunction(endTransition)) {
               endTransition();

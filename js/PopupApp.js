@@ -13,6 +13,7 @@ define([
   "services/PopoverCleanupService",
   "services/ChromeTabService",
   "services/ChromePopupViewService",
+  "services/SpotifyLikeSyncService",
   "collections/NowPlayingCollection",
   "views/NavRegionView",
   "views/PlayerView"
@@ -31,6 +32,7 @@ define([
     PopoverCleanupService,
     ChromeTabService,
     ChromePopupViewService,
+    SpotifyLikeSyncService,
     NowPlayingCollection,
     NavRegionView,
     PlayerView) {
@@ -60,6 +62,7 @@ define([
     this.addService(new FeatureManagerService(), options);
     this.addService(new PopoutService(), options);
     this.addService(new PopoverCleanupService(), options);
+    this.addService(new SpotifyLikeSyncService(), options);
     if (options.chromeExtension) {
       this.addService(new ChromeTabService(), options);
       this.addService(new ChromePopupViewService(), options);

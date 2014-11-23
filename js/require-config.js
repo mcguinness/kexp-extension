@@ -6,6 +6,7 @@ var require = {
     "backbone-localstorage": "libs/backbone-localstorage",
     "backbone-modelbinder": "plugins/Backbone.ModelBinder.min",
     "backbone-replete": "plugins/backbone-replete",
+    "backbone-oauth": "libs/backbone-oauth",
     "bootstrap": "plugins/bootstrap.min",
     "detectzoom": "util/detectzoom",
     "ga": "https://ssl.google-analytics.com/ga",

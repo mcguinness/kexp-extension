@@ -2,28 +2,36 @@ define([
   "jquery",
   "underscore",
   "backbone-kexp",
-  "backbone-localstorage"
-  ], function($, _, Backbone, Store) {
+  "backbone-localstorage",
+  "backbone-oauth"
+  ], function($, _, Backbone, Store, OAuth2Sync) {
+
+  var SpotifyAppOptions = {
+    authzUrl: 'https://accounts.spotify.com/authorize',
+    accessUrl: 'https://accounts.spotify.com/api/token',
+    redirectUrl: window.chrome.identity.getRedirectURL() + "spotify",
+    refreshUrl: 'https://accounts.spotify.com/api/token',
+    clientId: "6b0551371741402ba8cb726425fc943d",
+    clientSecret: "abb785c0e50f4c77b0f4ec4842f10e10",
+    scopes: ['playlist-modify-private']
+  };
 
   var SpotifyConfigModel = Backbone.Model.extend({
 
       defaults: {
         id: "spotify",
-        clientId: "6b0551371741402ba8cb726425fc943d",
-        clientSecret: "abb785c0e50f4c77b0f4ec4842f10e10",
+        apiUrl: 'https://api.spotify.com/v1',
         accessToken: null,
         tokenType: null,
         expiresIn: null,
         refreshToken: null,
-        scopes: ["playlist-modify-private"],
-        authorizeUrl: "https://accounts.spotify.com/authorize",
-        tokenUrl: "https://accounts.spotify.com/api/token",
-        redirectUrl: null,
-        playListName: "liked on kexp",
-        likeShareEnabled: true,
+        tokenRequestTime: null,
+        playListName: 'liked on kexp',
+        playListId: null,
+        userId: null,
+        likeShareEnabled: true
       },
       initialize: function(attributes, options) {
-      
         options || (options = {});
         // TODO: Move to common module
         if (options.localStorage && _.isFunction(options.localStorage.sync)) {
@@ -33,6 +41,16 @@ define([
           this.localStorage = new Store("app.kexp.config");
           this.sync = this.localStorage.sync;
         }
+
+        var storage = {
+          storage: {
+            load: _.bind(this.getAuthorization, this),
+            save: _.bind(this.enableAuthorization, this),
+            clear: _.bind(this.disableAuthorization, this)
+          }
+        };
+
+        this.spotifySync = new OAuth2Sync(_.extend(SpotifyAppOptions, storage));
       },
       hasAuthorization: function() {
         return !_.isEmpty(this.get("refreshToken"));
@@ -40,12 +58,38 @@ define([
       hasSharingEnabled: function() {
         return this.hasAuthorization() && this.isLikeShareEnabled();
       },
+      requestAuthorization: function() {
+        var self = this;
+        return this.spotifySync.authorize().pipe(function(response) {
+          console.log(response);
+          return self.spotifySync.access(response.code)
+            .done(function() {
+                self.updateUserId()
+                  .done(function() {
+                    self.upsertPlaylist();
+                  })
+            });
+        });
+      },
+      getAuthorizationHeader: function() {
+        return this.spotifySync.getAuthorizationHeader();
+      },
+      getAuthorization: function() {
+        return {
+          access_token: this.get('accessToken'),
+          refresh_token: this.get('refreshToken'),
+          token_type: this.get('tokenType'),
+          expires_in: this.get('expiresIn'),
+          time: this.get('tokenRequestTime')
+        }
+      },
       enableAuthorization: function(tokenResp) {
         this.set({
           accessToken: tokenResp.access_token,
           tokenType: tokenResp.token_type,
           expiresIn: tokenResp.expires_in,
-          refreshToken: tokenResp.refresh_token
+          refreshToken: tokenResp.refresh_token,
+          tokenRequestTime: tokenResp.time
         });
       },
       disableAuthorization: function() {
@@ -57,76 +101,62 @@ define([
           refreshToken: ""
         });
       },
-      getRedirectUrl: function() {
-        var redirectUrl = this.get("redirectUrl");
-        return _.isEmpty(this.get(redirectUrl)) ? window.chrome.identity.getRedirectURL() + "spotify" : redirectUrl;
-      },
-      getAuthorizationUrl: function() {
-        return this.get("authorizeUrl") + 
-          '?response_type=code' + 
-          '&client_id=' + this.get("clientId") + 
-          '&scope=' + encodeURIComponent(this.get("scopes").join(',')) + 
-          '&redirect_uri=' + encodeURIComponent(this.getRedirectUrl());
-      },
-      requestAuthorization: function() {
-        var self = this,
-            authzDfr = $.Deferred();
-
-        window.chrome.identity.launchWebAuthFlow({
-          url: this.getAuthorizationUrl(),
-          interactive: true
-        }, function(responseUrl) {
-          console.log("Spotify OAuth Code Response:" + responseUrl);
-
-          if (_.isEmpty(responseUrl)) {
-            authzDfr.reject(this, "OAuth code grant was not issued");
-          } else {
-            var parser = document.createElement('a');
-            parser.href = responseUrl;
-          
-            var params = {}, queries, temp, i, l;
-            queries = parser.search.indexOf("?") === 0 ? parser.search.substring(1) : parser.search;
-            queries = queries.split("&");
-            for (i = 0, l = queries.length; i < l; i++ ) {
-              temp = queries[i].split('=');
-              params[temp[0]] = temp[1];
-            }
-
-            self.acceptAuthorization(params["code"], authzDfr);
-          }
-        });
-
-        return authzDfr.promise();
-      },      
-      acceptAuthorization: function(code, authzDfr) {
-        var self = this;
-
-        $.ajax({
-          type: "POST",
-          url: this.get("tokenUrl"),
-          data: {
-            client_id: this.get("clientId"),
-            client_secret: this.get("clientSecret"),
-            grant_type: "authorization_code",
-            code: code,
-            redirect_uri: this.getRedirectUrl()
-          }
-        }).success(function(resp, status, xhr) {
-          console.log("[Spotify OAuth Token Success]", resp);
-          self.enableAuthorization(resp);
-          authzDfr.resolve();
-        }).fail(function(xhr, status, errorThrown) {
-          if (xhr.status === 400) {
-            status = JSON.parse(xhr.responseText).error;
-          }
-          console.log("[Spotify OAuth Token Fail] {Error: %s}", status);
-          authzDfr.reject(this, status);
-        });
-
-        return authzDfr;
-      },
       isLikeShareEnabled: function() {
-        return (this.get("likeShareEnabled") && this.hasAuthorization());
+        return (this.get("likeShareEnabled") && this.hasAuthorization() && this.get("playListId"));
+      },
+      updateUserId: function() {
+        var self = this;
+        return $.ajax({
+          url: self.get('apiUrl') + '/me',
+          type: 'GET',
+          dataType: 'json',
+          headers: self.spotifySync.getAuthorizationHeader(),
+          success: function(response) {
+            self.set({ 
+              userId: response.id 
+            });
+          }
+        });
+      },
+      upsertPlaylist: function() {
+        var self = this;
+        
+        return $.ajax({
+          url: self.get('apiUrl') + '/search?q="' + self.get('playListName') + '"&type=playlist',
+          type: 'GET',
+          dataType: 'json',
+          headers: self.spotifySync.getAuthorizationHeader(),
+          success: function(response) {
+            if (response.playlists && response.playlists.items && response.playlists.length > 0) {
+              self.set({ 
+                playListId: response.playlists[0].id 
+              });
+            }
+          }
+        }).pipe(function(response) {
+          if (_.isEmpty(self.get('playListId'))) {
+            return $.ajax({
+              url: self.get('apiUrl') + '/users/' + self.get('userId') + '/playlists',
+              type: 'POST',
+              dataType: 'json',
+              data: JSON.stringify({
+                name: self.get('playListName'),
+                public: false
+              }),
+              headers: self.spotifySync.getAuthorizationHeader(),
+              success: function(response) {
+                self.set({ 
+                  playListId: response.id 
+                });
+              }
+            });
+          } else {
+            return $.Deferred().resolve();
+          }
+        });
+      },
+      getSync: function() {
+        return _.bind(this.spotifySync.sync, this.spotifySync);
       }
   });
 

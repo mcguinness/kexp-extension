@@ -54,7 +54,8 @@ define([
         // Wait for Fetch (Success or Error)
         self.collections.nowPlaying.fetch({upsert: true})
           .always(function() {
-            self.showNowPlaying();
+            _.delay(_.bind(self.showNowPlaying, self), 250);
+    
           });
       }
     },
@@ -92,7 +93,7 @@ define([
           self.enableFetchShowPoll(nextPollSeconds);
         })
         .fail(function(model, error, options) {
-          console.warn("Error [%s] fetching kexp show", error);
+          console.warn("Error [%s] fetching kexp show", JSON.stringify(error));
           self.enableFetchShowPoll(nextPollGraceSeconds);
         });
     },

@@ -54,13 +54,15 @@ define([
       this.bindTo(this.vent, "nowplaying:page:next", this.handlePageNext, this);
     },
     onShow: function() {
-      var mostRecentModel = this.collection.last();
+      var self = this,
+          mostRecentModel = this.collection.last();
 
-      this.showNowPlaying(mostRecentModel, ShowType.Reset);
-      this.vent.trigger("nowplaying:cycle", mostRecentModel);
-
+      this.showNowPlaying(mostRecentModel, ShowType.Reset).always(function() {
+        console.debug("[NowPlaying: Reset Complete] - %s", mostRecentModel.toDebugString());
+        self.vent.trigger("nowplaying:cycle", mostRecentModel);
+      });
       // Bind collection events here incase a fetch is in progress during initialize
-      this._bindCollection();
+      self._bindCollection();
     },
     showNowPlaying: function(nowPlayingModel, showType) {
       if (this._currentLoader) {
@@ -83,8 +85,7 @@ define([
       var layout = this,
         loader = this._currentLoader = new NowPlayingFsm(nowPlayingModel),
         loaderDfr = $.Deferred().always(function() {
-          delete layout._currentLoader;
-          loader = null;
+          //delete layout._currentLoader;
         });
 
       loader.on("initialized", function(model) {
@@ -115,6 +116,7 @@ define([
         layout.footer ? layout.footer.close() : true,
         layout.meta ? layout.meta.close() : true)
         .then(function() {
+          //console.debug("[Now Playing] => Fade-out Complete");
           loader.handle("initialize");
         });
 
@@ -174,12 +176,12 @@ define([
       this._manualPageTimeoutId = window.setTimeout(this.handleManualPageReset, 30 * 1000);
     },
     handleError: function(collection, model) {
-      console.debug("[Error NowPlaying] - Unable to upsert now playing to view collection");
+      console.debug("[NowPlaying: Error] - Unable to upsert now playing to view collection");
       this.showNowPlaying(null, ShowType.Reset);
       this.vent.trigger("nowplaying:cycle");
     },
     handleNewSong: function(model, collection) {
-      console.debug("[New NowPlaying] - Added new %s to view collection", model.toDebugString());
+      console.debug("[NowPlaying: New] - Added new %s to view collection", model.toDebugString());
       this.showNowPlaying(model, ShowType.New);
       this.vent.trigger("nowplaying:cycle", model);
     },
@@ -193,9 +195,10 @@ define([
       });
 
       if (identityChange) {
+        console.debug("[NowPlaying: Identity Change] - %s", model.toDebugString());
         this.showNowPlaying(model, ShowType.New);
       } else if (songChange) {
-        console.debug("[Updated NowPlaying] - Attributes changed for %s", model.toDebugString());
+        console.debug("[NowPlaying: Updated] - Attributes changed for %s", model.toDebugString());
         this.showNowPlaying(model, ShowType.Update);
       }
     },

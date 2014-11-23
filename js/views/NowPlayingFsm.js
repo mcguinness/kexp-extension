@@ -16,7 +16,7 @@ define([
       states: {
         "uninitialized": {
           _onEnter: function() {
-
+            console.debug("[Now Playing: uninitialized]");
           },
           "initialize": function() {
             if (!_.isObject(nowPlayingModel)) {
@@ -29,6 +29,7 @@ define([
         },
         "initialized": {
           _onEnter: function() {
+            console.debug("[Now Playing: initialized]");
             
             var fsm = this,
               songTitle = nowPlayingModel.get("songTitle"),
@@ -62,6 +63,7 @@ define([
         },
         "likeResolved": {
           _onEnter: function() {
+            console.debug("[Now Playing: likeResolved]");
             this.fireEvent("resolve:liked", nowPlayingModel);
 
             if (_.isUndefined(nowPlayingModel.lastFmMeta)) {
@@ -114,17 +116,20 @@ define([
         },
         "lastfmResolved": {
           _onEnter: function() {
+            console.debug("[Now Playing: lastfmResolved]");
             this.fireEvent("resolve:lastfm", nowPlayingModel);
             this.transition("reconciled");
           }
         },
         "reconciled": {
           _onEnter: function() {
+            console.debug("[Now Playing: reconciled]");
             this.fireEvent("reconciled", nowPlayingModel);
           }
         },
         "error": {
           _onEnter: function() {
+            console.debug("[Now Playing: error]");
             this.fireEvent("error", nowPlayingModel);
           }
         }
