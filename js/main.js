@@ -9,6 +9,10 @@ require(["jquery", "underscore", "PopupApp", "gaq"], function($, _, PopupApp) {
     //window.console = chrome.extension.getBackgroundPage().console;
     options.liveStreamEl = backgroundApp.liveStreamEl;
     options.appUrl = chrome.extension.getURL("popup.html");
+
+    if(window.location.search.indexOf('popout=true') > 0) {
+      $("body").addClass("popout");
+    }
     
   } else {
     $("body").addClass("popout");
