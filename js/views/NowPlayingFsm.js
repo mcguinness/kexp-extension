@@ -39,8 +39,6 @@ define([
 
             this.fireEvent("initialized", nowPlayingModel);
 
-            //nowPlayingModel.set("airBreak", true);
-
             if (nowPlayingModel.get("airBreak") || nowPlayingModel.hasLikedSong()) {
               fsm.transition("likeResolved");
 
