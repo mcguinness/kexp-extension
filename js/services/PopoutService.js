@@ -41,7 +41,7 @@ define([
           left = Math.round((screen.width / 2) - (width / 2));
           top = Math.round((screen.height / 2) - (height / 2));
 
-          self.popoutWindow = window.open(self.popoutUrl + window.location.hash + '?popout=true', '', 'width='+width+',height='+height+',top='+top+',left='+left);
+          self.popoutWindow = window.open(self.popoutUrl + '?popout=true' + window.location.hash, '', 'width='+width+',height='+height+',top='+top+',left='+left);
           self.vent.trigger('analytics:trackevent', 'Navigation', 'Popout');
         });
         $containerPopout.appendTo(this.popoutContainerId);
