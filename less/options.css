@@ -4114,8 +4114,11 @@ body {
   margin-top: 5px;
   margin-bottom: 5px;
 }
-.alert i {
-  vertical-align: -15%;
+.alert h4 {
+  margin-bottom: 5px;
+}
+.alert .close {
+  right: -28px;
 }
 .modal-spotify-authorize,
 .modal-lastfm-authorize {

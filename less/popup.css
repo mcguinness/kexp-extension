@@ -4503,3 +4503,6 @@ body.popout .notification-fixed {
 body.popout .notification-fixed-single {
   bottom: 2px;
 }
+.tooltip-inner {
+  max-width: 210px;
+}
