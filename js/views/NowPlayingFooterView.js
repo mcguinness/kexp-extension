@@ -16,6 +16,7 @@ define([
       options || (options = {});
       this.collection = this.model.collection;
       this.lastFmConfig = this.appConfig.getLastFm();
+      this.spotifyConfig = this.appConfig.getSpotify();
       this.pager = options.pager || {canPagePrev: false, canPageNext:  false};
     },
     initialEvents: function() {
@@ -23,9 +24,11 @@ define([
       this.bindTo(this.collection, "before:sync", this.handleBackgroundRefresh, this);
       this.bindTo(this.vent, "lastfm:track:love:success", this.showShareAnimation, this);
       this.bindTo(this.model, "change:like", this.handleLikeCountChange, this);
-      this.bindTo(this.lastFmConfig, "change:sessionKey", this.handleLastFmShareChange, this);
-      this.bindTo(this.lastFmConfig, "change:likeShareEnabled", this.handleLastFmShareChange, this);
-      this.bindTo(this.lastFmConfig, "change:likeScrobbleEnabled", this.handleLastFmShareChange, this);
+      this.bindTo(this.lastFmConfig, "change:sessionKey", this.handleShareChange, this);
+      this.bindTo(this.lastFmConfig, "change:likeShareEnabled", this.handleShareChange, this);
+      this.bindTo(this.lastFmConfig, "change:likeScrobbleEnabled", this.handleShareChange, this);
+      this.bindTo(this.spotifyConfig, "change:refreshToken", this.handleShareChange, this);
+      this.bindTo(this.spotifyConfig, "change:likeShareEnabled", this.handleShareChange, this);
     },
     events: {
       "click #button-like": "handleLike",
@@ -35,7 +38,6 @@ define([
       "click #button-page-next.active": "handlePageNext"
     },
     tooltips: {
-      "#button-spotify" : "tooltip",
       "#button-refresh" : "tooltip",
       "#button-share" : "tooltip"
     },
@@ -45,7 +47,7 @@ define([
           id: this.model.id,
           airBreak: this.model.get("airBreak"),
           likeCount: this.model.hasLikedSong() ? this.model.likedSong.get("likeCount") : 0,
-          likeShareEnabled: this.lastFmConfig.hasSharingEnabled(),
+          likeShareEnabled: this.lastFmConfig.hasSharingEnabled() || this.spotifyConfig.hasSharingEnabled(),
           pager: this.pager
         }
       };
@@ -53,13 +55,6 @@ define([
     onRender: function() {
       var view = this;
 
-      $(this.el)
-        .find("#button-spotify")
-          .attr("href", view.model.toSpotifyUrl())
-            .tooltip({
-              placement: "top",
-              title: "Searches Spotify (requires Spotify app and access to launch from web)"
-            });
       if (_.isDate(view.model.get("timeLastUpdate"))) {
         $(this.el)
           .find("#button-refresh")
@@ -75,13 +70,15 @@ define([
           .tooltip({
             placement: "top",
             title: function() {
-              return view.lastFmConfig.hasSharingEnabled() ?
-                view.lastFmConfig.isLikeShareEnabled() && view.lastFmConfig.isLikeScrobbleEnabled() ?
-                  "<strong>Last.fm Sharing Enabled</strong> - Likes will be shared to your Last.fm profile as 'loves' & 'listens' (See Options)" :
-                  (view.lastFmConfig.isLikeShareEnabled() ?
-                    "<strong>Last.fm Sharing Enabled</strong> - Likes will be shared to your Last.fm profile as 'loves' (See Options)" :
-                    "<strong>Last.fm Sharing Enabled</strong> - Likes will be shared to your Last.fm profile as 'listens' (See Options)") :
-                "<strong>Last.fm Sharing Disabled</strong> - Likes will only be locally stored and not shared with your Last.fm profile (See Options)";
+              if (view.lastFmConfig.hasSharingEnabled() && view.spotifyConfig.hasSharingEnabled()) {
+                return '<strong><i class="fa fa-lastfm"></i> Last.fm & <i class="fa fa-spotify"></i> Spotify Sharing Enabled</strong><br>Likes will be shared to your Last.fm profile and your Spotify playlist (See Options)';
+              } else if (!view.lastFmConfig.hasSharingEnabled() && view.spotifyConfig.hasSharingEnabled()) {
+                return '<i class="fa fa-spotify"></i> Spotify Sharing Enabled</strong><br>Likes will be shared to only your Spotify playlist (See Options)';
+              } else if (view.lastFmConfig.hasSharingEnabled() && !view.spotifyConfig.hasSharingEnabled()) {
+                return '<strong><i class="fa fa-lastfm"></i> Last.fm Sharing Enabled</strong><br>Likes will be shared to only your Last.fm profile (See Options)';
+              } else {
+                return '<strong><i class="fa fa-lastfm"></i> Last.fm & <i class="fa fa-spotify"></i> Spotify Sharing Disabled<br>Likes will only be stored locally and not shared with your Last.fm profile or Spotify playlist (See Options)';
+              }
             }
           });
     },
@@ -153,8 +150,8 @@ define([
     handleLastFmPopoverToggle: function() {
       this.vent.trigger("nowplaying:lastfm:popover:toggle", this.model);
     },
-    handleLastFmShareChange: function(model, value, options) {
-      $("#button-share", this.$el).toggleClass("active", model.hasSharingEnabled());
+    handleShareChange: function(model, value, options) {
+      $("#button-share", this.$el).toggleClass("active", (view.lastFmConfig.hasSharingEnabled() || view.spotifyConfig.hasSharingEnabled()));
     },
     handlePagePrev: function() {
       this.vent.trigger("nowplaying:page:prev", this.model);

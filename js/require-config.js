@@ -32,6 +32,7 @@ var require = {
     "underscore": "libs/underscore-min"
   },
   shim: {
+    "backbone-localstorage": ["backbone"],
     "bootstrap": ["jquery"],
     "jquery-cycle": ["jquery"],
     "jquery-kexp": ["jquery", "underscore"],

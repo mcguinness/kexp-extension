@@ -18,6 +18,8 @@ define([
 
   var SpotifyConfigModel = Backbone.Model.extend({
 
+      localStorage: new Backbone.LocalStorage("app.kexp.config.item"),
+      
       defaults: {
         id: "spotify",
         apiUrl: 'https://api.spotify.com/v1',
@@ -33,15 +35,7 @@ define([
         likeShareEnabled: true
       },
       initialize: function(attributes, options) {
-        options || (options = {});
-        // TODO: Move to common module
-        if (options.localStorage && _.isFunction(options.localStorage.sync)) {
-          this.localStorage = options.localStorage;
-          this.sync = options.localStorage.sync;
-        } else {
-          this.localStorage = new Store("app.kexp.config");
-          this.sync = this.localStorage.sync;
-        }
+        
 
         var storage = {
           storage: {
@@ -61,16 +55,13 @@ define([
       },
       requestAuthorization: function() {
         var self = this;
-        return this.spotifySync.authorize().pipe(function(response) {
-          console.log(response);
-          return self.spotifySync.access(response.code)
-            .done(function() {
-                self.updateSpotifyUser()
-                  .done(function() {
-                    self.upsertPlaylist();
-                  })
-            });
-        });
+        return this.spotifySync.authenticate()
+          .pipe(function() {
+            self.updateSpotifyUser()
+              .pipe(function() {
+                self.upsertPlaylist();
+              })
+          });
       },
       getAuthorizationHeader: function() {
         return this.spotifySync.getAuthorizationHeader();
@@ -85,6 +76,7 @@ define([
         }
       },
       enableAuthorization: function(tokenResp) {
+        console.debug("[Spotify API Authorization Disabled] => %s", JSON.stringify(tokenResp));
         this.set({
           accessToken: tokenResp.access_token,
           tokenType: tokenResp.token_type,

@@ -27,8 +27,7 @@ define([
       
       if (!_.isObject(options.appConfig)) {
         options.appConfig = new AppConfigCollection();
-        options.appConfig.getDefaults();
-        
+
         this.bindTo(options.appConfig, "change", function(model) {
             console.debug("Configuration model {%s} value has changed, saving changes...", model.id, JSON.stringify(model));
             model.save();

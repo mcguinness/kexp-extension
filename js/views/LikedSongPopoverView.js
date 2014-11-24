@@ -60,10 +60,10 @@ define([
             placement: "bottom",
             title: function() {
               return view.lastFmConfig.isLikeScrobbleEnabled() ?
-                "<strong>Last.fm Scrobble Enabled</strong> - Last.fm Track Scrobbles (Listens)" :
+                '<strong><i class="fa fa-lastfm"></i> Last.fm Scrobble Enabled</strong><br>Last.fm Track Scrobbles (Listens)' :
                 (view.model.get("lastFmTrackScrobbleCount") > 0 ?
-                  "<strong>Last.fm Scrobble Disabled</strong> - Previous Last.fm Track Scrobbles (Listens)" :
-                  "<strong>Last.fm Scrobble Disabled</strong> - Scrobble listens with your Last.fm profile (See Options)");
+                  '<strong><i class="fa fa-lastfm"></i> Last.fm Scrobble Disabled</strong><br>Previous Last.fm Track Scrobbles (Listens)' :
+                  '<strong><i class="fa fa-lastfm"></i> Last.fm Scrobble Disabled</strong><br>Scrobble listens with your Last.fm profile (See Options)');
             }
           });
 
@@ -75,8 +75,8 @@ define([
               return hasTrackLoveDate ?
                 '<i class="fa fa-clock-o"></i> ' + moment(view.model.get("timeLastFmLoveShare")).format("MMM Do, YYYY @ hh:mm A") :
                 (view.lastFmConfig.isLikeShareEnabled() ?
-                  "<strong>Last.fm Sharing Enabled</strong> - Share this song to your Last.fm profile (Love)" :
-                  "<strong>Last.fm Sharing Disabled</strong> - Share likes with your Last.fm profile (See Options)");
+                  '<strong><i class="fa fa-lastfm"></i> Last.fm Sharing Enabled</strong><br>Share this song to your Last.fm profile (Love)' :
+                  '<strong><i class="fa fa-lastfm"></i> Last.fm Sharing Disabled</strong><br>Share likes with your Last.fm profile (See Options)');
             }
           });
 
