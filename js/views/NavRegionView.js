@@ -10,19 +10,10 @@ define([
       // Bind before adding hashchange event handler
       _.bindAll(this, "updateNav");
       
-      $("ul.nav li", this.el).hover(this.toggleActiveNav, this.toggleActiveNav);
-      
       // Initialize
       this.updateNav();
       // Listen for changes for future routes...
       $(window).on("hashchange", this.updateNav);
-    },
-    toggleActiveNav: function() {
-      // keep target element "this" context for this handler (no bind)
-      var $navHover = $(this);
-      if (!$navHover.hasClass("active")) {
-        $navHover.find("i").toggleClass("icon-white");
-      }
     },
     updateNav: function() {
       
@@ -30,7 +21,6 @@ define([
       
       if ($activeNav.length > 0) {
         $activeNav.toggleClass("active", false);
-        $activeNav.find("i").toggleClass("icon-white", false);
         this.vent.trigger("analytics:trackevent", "Navigation", "Route", window.location.hash);
       }
 
@@ -41,7 +31,6 @@ define([
       }
 
       $activeNav.toggleClass("active", true);
-      $activeNav.find("i").toggleClass("icon-white", true);
     },
     beforeClose: function() {
       $(window).off("hashchange", this.updateNav);

@@ -56,11 +56,11 @@ define([
 				},
 				convertPause = function(direction, value, attribute, model) {
 					return value ?
-						'<i class="icon-play icon-white"></i> Play' :
-						'<i class="icon-pause icon-white"></i> Pause';
+						'<i class="fa fa-play"></i> Play' :
+						'<i class="fa fa-pause"></i> Pause';
 				},
 				convertMuted = function(direction, value) {
-					return value ? "icon-volume-off" : "icon-volume-up";
+					return value ? "fa fa-volume-off" : "fa fa-volume-up";
 				},
 				bindings = {
 					message: {

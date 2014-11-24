@@ -13,6 +13,9 @@
 
   .btn-play {
     width: 70px; // 1 px border inherited
+    i:before {
+      margin-right: 3px;
+    }
   }
   .container-player-inner {
     border: 4px solid rgba(0,0,0,.05);
@@ -24,7 +27,7 @@
   .slider-volume {
     -webkit-appearance: none !important;
     width: 103px;
-    height: 6px;
+    height: 7px;
     // override bootstrap input default
     margin-bottom: 0;
     padding: 0 0 0 0;
@@ -36,9 +39,9 @@
       .buttonBackground(@btnInverseBackground, @btnInverseBackgroundHighlight);
     }
   }
-  i.icon-volume-off,
-  i.icon-volume-up {
+  #player-mute {
     vertical-align: middle;
+    font-size: 16px;
     cursor: pointer;
   }
   .container-player-status {

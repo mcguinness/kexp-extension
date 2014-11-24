@@ -11,16 +11,16 @@ define([
 
       switch (alert ? alert.toLowerCase() : "") {
         case "error" :
-          alertParams = { alertClass: "alert-error", iconClass: "icon-exclamation-sign"};
+          alertParams = { alertClass: "alert-error", iconClass: "fa fa-exclamation-circle"};
           break;
         case "success" :
-          alertParams = { alertClass: "alert-success", iconClass: "icon-ok-sign"};
+          alertParams = { alertClass: "alert-success", iconClass: "fa fa-check-circle"};
           break;
         case "info" :
-          alertParams = { alertClass: "alert-info", iconClass: "icon-info-sign"};
+          alertParams = { alertClass: "alert-info", iconClass: "fa fa-info-circle"};
           break;
         default :
-          alertParams = { alertClass: "", iconClass: "icon-warning-sign"};
+          alertParams = { alertClass: "", iconClass: "fa fa-warning-circle"};
           break;
       }
 
@@ -29,9 +29,9 @@ define([
       
       if (!_.isEmpty(heading)) {
         elParts.push('<h4 class="alert-heading"><i class="' + alertParams.iconClass +
-          ' icon-white"></i> ' + heading + '</h4>');
+          '""></i> ' + heading + '</h4>');
       } else {
-        elParts.push('<i class="' + alertParams.iconClass + 'icon-white"></i> ');
+        elParts.push('<i class="' + alertParams.iconClass + '"></i> ');
       }
       if (!_.isEmpty(message)) {
         elParts.push(message);

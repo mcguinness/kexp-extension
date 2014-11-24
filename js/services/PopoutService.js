@@ -72,7 +72,7 @@ define([
           $targetWin,
           self = this;
 
-        $containerPopout = $('<div class="container-footer-popout"><span><i class="icon-fullscreen"></i> Popout</span></div>');
+        $containerPopout = $('<div class="container-footer-popout"><i class="fa fa-arrows-alt"></i> Popout</span></div>');
         $containerPopout.click(function() {
           width = window.outerWidth;
           height = window.outerHeight;

@@ -50,7 +50,7 @@ define([
           .tooltip({
             placement: "right",
             title: function() {
-              return '<i class="icon-time icon-white"></i> ' + moment(view.model.get("timeLastLike")).format("MMM Do, YYYY @ hh:mm A");
+              return '<i class="fa fa-clock-o"></i> ' + moment(view.model.get("timeLastLike")).format("MMM Do, YYYY @ hh:mm A");
             }
           });
 
@@ -73,7 +73,7 @@ define([
             placement: "right",
             title: function() {
               return hasTrackLoveDate ?
-                '<i class="icon-time icon-white"></i> ' + moment(view.model.get("timeLastFmLoveShare")).format("MMM Do, YYYY @ hh:mm A") :
+                '<i class="fa fa-clock-o"></i> ' + moment(view.model.get("timeLastFmLoveShare")).format("MMM Do, YYYY @ hh:mm A") :
                 (view.lastFmConfig.isLikeShareEnabled() ?
                   "<strong>Last.fm Sharing Enabled</strong> - Share this song to your Last.fm profile (Love)" :
                   "<strong>Last.fm Sharing Disabled</strong> - Share likes with your Last.fm profile (See Options)");

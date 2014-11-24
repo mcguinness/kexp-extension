@@ -32,8 +32,8 @@ define([
           },
           convertAuthzButtonHtml = function(direction, value) {
             return _.isEmpty(value) ?
-              '<i class="icon-user icon-white"></i> Disabled' :
-              '<i class="icon-user"></i> Enabled';
+              '<i class="fa fa-user"> Disabled</i>' :
+              '<i class="fa fa-user"> Enabled</i>';
           },
           convertCheckboxDisable = function(direction, value) {
             return _.isEmpty(value);

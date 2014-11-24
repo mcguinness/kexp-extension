@@ -10,6 +10,8 @@
 // Missing from bootstrap for some reason
 button.close {
   padding: 0;
+  margin-right: 5px;
+  font-size: 25px;
   cursor: pointer;
   background: transparent;
   border: 0;
@@ -59,36 +61,20 @@ i {
 
 .table-removable {
   tbody tr {
+    td.cell-info-action,
     td.cell-remove-action {
-      width: 22px;
-      padding-left: 8px;
-      padding-right: 0px;
-      i.icon-remove {
-          display: none;
-          vertical-align: text-bottom;
-      }
-    }
-    &:hover {
-      td.cell-remove-action i.icon-remove {
-          display: inline-block;
-      }
-    }
-  }
-}
-
-.table-infoable {
-  tbody tr {
-    td.cell-info-action {
       width: 22px;
       padding-left: 8px;
       padding-right: 0px;
       i {
           display: none;
-          vertical-align: text-bottom;
+          font-size: 15px;
+          vertical-align: baseline;
       }
     }
     &:hover {
-      td.cell-info-action i {
+      td.cell-info-action i,
+      td.cell-remove-action i {
           display: inline-block;
       }
     }
@@ -138,12 +124,20 @@ i {
 
 .kexp-error {
   margin-bottom: 10px;
+
   .kexp-icon-button-group;
+  p {
+    margin: 20px 0;
+    font-size: 15px;
+  }
 }
 
 .kexp-icon-button-group {
+  font-size: 18px;
   i {
     vertical-align: middle;
+    color: @grayDark;
+    margin-left: 10px;
     .opacity(50);
     &.active {
       .opacity(100);
@@ -271,29 +265,16 @@ i {
   background-color: transparent;
   background-image: url("../img/lastfm_logo_white.png");
   background-repeat: no-repeat;
-  width: 47px;
-  height: 14px;
-  padding: 0px 0px;
-  .center-block();
-  background-origin: content-box;
+  width: 40px;
+  height: 12px;
+  padding: 0px 0px 0px px;
+  background-size: contain;
+  margin-left: 3px;
+  vertical-align: text-bottom;
 }
 
 .lastfm-bg-color() {
   .gradientBar(#de4941, #D51007);
-}
-
-.btn-lastfm {
-  margin-left: 10px;
-  width: 60px;
-  height: 20px;
-  padding: 0px 0px;
-
-  .gradientBar(@btnInverseBackground, @btnInverseBackgroundHighlight);
-  &:hover, &:active, &.active {
-    .lastfm-bg-color();
-    background-position: left top;
-    .transition(0);
-  }
 }
 
 .btn-lastfm-favicon {
@@ -322,11 +303,6 @@ i {
 }
 
 .btn-spotify {
-  margin-left: 20px;
-  width: 60px;
-  height: 18px;
-  padding: 0px 0px;
-
   .gradientBar(@btnInverseBackground, @btnInverseBackgroundHighlight);
   &:hover, &:active, &.active {
     .gradientBar(#81bd1e, #6eb11b);
@@ -337,11 +313,12 @@ i {
 
 .btn-spotify-favicon {
   display: inline-block;
-  background-image: url("../img/spotify-favicon.ico");
+  background-image: url("../img/spotify-favicon.png");
   background-repeat: no-repeat;
   width: 16px;
   height: 16px;
   vertical-align: text-top;
+  background-size: contain;
 }
 
 /////////////////////////////////////////////

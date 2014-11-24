@@ -13,7 +13,7 @@
                   rel="tooltip" title="Search KEXP for Track" data-chrometab="active"></a>
               <% } %>
               <% if (!_.isEmpty(model.trackLastFmUrl)) { %>
-                <a class="btn-lastfm-favicon" href="<%= model.trackLastFmUrl %>" 
+                <a href="<%= model.trackLastFmUrl %>" 
                   rel="tooltip" title="Last.fm Track Page" data-chrometab="active"></a>
               <% } %>
               <% if (!_.isEmpty(model.trackSpotifyUrl)) { %>
@@ -23,7 +23,7 @@
               <% if (!_.isEmpty(model.trackDownloadUrl)) { %>
                 <a class="btn-download" href="<%= model.trackDownloadUrl %>" 
                   rel="tooltip" title="Track Download" data-chrometab="active">
-                  <i class="icon-download"></i>
+                  <i class="fa fa-cloud-download"></i>
                 </a>
               <% } %>
             </div>
@@ -91,12 +91,14 @@
           <td><span class="badge badge-likes"><%= model.likeCount %></span></td>
         </tr>
         <tr>
-          <td><div class="btn-lastfm-nohover"><i class="icon-share icon-white"></i> <span class="lastfm-logo"></span></div></td>
+          <td><div class="btn-kexp-nohover"><span class="prefix-accent">\\\</span><span class="lastfm-logo"></span></div></td>
           <td>
             <span class="badge badge-scrobbles <%= model.isLikeScrobbleEnabled ? 'enabled' : 'disabled' %>">
-              <i class="icon-headphones icon-white"></i> <%= model.lastFmTrackScrobbleCount %>
+              <i class="fa fa-headphones"> <%= model.lastFmTrackScrobbleCount %></i> 
             </span>
-            <i id="btn-lastfm-love" class="btn-lastfm-love <%= model.hasLastFmLoveShare ? 'icon-heart enabled' : 'icon-heart disabled' %>"></i>
+            <span>
+              <i id="btn-lastfm-love" class="btn-lastfm-love fa fa-heart <%= model.hasLastFmLoveShare ? 'enabled' : 'disabled' %>"></i>
+            </span>
           </td>
         </tr>
       </tbody>

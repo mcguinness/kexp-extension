@@ -1,30 +1,25 @@
-<div id="song-footer" class="song-footer kexp-box-striped fade">
-    <div class="wrap">
-      <% if (!model.airBreak) { %>
-      <button id="button-like" class="btn btn-mini btn-like btn-inverse btn-kexp-inverse pull-left" type="button" data-id="<%= model.id %>">
+<div id="song-footer" class="song-footer fade">
+  
+    <% if (!model.airBreak) { %>
+    <div class="pull-left">
+      <button id="button-like" class="btn btn-like btn-inverse btn-kexp-inverse" type="button" data-id="<%= model.id %>">
         <span class="prefix-accent">\\\</span> LIKE
+        <span class="<%= (model.likeCount > 0) ? 'badge' : 'badge badge-zero' %> "><%= model.likeCount %></span>
       </button>
-      <span class="<%= (model.likeCount > 0) ? 'badge' : 'badge badge-zero' %> pull-left "><%= model.likeCount %></span>
-      <a id="button-spotify" class="btn btn-mini btn-spotify pull-left" data-chrometab="temp">
-        <span class="spotify-logo"></span>
+      <button id="button-lastfm" class="btn btn-lastfm btn-inverse btn-kexp-inverse hide" type="button">
+        <i class="fa fa-lastfm"> Song Info</i>
+      </button>
+       </div>
+    <% } %>
+ 
+  <div class="kexp-icon-button-group pull-right">
+    <% if (_.isObject(model.pager) && (model.pager.canPagePrev || model.pager.canPageNext)) { %>
+      <i id="button-page-prev" class="btn-page fa fa-step-backward <%= (model.pager.canPagePrev) ? 'active' : '' %>"></i>
+      <i id="button-page-next" class="btn-page fa fa-step-forward <%= (model.pager.canPageNext) ? 'active' : '' %>"></i>
+    <% } %>
+      <i id="button-refresh" class="btn-refresh fa fa-refresh active"></i>
+      <a href="./options.html" target="_blank" data-chrometab="active">
+        <i id="button-share" class="btn-share fa fa-share-square <%= (model.likeShareEnabled) ? 'active' : '' %>"></i>
       </a>
-      <button id="button-lastfm" class="btn btn-mini btn-lastfm pull-left hide" type="button">
-        <span class="lastfm-logo"></span>
-      </button>
-      <% } %>
-      <span class="kexp-icon-button-group pull-right">
-        <% if (_.isObject(model.pager) && (model.pager.canPagePrev || model.pager.canPageNext)) { %>
-        <span>
-          <i id="button-page-prev" class="btn-page icon-step-backward <%= (model.pager.canPagePrev) ? 'active' : '' %>"></i>
-          <i id="button-page-next" class="btn-page icon-step-forward <%= (model.pager.canPageNext) ? 'active' : '' %>"></i>
-        </span>
-        <% } %>
-        <span>
-          <i id="button-refresh" class="btn-refresh icon-refresh active"></i>
-          <a href="./options.html" target="_blank" data-chrometab="active">
-            <i id="button-share" class="btn-share icon-share <%= (model.likeShareEnabled) ? 'active' : '' %>"></i>
-          </a>
-        </span>
-      </span>
-    </div>
+  </div>
 </div>

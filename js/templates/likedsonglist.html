@@ -2,24 +2,24 @@
   <thead class="table-header-nofocus">
     <tr>
       <th></th> <!-- remove-action -->
-      <th class="column-sortable center"><i class="icon-star"></i></th>
-      <th class="column-sortable"><i class="icon-user"></i> Artist</th>
-      <th class="column-sortable"><i class="icon-music"></i> Song</th>
-      <th class="column-sortable"><i class="icon-book"></i> Album</th>
-      <th class="column-sortable center"><i class="icon-time"></i></th>
+      <th class="column-sortable center"><i class="fa fa-star"></i></th>
+      <th class="column-sortable"><i class="fa fa-user"> Artist</i></th>
+      <th class="column-sortable"><i class="fa fa-music"> Song</i></th>
+      <th class="column-sortable"><i class="fa fa-book"> Album</i></th>
+      <th class="column-sortable center"><i class="fa fa-clock-o"> Time</i></th>
       <th></th> <!-- info action -->
     </tr>
   </thead>
   <tbody>
     <% _.each(model, function(song) { %>
     <tr data-id="<%- song.id %>">
-      <td class="cell-remove-action"><i class="icon-remove"></i></td>
+      <td class="cell-info-action"><i class="fa fa-info-circle"></i></td>
       <td><span class="cell-likes badge"><%- song.likeCount %></span></td>
       <td class="cell-artist"><%- song.artist %></td>
       <td class="cell-song"><%- song.songTitle %></td>
       <td class="cell-album"><%- song.album %></td>
       <td class="cell-lastliked"><%- song.timeLastLike %></td>
-      <td class="cell-info-action"><i class="icon-info-sign"></i></td>
+      <td class="cell-remove-action"><i class="fa fa-trash"></i></td>
     </tr>
     <% }); %>
   </tbody>

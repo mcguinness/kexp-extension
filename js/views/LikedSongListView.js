@@ -29,8 +29,8 @@ define([
       this.popoverEl = options.popoverEl || "#navbar-top";
     },
     events: {
-      "click #table-liked i.icon-remove:hover": "removeLike",
-      "click #table-liked i.icon-info-sign:hover": "showInfoPopover",
+      "click #table-liked .cell-remove-action i": "removeLike",
+      "click #table-liked .cell-info-action i": "showInfoPopover",
       "dblclick #table-liked tbody tr": "showInfoPopover"
     },
     getTemplateSelector: function() {

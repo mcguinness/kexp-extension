@@ -3638,6 +3638,8 @@ input[type="submit"].btn.btn-mini {
 }
 button.close {
   padding: 0;
+  margin-right: 5px;
+  font-size: 25px;
   cursor: pointer;
   background: transparent;
   border: 0;
@@ -3672,28 +3674,20 @@ i.enabled {
 .table-header-nofocus th:focus {
   outline: 0;
 }
+.table-removable tbody tr td.cell-info-action,
 .table-removable tbody tr td.cell-remove-action {
   width: 22px;
   padding-left: 8px;
   padding-right: 0px;
 }
-.table-removable tbody tr td.cell-remove-action i.icon-remove {
+.table-removable tbody tr td.cell-info-action i,
+.table-removable tbody tr td.cell-remove-action i {
   display: none;
-  vertical-align: text-bottom;
+  font-size: 15px;
+  vertical-align: baseline;
 }
-.table-removable tbody tr:hover td.cell-remove-action i.icon-remove {
-  display: inline-block;
-}
-.table-infoable tbody tr td.cell-info-action {
-  width: 22px;
-  padding-left: 8px;
-  padding-right: 0px;
-}
-.table-infoable tbody tr td.cell-info-action i {
-  display: none;
-  vertical-align: text-bottom;
-}
-.table-infoable tbody tr:hover td.cell-info-action i {
+.table-removable tbody tr:hover td.cell-info-action i,
+.table-removable tbody tr:hover td.cell-remove-action i {
   display: inline-block;
 }
 .column-sortable {
@@ -3727,9 +3721,12 @@ i.enabled {
 }
 .kexp-error {
   margin-bottom: 10px;
+  font-size: 18px;
 }
 .kexp-error i {
   vertical-align: middle;
+  color: #333333;
+  margin-left: 10px;
   opacity: 0.5;
   filter: alpha(opacity=50);
   cursor: pointer;
@@ -3738,8 +3735,17 @@ i.enabled {
   opacity: 1;
   filter: alpha(opacity=100);
 }
+.kexp-error p {
+  margin: 20px 0;
+  font-size: 15px;
+}
+.kexp-icon-button-group {
+  font-size: 18px;
+}
 .kexp-icon-button-group i {
   vertical-align: middle;
+  color: #333333;
+  margin-left: 10px;
   opacity: 0.5;
   filter: alpha(opacity=50);
   cursor: pointer;
@@ -3952,51 +3958,12 @@ i.enabled {
   background-color: transparent;
   background-image: url("../img/lastfm_logo_white.png");
   background-repeat: no-repeat;
-  width: 47px;
-  height: 14px;
-  padding: 0px 0px;
-  display: block;
-  margin-left: auto;
-  margin-right: auto;
-  background-origin: content-box;
-}
-.btn-lastfm {
-  margin-left: 10px;
-  width: 60px;
-  height: 20px;
-  padding: 0px 0px;
-  background-color: #414141;
-  background-image: -moz-linear-gradient(top, #555555, #222222);
-  background-image: -ms-linear-gradient(top, #555555, #222222);
-  background-image: -webkit-gradient(linear, 0 0, 0 100%, from(#555555), to(#222222));
-  background-image: -webkit-linear-gradient(top, #555555, #222222);
-  background-image: -o-linear-gradient(top, #555555, #222222);
-  background-image: linear-gradient(top, #555555, #222222);
-  background-repeat: repeat-x;
-  filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#555555', endColorstr='#222222', GradientType=0);
-  border-color: #222222 #222222 #000000;
-  border-color: rgba(0, 0, 0, 0.1) rgba(0, 0, 0, 0.1) rgba(0, 0, 0, 0.25);
-}
-.btn-lastfm:hover,
-.btn-lastfm:active,
-.btn-lastfm.active {
-  background-color: #da322a;
-  background-image: -moz-linear-gradient(top, #de4941, #d51007);
-  background-image: -ms-linear-gradient(top, #de4941, #d51007);
-  background-image: -webkit-gradient(linear, 0 0, 0 100%, from(#de4941), to(#d51007));
-  background-image: -webkit-linear-gradient(top, #de4941, #d51007);
-  background-image: -o-linear-gradient(top, #de4941, #d51007);
-  background-image: linear-gradient(top, #de4941, #d51007);
-  background-repeat: repeat-x;
-  filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#de4941', endColorstr='#d51007', GradientType=0);
-  border-color: #d51007 #d51007 #8b0a05;
-  border-color: rgba(0, 0, 0, 0.1) rgba(0, 0, 0, 0.1) rgba(0, 0, 0, 0.25);
-  background-position: left top;
-  -webkit-transition: 0;
-  -moz-transition: 0;
-  -ms-transition: 0;
-  -o-transition: 0;
-  transition: 0;
+  width: 40px;
+  height: 12px;
+  padding: 0px 0px 0px px;
+  background-size: contain;
+  margin-left: 3px;
+  vertical-align: text-bottom;
 }
 .btn-lastfm-favicon {
   display: inline-block;
@@ -4019,10 +3986,6 @@ i.enabled {
   background-origin: content-box;
 }
 .btn-spotify {
-  margin-left: 20px;
-  width: 60px;
-  height: 18px;
-  padding: 0px 0px;
   background-color: #414141;
   background-image: -moz-linear-gradient(top, #555555, #222222);
   background-image: -ms-linear-gradient(top, #555555, #222222);
@@ -4058,11 +4021,12 @@ i.enabled {
 }
 .btn-spotify-favicon {
   display: inline-block;
-  background-image: url("../img/spotify-favicon.ico");
+  background-image: url("../img/spotify-favicon.png");
   background-repeat: no-repeat;
   width: 16px;
   height: 16px;
   vertical-align: text-top;
+  background-size: contain;
 }
 .twitter-mention-button {
   vertical-align: bottom;
@@ -4119,11 +4083,8 @@ body {
   background-color: #eeeeee;
   margin-top: 15px;
 }
-.btn i {
-  vertical-align: -15%;
-}
 .img-header {
-  margin-bottom: 5px;
+  margin-bottom: 20px;
   max-height: 25px;
 }
 .btn-kexp-toggle {
@@ -4143,7 +4104,9 @@ body {
   box-shadow: 0 0 12px #999999;
 }
 .section {
-  margin-top: 5px;
+  margin-top: 15px;
+}
+.section h2 {
   margin-bottom: 15px;
 }
 .alert {

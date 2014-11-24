@@ -23,6 +23,7 @@ define(["jquery"], function($) {
               iconClass: 'toast-info',
               positionClass: 'toast-top-right',
               timeOut: 5000, // Set timeOut to 0 to make it sticky
+              wrapClass: 'toast-wrap',
               titleClass: 'toast-title',
               messageClass: 'toast-message'
           },
@@ -70,6 +71,7 @@ define(["jquery"], function($) {
                   intervalId = null,
                   $container = getContainer(options),
                   $toastElement = $('<div/>'),
+                  $wrapElement  = $('<div/>'),
                   $titleElement = $('<div/>'),
                   $messageElement = $('<div/>'),
                   response = { options: options, map: map }
@@ -80,13 +82,16 @@ define(["jquery"], function($) {
 
               if (map.title) {
                   $titleElement.append(map.title).addClass(options.titleClass)
-                  $toastElement.append($titleElement)
+                  $wrapElement.append($titleElement)
               }
 
               if (map.message) {
                   $messageElement.append(map.message).addClass(options.messageClass)
-                  $toastElement.append($messageElement)
+                  $wrapElement.append($messageElement)
               }
+
+              $wrapElement.addClass(options.wrapClass);
+              $toastElement.append($wrapElement);
 
               var fadeAway = function() {
                   if ($(':focus', $toastElement).length > 0)

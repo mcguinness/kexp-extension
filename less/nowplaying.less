@@ -22,10 +22,13 @@
 /////////////////////////////////////////////
 
 #region-nowplaying-song {
-  min-height: 220px;
+  min-height: 260px;
+  padding-left: 10px;
 }
 #region-nowplaying-footer {
-  min-height: 71px;
+  height: 30px;
+  margin: 10px 0;
+  padding: 0 10px;
 }
 
 .song {
@@ -62,28 +65,45 @@
 
 .song-footer {
   .clearfix;
-  .wrap {
-    height: 21px
-  }
-  .badge {
-    margin-left: 5px;
-    background-color: @linkColorHover;
-    &:hover {
-     cursor: default;
+  color: @grayDark;
+  .btn {
+    #font > #family .sans-serif();
+    margin-right: 5px;
+    i {
+      color: @white;
+      font-weight: bold;
+      text-shadow: 0 -1px 0 rgba(0, 0, 0, 0.25);
     }
-    &.badge-zero {
-      background-color: @textColor;
-    }
+
   }
   .btn-like {
-    height: 20px;
-    #font > #family .sans-serif();
+    .badge {
+      margin-left: 5px;
+      padding: 1px 9px 2px;
+      background-color: @linkColorHover;
+      &.badge-zero {
+        background-color: #909090;
+      }
+    }
+    &:hover .badge {
+      cursor: default;
+      background-color: @textColor;
+      &.badge-zero {
+        background-color: @kexpDark;
+      }
+    }
   }
-  .btn-refresh {
-    margin-left: 3px;
+  .btn-lastfm {
+    .fa-lastfm:before {
+      color: @kexpOrange;
+    }
+    &:hover .fa-lastfm:before {
+      color: @kexpDark;
+    }
   }
-  .btn-share {
-    margin-left: 10px;
+  .kexp-icon-button-group {
+    height: 28px;
+    margin-top: 5px;
   }
   &.fade {
     .transition(opacity .75s ease);
