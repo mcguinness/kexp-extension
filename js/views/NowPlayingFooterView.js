@@ -131,8 +131,9 @@ define([
       }
 
       this.vent.trigger("analytics:trackevent", "NowPlaying", "Like", targetModel.toDebugString(), likedSong.get("likeCount"));
-      this.vent.trigger("nowplaying:like", targetModel);
       targetModel.trigger("change:like", targetModel, likedSong);
+      this.vent.trigger("nowplaying:like", targetModel);
+      
     },
     handleBackgroundRefresh: function() {
       $("#button-refresh", this.$el).tooltip("hide");
