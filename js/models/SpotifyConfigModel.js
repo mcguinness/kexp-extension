@@ -29,6 +29,7 @@ define([
         playListName: 'liked on kexp',
         playListId: null,
         userId: null,
+        userDisplayName: null,
         likeShareEnabled: true
       },
       initialize: function(attributes, options) {
@@ -64,7 +65,7 @@ define([
           console.log(response);
           return self.spotifySync.access(response.code)
             .done(function() {
-                self.updateUserId()
+                self.updateSpotifyUser()
                   .done(function() {
                     self.upsertPlaylist();
                   })
@@ -102,9 +103,12 @@ define([
         });
       },
       isLikeShareEnabled: function() {
-        return (this.get("likeShareEnabled") && this.hasAuthorization() && this.get("playListId"));
+        return (this.get("likeShareEnabled") && 
+          this.hasAuthorization() && 
+          this.get("userId") && 
+          this.get("playListId"));
       },
-      updateUserId: function() {
+      updateSpotifyUser: function() {
         var self = this;
         return $.ajax({
           url: self.get('apiUrl') + '/me',
@@ -113,7 +117,8 @@ define([
           headers: self.spotifySync.getAuthorizationHeader(),
           success: function(response) {
             self.set({ 
-              userId: response.id 
+              userId: response.id,
+              userDisplayName: response.display_name
             });
           }
         });

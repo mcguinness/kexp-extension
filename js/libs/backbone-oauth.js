@@ -166,6 +166,10 @@ define([
             return false;
         },
 
+        hasRefreshToken: function() {
+           return _.isObject(this.state) && _.isString(this.state.refresh_token);
+        },
+
         /**
          * Get epxiration time for the access-token. This method should be used to
          * request a new access-token after ~50% of the access-token lifetime.
@@ -242,13 +246,19 @@ define([
         /**
          * Authenticate
          *
-         * @returns {this}
+         * @returns {jQuery Deferred Object}
          */
-        auth: function () {
+        authenticate: function () {
+            var self = this;
+
             if (this.isAuthenticated()) {
-                return this.trigger('access', this.state, this);
+                this.trigger('access', this.state, this);
+                return $.Deferred().resolve(this.state);
+            } else {
+                return self.authorize().pipe(function(response) {
+                    return self.access(response.code)
+                })
             }
-            this.trigger('error', this.state, this);
         },
 
 
@@ -257,6 +267,7 @@ define([
             var self = this;
             var flowDfr = $.Deferred();
 
+            console.log("[OAuth 2.0 Authorization Code Flow] => obtaining authorization_code");
             window.chrome.identity.launchWebAuthFlow({
               url: self.authzUrl + 
                   '?response_type=code' + 
@@ -265,7 +276,7 @@ define([
                   '&redirect_uri=' + encodeURIComponent(self.redirectUrl),
               interactive: true
             }, function(responseUrl) {
-                console.log("OAuth authorization code response:" + responseUrl);
+                console.log("[OAuth 2.0 Authorization Code Flow] <= authorization_code response %s", responseUrl);
                 if (!_.isEmpty(responseUrl)) {
                     var parser = document.createElement('a');
                     parser.href = responseUrl;
@@ -293,7 +304,7 @@ define([
          * Redeems authorization_code grant for access_token with OAuth 2.0 token endpoint
          *
          * @param {string} code
-         * @returns {jQuery Deferred}
+         * @returns {jQuery Deferred Object}
          */
         access: function (code) {
             // Store a reference to the object
@@ -301,13 +312,17 @@ define([
 
             // Check if we have already authenticated
             if (this.isAuthenticated()) {
-                return self.trigger('success', this.state, this);
+                self.trigger('success', this.state, this);
+                console.log("[OAuth 2.0 Authorization Code Flow] <= existing access_token is valid");
+                return $.Deferred().resolve(this.state);
             }
 
             /*
              * Save time before request to avoid race conditions with expiration timestamps
              */
             var time = new Date().getTime();
+
+            console.log("[OAuth 2.0 Authorization Code Flow] => redeeming authorization_code for access_token");
 
             // Request a new access-token/refresh-token
             return $.ajax({
@@ -329,10 +344,9 @@ define([
                  * @param {object} response
                  * @returns {void}
                  */
-                success: function (response) {
-                    console.log("OAuth authorization code response: %s", JSON.stringify(response));
-
-
+                success: function (response, status, xhr) {
+                    console.log("[OAuth 2.0 Authorization Code Flow] <= access_token response %s", JSON.stringify(response));
+                    
                     /*
                      * Extend response object with current time
                      */
@@ -353,8 +367,8 @@ define([
                  * @param {object} response
                  * @returns {void}
                  */
-                error: function (response) {
-                    self.trigger('error', response, this);
+                error: function (xhr, status, errorThrown) {
+                    self.trigger('error', xhr.responseText, this);
                 }
             });
         },
@@ -363,15 +377,19 @@ define([
          * Request a new access_token and request_token by sending a valid
          * refresh_token
          *
-         * @returns {void}
+         * @returns {jQuery Deferred Object}
          */
         refresh: function () {
             // Store a reference to the object
             var self = this;
 
             // Load
-            if (this.isAuthenticated()) {
-                self.trigger('error', 'No authentication data found, please use the access method first.', this);
+            if (!self.hasRefreshToken()) {
+                self.trigger('error', 'No authorization state found, please use the access method first.', this);
+                return $.Deferred().reject(JSON.stringify({
+                    error: "invalid_grant",
+                    error_description: "Invalid refresh token"
+                }));
             }
 
             /*
@@ -379,6 +397,8 @@ define([
              * timestamps
              */
             var time = new Date().getTime();
+
+            console.log("[OAuth 2.0 Authorization Code Flow] => requesting new access_token with existing refresh_token");
 
             // Request a new access-token/refresh-token
             return $.ajax({
@@ -391,8 +411,7 @@ define([
                     client_secret   : self.clientSecret,
                     refresh_token   : self.state.refresh_token
                 },
-                headers: this.getAuthorizationHeader(),
-
+          
                 /**
                  * Success event, triggered on every successfull
                  * authentication attempt.
@@ -400,8 +419,9 @@ define([
                  * @param {object} response
                  * @returns {void}
                  */
-                success: function (response) {
-
+                success: function (response, status, xhr) {
+                    console.log("[OAuth 2.0 Authorization Code Flow] <= access_token response %s", JSON.stringify(response));
+                    
                     /*
                      * Extend response object with current time
                      * Get timediff before and after request for localStorage
@@ -423,8 +443,8 @@ define([
                  * @param {object} response
                  * @returns {void}
                  */
-                error: function (response) {
-                    self.trigger('error', response, this);
+                error: function (xhr, status, errorThrown) {
+                    self.trigger('error', xhr.responseText, this);
                 }
             });
         },
@@ -450,6 +470,10 @@ define([
             // Build header
             var accessToken = this.state.access_token;
 
+
+            console.log("[OAuth 2.0 Authorization Code Flow] => revoking refresh_token");
+
+
             // Request a new access-token/refresh-token
             return $.ajax({
                 url: self.revokeUrl,
@@ -468,7 +492,7 @@ define([
                  * @param {object} response
                  * @returns {void}
                  */
-                success: function (response) {
+                success: function (response, status, xhr) {
                     self.clear();
                     self.trigger('revoke', response, this);
                 },
@@ -481,26 +505,39 @@ define([
                  * @param {object} thrownError
                  * @returns {void}
                  */
-                error: function (xhr, ajaxOptions, thrownError) {
-                    self.trigger('error', xhr, this);
+                error: function (xhr, status, errorThrown) {
+                    self.trigger('error', xhr.responseText, this);
                 }
             });
         },
-        sync: function(method, model, options) {
-            var self = this;
+        authorizedSync: function(method, model, options) {
             options = options ? _.clone(options) : {};
             if (options.headers === undefined) options.headers = {};
+            _.extend(options.headers, this.getAuthorizationHeader());
+            return Backbone.sync(method, model, options)
+        },
+
+        sync: function(method, model, options) {
+            var self = this;
 
             if (this.isAuthenticated()) {
-                _.extend(options.headers, self.getAuthorizationHeader());
-                return Backbone.sync(method, model, options);
+                return self.authorizedSync(method, model, options);
             } else {
-                return self.authorize().pipe(function(response) {
-                    return self.access(response.code).pipe(function() {
-                        _.extend(options.headers, self.getAuthorizationHeader());
-                        return Backbone.sync(method, model, options);
+                if (self.hasRefreshToken()) {
+                    return self.refresh().pipe(function() {
+                        return self.authorizedSync(method, model, options);
+                    }, function(error) {
+                        console.log("Unable to obtain a new access_token with existing refresh_token due to error %s", 
+                            _.isObject(error) ? JSON.stringify(error) : error);
+                        self.authenticate().pipe(function() {
+                            return self.authorizedSync(method, model, options);
+                        });
                     });
-                })
+                } else {
+                    self.authenticate().pipe(function() {
+                        return self.authorizedSync(method, model, options);
+                    });
+                }
             }
         }
     });
