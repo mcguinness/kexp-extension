@@ -42,22 +42,22 @@ define([
       console.debug("[SpotifyLikeSyncService] processing nowplaying:like event for song [%s]",
         nowPlayingModel.toDebugString());
     
-      var likedSong = nowPlayingModel.likedSong;
-      var self = this,
-        track = likedSong.get("songTitle"),
-        artist = likedSong.get("artist"),
-        album = likedSong.get("album");
+      var likedSong    = nowPlayingModel.likedSong,
+          self         = this,
+          track        = likedSong.get("songTitle"),
+          artist       = likedSong.get("artist"),
+          album        = likedSong.get("album");
+          tracks       = new SpotifyTrackCollection(),
+          tracks.sync  = this._spotifySync,
+          searchParams = null;
 
       // Skip processing if empty track or artist
       if (_.isEmpty(track) || _.isEmpty(artist) || _.isEmpty(album)) { return; }
 
-
       if (this._spotifyConfig.isLikeShareEnabled()) {
 
-        var searchParams = { q: 'track:"' + track.replace(' ', '+') + '"album:"' + album.replace(' ', '+') + '"artist:"' + artist.replace(' ', '+') +'"', type: "track"};
+        searchParams = { q: 'track:"' + track.replace(' ', '+') + '"album:"' + album.replace(' ', '+') + '"artist:"' + artist.replace(' ', '+') +'"', type: "track"};
 
-        var tracks = new SpotifyTrackCollection();
-        tracks.sync = this._spotifySync;
         tracks.fetch({ 
           data: $.param(searchParams), 
           success: function(collection, resp) {
