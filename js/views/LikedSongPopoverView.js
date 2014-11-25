@@ -6,7 +6,7 @@ define([
   "text!templates/likedsong-popover.html",
   "text!templates/likedsong-popover-info.html",
   "moment"
-  ], function($, _, PopoverView, LikedSongModel, PopoverTemplate, PopoverContentTemplate) {
+  ], function($, _, PopoverView, LikedSongModel, PopoverTemplate, PopoverContentTemplate, moment) {
 
   var LikedSongPopoverView = PopoverView.extend({
 

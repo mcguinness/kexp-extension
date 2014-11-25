@@ -4,7 +4,7 @@ define([
   "backbone-replete", // Backbone Plugin
   "htmlencoder",
   "moment"
-  ], function($, _, Backbone, HtmlEncoder) {
+  ], function($, _, Backbone, HtmlEncoder, moment) {
 
   var findDstDate = function(dstMonth, sundayCount, searchStartDate) {
     searchStartDate || (searchStartDate = (sundayCount * 7));
@@ -113,11 +113,11 @@ define([
               if (mapping.options.addDate) {
                 nowUtc = moment.utc();
                 timeZoneOffset = (nowUtc.diff(DST_START) >= 0 && nowUtc.diff(DST_END) <= 0) ? 420 : 480;
-                valMoment.add("minutes", timeZoneOffset);
+                valMoment.add(timeZoneOffset, "minutes");
                 valMoment = moment.utc(nowUtc.format("YYYY-MM-DD") + valMoment.format("THH:mm:ss"));
               } else {
                 timeZoneOffset = (valMoment.diff(DST_START) >= 0 && valMoment.diff(DST_END) <= 0) ? 420 : 480;
-                valMoment.add("minutes", timeZoneOffset);
+                valMoment.add(timeZoneOffset, "minutes");
                 valMoment = moment.utc(valMoment.format("YYYY-MM-DDTHH:mm:ss"));
               }
               result[mapping.attribute] = mapping.options.toLocal ? valMoment.local().toDate() : valMoment.toDate();

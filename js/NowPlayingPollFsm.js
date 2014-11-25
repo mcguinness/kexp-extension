@@ -72,7 +72,12 @@ define([
     });
     // Need to bind audio element and set context for event handlers
     // IMPORTANT!!! do not forget to unbind event handlers when done
-    _.bindAll(nowPlayingFsm);
+    _.bindAll(nowPlayingFsm, 
+      'attachView', 
+      'detachView', 
+      'verifyState', 
+      'bindAudioElEvents', 
+      'unbindAudioElEvents');
     nowPlayingFsm.bindAudioElEvents();
     return nowPlayingFsm;
   };

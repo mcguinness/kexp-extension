@@ -76,14 +76,19 @@ define([
         }
       },
       enableAuthorization: function(tokenResp) {
-        console.debug("[Spotify API Authorization Disabled] => %s", JSON.stringify(tokenResp));
-        this.set({
+        console.debug("[Spotify API Authorization Enabled] => %s", JSON.stringify(tokenResp));
+        
+        var tokenState = {
           accessToken: tokenResp.access_token,
           tokenType: tokenResp.token_type,
           expiresIn: tokenResp.expires_in,
           refreshToken: tokenResp.refresh_token,
           tokenRequestTime: tokenResp.time
-        });
+        };
+
+        this.set(_.pick(tokenState, function(value, key, object) {
+          return value !== null && value !== undefined;
+        }));
       },
       disableAuthorization: function() {
         console.debug("[Spotify API Authorization Disabled]");

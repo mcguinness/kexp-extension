@@ -7,9 +7,9 @@ define([
 	"models/ShowModel",
 	"views/PlayerFsm",
 	"text!templates/player.html",
-	"moment", // Global
+	"moment",
 	"jquery-cycle" // jQuery Plugin
-	], function($, _, Marionette, ModelBinder, PlayerModel, ShowModel, PlayerFsm, ViewTemplate) {
+	], function($, _, Marionette, ModelBinder, PlayerModel, ShowModel, PlayerFsm, ViewTemplate, moment) {
 	
 	var PlayerView = Marionette.ItemView.extend({
 		template: ViewTemplate,

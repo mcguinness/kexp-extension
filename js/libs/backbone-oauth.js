@@ -251,14 +251,9 @@ define([
         authenticate: function () {
             var self = this;
 
-            if (this.isAuthenticated()) {
-                this.trigger('access', this.state, this);
-                return $.Deferred().resolve(this.state);
-            } else {
-                return self.authorize().pipe(function(response) {
-                    return self.access(response.code)
-                })
-            }
+            return self.authorize().pipe(function(response) {
+                return self.access(response.code)
+            })
         },
 
 

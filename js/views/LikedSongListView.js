@@ -7,12 +7,12 @@ define([
   "views/LikedSongPopoverView",
   "text!templates/likedsonglist.html",
   "text!templates/likedsonglist-empty.html",
-  "moment", // no need for arg
+  "moment",
   "bootstrap", // no need for arg
-  "jquery.dataTables", // no need for arg
+  "datatables",
   "jquery.dataTables.sort" // no need for arg
   ], function($, _, Marionette, LikedSongModel, LikedSongCollection,
-    LikedSongPopoverView, ViewTemplate, EmptyTemplate) {
+    LikedSongPopoverView, ViewTemplate, EmptyTemplate, moment) {
 
   var LikedSongListView = Marionette.ItemView.extend({
 

@@ -7,7 +7,7 @@ define([
   "jquery-ui", // no need for arg
   "jquery-kexp", // no need for arg
   "bootstrap" // no need for arg
-  ], function($, _, Marionette, ViewTemplate) {
+  ], function($, _, Marionette, ViewTemplate, moment) {
   
   var NowPlayingFooterView = Marionette.ItemView.extend({
     template: ViewTemplate,

@@ -253,7 +253,7 @@ define(["jquery", "underscore", "machina", "moment"], function($, _, Machina, mo
 
     // Need to bind audio element and set context for event handlers
     // IMPORTANT!!! do not forget to unbind event handlers when done
-    _.bindAll(fsm);
+    _.bindAll(fsm, 'handleAudioEvent', 'unbindAudioElEvents');
     fsm.bindAudioElEvents();
     return fsm;
   };
