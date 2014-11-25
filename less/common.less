@@ -16,6 +16,9 @@ button.close {
   background: transparent;
   border: 0;
   -webkit-appearance: none;
+  &:focus {
+    outline: none;
+  }
 }
 
 .alert .close {
@@ -35,6 +38,10 @@ button.close {
 
 .alert-success {
   text-shadow: 0 1px 0 rgba(0, 0, 0, .5);
+}
+
+.btn:focus {
+  outline: none;
 }
 
 /////////////////////////////////////////////
@@ -67,8 +74,8 @@ i {
       padding-right: 0px;
       i {
           display: none;
-          font-size: 15px;
-          vertical-align: baseline;
+          font-size: 18px;
+          vertical-align: text-top;
       }
     }
     &:hover {

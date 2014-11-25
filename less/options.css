@@ -1,3 +1,15 @@
+@font-face {
+  font-family: 'Roboto-Medium';
+  src: url('../fonts/Roboto-Medium.ttf');
+  font-weight: normal;
+  font-style: normal;
+}
+@font-face {
+  font-family: 'Roboto-Regular';
+  src: url('../fonts/Roboto-Regular.ttf');
+  font-weight: normal;
+  font-style: normal;
+}
 /*!
  * Bootstrap v2.0.2
  *
@@ -133,7 +145,7 @@ textarea {
 }
 body {
   margin: 0;
-  font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+  font-family: "Helvetica Neue", "Roboto-Regular", Helvetica, Arial, sans-serif;
   font-size: 13px;
   line-height: 18px;
   color: #333333;
@@ -361,7 +373,7 @@ h4,
 h5,
 h6 {
   margin: 0;
-  font-family: inherit;
+  font-family: "Helvetica Neue", "Roboto-Medium";
   font-weight: bold;
   color: inherit;
   text-rendering: optimizelegibility;
@@ -581,7 +593,7 @@ input,
 button,
 select,
 textarea {
-  font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+  font-family: "Helvetica Neue", "Roboto-Regular", Helvetica, Arial, sans-serif;
 }
 label {
   display: block;
@@ -3014,7 +3026,7 @@ input[type="submit"].btn.btn-mini {
 }
 .navbar-search .search-query {
   padding: 4px 9px;
-  font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+  font-family: "Helvetica Neue", "Roboto-Regular", Helvetica, Arial, sans-serif;
   font-size: 13px;
   font-weight: normal;
   line-height: 1;
@@ -3645,6 +3657,9 @@ button.close {
   border: 0;
   -webkit-appearance: none;
 }
+button.close:focus {
+  outline: none;
+}
 .alert .close {
   color: #ffffff;
   text-shadow: 0 1px 0 rgba(0, 0, 0, 0.5);
@@ -3662,6 +3677,9 @@ button.close {
 }
 .alert-success {
   text-shadow: 0 1px 0 rgba(0, 0, 0, 0.5);
+}
+.btn:focus {
+  outline: none;
 }
 i.disabled {
   opacity: 0.3;
@@ -3683,8 +3701,8 @@ i.enabled {
 .table-removable tbody tr td.cell-info-action i,
 .table-removable tbody tr td.cell-remove-action i {
   display: none;
-  font-size: 15px;
-  vertical-align: baseline;
+  font-size: 18px;
+  vertical-align: text-top;
 }
 .table-removable tbody tr:hover td.cell-info-action i,
 .table-removable tbody tr:hover td.cell-remove-action i {
