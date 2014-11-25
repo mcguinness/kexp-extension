@@ -54,7 +54,7 @@ define([
           "bAutoWidth": true,
           "bScrollInfinite": true,
           "bScrollCollapse": false,
-          "sScrollY": "274px",
+          "sScrollY": "266px",
           "bDeferRender": true,
           "aoColumns": [
             null,

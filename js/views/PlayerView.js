@@ -88,6 +88,11 @@ define([
 				};
 
 			this._playerBinder.bind(this.model, this.$el, bindings);
+
+			_.delay(function() {
+				$('#player').addClass('in');
+			}, 600);
+
 		},
 		makeStatusEl: function(id, message) {
 			return this.make(
