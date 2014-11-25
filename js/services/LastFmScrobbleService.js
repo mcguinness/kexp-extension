@@ -3,7 +3,7 @@ define([
   "underscore",
   "services/Service",
   "moment"
-  ], function($, _, Service) {
+  ], function($, _, Service, moment) {
 
   var LastFmScrobbleService = Service.extend({
     onStart: function(options) {

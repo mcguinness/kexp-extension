@@ -5,7 +5,7 @@ define([
   "linkify",
   "text!templates/nowplaying-song.html",
   "moment"
-  ], function($, _, Marionette, linkify, ViewTemplate) {
+  ], function($, _, Marionette, linkify, ViewTemplate, moment) {
 
   var NowPlayingSongView = Marionette.ItemView.extend({
     template: ViewTemplate,

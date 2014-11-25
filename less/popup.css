@@ -4246,6 +4246,7 @@ body {
   font-weight: bold;
   width: 100%;
   margin-top: 3px;
+  background-color: transparent;
 }
 .player .player-status {
   cursor: pointer;

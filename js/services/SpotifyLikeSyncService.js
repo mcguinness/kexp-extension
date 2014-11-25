@@ -4,7 +4,7 @@ define([
   "services/Service",
   "collections/SpotifyTrackCollection",
   "moment"
-  ], function($, _, Service, SpotifyTrackCollection) {
+  ], function($, _, Service, SpotifyTrackCollection, moment) {
 
   var SpotifyLikeSyncService = Service.extend({
     onStart: function(options) {

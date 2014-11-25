@@ -4,7 +4,7 @@ define([
   "underscore",
   "models/MappingParseModel",
   "moment"
-  ], function($, Backbone, _, MappingParseModel) {
+  ], function($, Backbone, _, MappingParseModel, moment) {
   
   var ShowModel = MappingParseModel.extend({
 

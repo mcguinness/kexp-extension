@@ -3,8 +3,8 @@ define([
   "underscore",
   "backbone-kexp",
   "md5",
-  "moment" // Global, no need for arg
-  ], function($, _, Backbone, MD5) {
+  "moment"
+  ], function($, _, Backbone, MD5, moment) {
 
   function InvalidOptionError(message) {
       this.name = "InvalidOptionError";

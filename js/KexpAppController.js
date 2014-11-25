@@ -8,7 +8,7 @@ define([
   "views/LikedSongListView",
   "moment"
   ], function($, _, ShowModel, NowPlayingCollection,
-    PlayerView, NowPlayingLayout, LikedSongListView) {
+    PlayerView, NowPlayingLayout, LikedSongListView, moment) {
 
   var KexpAppController = function(application, options) {
     options || (options = {});

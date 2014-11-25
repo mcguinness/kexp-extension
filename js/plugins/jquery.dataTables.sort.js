@@ -1,4 +1,4 @@
-define(["jquery", "jquery.dataTables"], function($) {
+define(["jquery", "datatables"], function($) {
   if ($.fn.dataTableExt.oSort['num-html-asc'] === undefined) {
     $.fn.dataTableExt.oSort['num-html-asc'] = function(a, b) {
       var x = a.replace(/<.*?>/g, "");

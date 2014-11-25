@@ -5,7 +5,7 @@ define([
   "services/LastFmApi",
   "models/LikedSongModel",
   "moment"
-  ], function($, _, Service, LastFmApi, LikedSongModel) {
+  ], function($, _, Service, LastFmApi, LikedSongModel, moment) {
 
   var LastFmLikeSyncService = Service.extend({
     onStart: function(options) {
