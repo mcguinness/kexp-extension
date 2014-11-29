@@ -13,7 +13,7 @@ define([
     refreshUrl: 'https://accounts.spotify.com/api/token',
     clientId: "6b0551371741402ba8cb726425fc943d",
     clientSecret: "abb785c0e50f4c77b0f4ec4842f10e10",
-    scopes: ['playlist-modify-private']
+    scopes: ['playlist-read-private', 'playlist-modify-private']
   };
 
   var SpotifyConfigModel = Backbone.Model.extend({
@@ -54,6 +54,7 @@ define([
         return this.hasAuthorization() && this.isLikeShareEnabled();
       },
       requestAuthorization: function() {
+        console.debug("[Spotify API Authorization Request]");
         var self = this;
         return this.spotifySync.authenticate()
           .pipe(function() {
@@ -93,10 +94,13 @@ define([
       disableAuthorization: function() {
         console.debug("[Spotify API Authorization Disabled]");
         this.set({
-          accessToken: "",
-          tokenType: "",
-          expiresIn: "",
-          refreshToken: ""
+          accessToken: null,
+          tokenType: null,
+          expiresIn: null,
+          refreshToken: null,
+          playListId: null,
+          userId: null,
+          userDisplayName: null
         });
       },
       isLikeShareEnabled: function() {
@@ -121,41 +125,73 @@ define([
         });
       },
       upsertPlaylist: function() {
-        var self = this;
+        var self = this,
+            upsertDfr = $.Deferred();
         
-        return $.ajax({
-          url: self.get('apiUrl') + '/search?q="' + self.get('playListName') + '"&type=playlist',
+        console.log("finding spotify playlist: " + self.get('playListName'));
+        $.ajax({
+          url: self.get('apiUrl') + '/users/' + self.get('userId') + '/playlists?limit=50',
           type: 'GET',
           dataType: 'json',
-          headers: self.spotifySync.getAuthorizationHeader(),
-          success: function(response) {
-            if (response.playlists && response.playlists.items && response.playlists.length > 0) {
+          headers: self.spotifySync.getAuthorizationHeader()
+        })
+        .pipe(
+          function(response) {
+            if (response.items && response.items.length > 0) {
+              for (var i=0; i<response.items.length; i++) {
+                if (response.items[i].name.toLowerCase() === self.get('playListName')) {
+                  console.log("found matching spotify playlist: %s", JSON.stringify(response.items[i]))
+                  return $.Deferred().resolve(response.items[i]);
+                }
+              }
+            } 
+
+            if (response && response.next) {
+              return $.ajax({
+                url: response.next,
+                type: 'GET',
+                dataType: 'json',
+                headers: self.spotifySync.getAuthorizationHeader()
+              }).pipe(arguments.callee);
+            } else {
+              console.log("unable to find spotify playlist: " + self.get('playListName'));
+              $.Deferred().resolve();
+            }
+          }
+        )
+        .pipe(
+          function(playlist) {
+            if (playlist && playlist.id) {
               self.set({ 
-                playListId: response.playlists[0].id 
+                playListId: playlist.id 
+              });
+              upsertDfr.resolve()
+            } else {
+              console.log("creating new spotify playlist: " + self.get('playListName'));
+              return $.ajax({
+                url: self.get('apiUrl') + '/users/' + self.get('userId') + '/playlists',
+                type: 'POST',
+                dataType: 'json',
+                data: JSON.stringify({
+                  name: self.get('playListName'),
+                  public: false
+                }),
+                headers: self.spotifySync.getAuthorizationHeader(),
+                success: function(response) {
+                  self.set({ 
+                    playListId: response.id 
+                  });
+                  upsertDfr.resolve();
+                },
+                error: function (xhr, status, errorThrown) {
+                  upsertDfr.reject(xhr.responseText);
+                }
               });
             }
           }
-        }).pipe(function(response) {
-          if (_.isEmpty(self.get('playListId'))) {
-            return $.ajax({
-              url: self.get('apiUrl') + '/users/' + self.get('userId') + '/playlists',
-              type: 'POST',
-              dataType: 'json',
-              data: JSON.stringify({
-                name: self.get('playListName'),
-                public: false
-              }),
-              headers: self.spotifySync.getAuthorizationHeader(),
-              success: function(response) {
-                self.set({ 
-                  playListId: response.id 
-                });
-              }
-            });
-          } else {
-            return $.Deferred().resolve();
-          }
-        });
+        );
+
+        return upsertDfr.promise();
       },
       getSync: function() {
         return _.bind(this.spotifySync.sync, this.spotifySync);

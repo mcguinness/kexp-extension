@@ -23,7 +23,7 @@ define([
         if (!_.isObject(options.appConfig)) {
           options.appConfig = new AppConfigCollection();
 
-          if (options.background) {
+          if (!options.background) {
             this.bindTo(options.appConfig, "change", function(model) {
                 console.debug("Configuration model {%s} value has changed, saving changes...", model.id, JSON.stringify(model));
                 model.save();

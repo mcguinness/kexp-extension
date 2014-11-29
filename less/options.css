@@ -4095,7 +4095,6 @@ body {
 }
 .btn-kexp-toggle {
   border: 1px solid #999999;
-  width: 92px;
 }
 .logo {
   width: 557px;
@@ -4119,6 +4118,7 @@ body {
   display: inline-block;
   margin-top: 5px;
   margin-bottom: 5px;
+  width: 275px;
 }
 .alert h4 {
   margin-bottom: 5px;
@@ -4143,4 +4143,8 @@ body {
 .modal-spotify-authorize a,
 .modal-lastfm-authorize a {
   cursor: pointer;
+}
+.spotify-container .profile-name {
+  margin-left: 10px;
+  font-weight: bold;
 }

@@ -19,6 +19,7 @@ define([
     events: {
       "click #btn-spotify-service": "handleAuthorizationToggle",
       "click #chkbx-spotify-share-like": "handleLikeShareCheck",
+      "click #btn-spotify-reset-playlist": "resetPlaylist"
     },
     onRender: function() {
       var convertAuthzButtonClass = function(direction, value) {
@@ -33,23 +34,25 @@ define([
             return _.isEmpty(value);
           },
           bindings = { // Order is important, checkbox selectors will also match sessionKey selector (Fixed in next release)
-            likeShareEnabled: {selector: "#chkbx-spotify-share-like"},
+            likeShareEnabled: { selector: "#chkbx-spotify-share-like" },
             refreshToken: [
-              {selector: "#btn-spotify-service", elAttribute: "class", converter: convertAuthzButtonClass},
-              {selector: "#btn-spotify-service", elAttribute: "html", converter: convertAuthzButtonHtml},
-              {selector: "#ctrls-spotify-features input[type=checkbox]", elAttribute: "disabled", converter: convertCheckboxDisable}
-            ]
+              { selector: "#btn-spotify-service", elAttribute: "class", converter: convertAuthzButtonClass },
+              { selector: "#btn-spotify-service", elAttribute: "html", converter: convertAuthzButtonHtml },
+              { selector: "#ctrls-spotify-features input", elAttribute: "disabled", converter: convertCheckboxDisable },
+              { selector: "#ctrls-spotify-features button", elAttribute: "disabled", converter: convertCheckboxDisable }
+            ],
+            userDisplayName: { selector: '#spotify-profile-name' },
+            playListName: { selector: '#txt-spotify-playlist' }
           };
 
       this._modelBinder.bind(this.model, this.$el, bindings);
-      $("#btn-spotify-service").button();
     },
     serializeData: function() {
       return { model: this.model.toJSON()};
     },
     requestAuthorization: function() {
       var self = this,
-          $ctrlBox = $(this.serviceBoxEl);
+          $ctrlBox = $(this.serviceBoxEl),
           $btn = $("#btn-spotify-service");
 
       $btn.attr('disabled', 'disabled');
@@ -70,12 +73,35 @@ define([
       this.vent.trigger("analytics:trackevent", "Feature", "SpotifyAuthorization", "Disabled");
     },
     handleAuthorizationToggle: function(event) {
-      $(this.serviceBoxEl).find("div.alert").remove();
-      $(event.currentTarget).hasClass("active") ? this.removeAuthorization() : this.requestAuthorization();
+      event.stopPropagation();
+      $(this.el).find("div.alert").remove();
+      this.model.hasAuthorization() ? this.removeAuthorization() : this.requestAuthorization();
     },
     handleLikeShareCheck: function(event) {
       var checked = $(event.currentTarget).is(":checked");
       this.vent.trigger("analytics:trackevent", "Feature", "SpotifyLikeShare", checked ? "Enabled" : "Disabled");
+    },
+    resetPlaylist: function() {
+
+      $(this.el).find("div.alert").remove();
+
+      var self = this,
+          $ctrlBox = $('#ctrls-spotify-features'),
+          $btn = $("#btn-spotify-reset-playlist");
+
+      $btn.attr('disabled', 'disabled');
+      this.model.upsertPlaylist().done(function() {
+        $ctrlBox.append(
+          self.makeAlert("success", "Created playlist")
+        );
+      }).fail(function(error) {
+        $ctrlBox.append(
+          self.makeAlert("error", "Playlist Error!",
+            "Unable to create Spotify playlist " + self.model.get('playListName') + " due to error <em>" + error + "</em>")
+          );
+      }).always(function() {
+        $btn.removeAttr("disabled");
+      });
     }
   });
 
