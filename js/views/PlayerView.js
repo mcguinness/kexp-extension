@@ -203,11 +203,12 @@ define([
 			}
 		},
 		beforeClose: function() {
+			this._playerFsm.unbindAudioElEvents();
 			this._playerBinder.unbind();
+
 			if (_.isObject(this.$statusCycleEl)) {
 				this.$statusCycleEl.cycle("destroy");
-			}
-			this._playerFsm.unbindAudioElEvents();
+			}			
 		}
 	});
 

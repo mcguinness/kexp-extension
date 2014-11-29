@@ -63,7 +63,7 @@ define([
          * Extend defaults with options
          * @type {*|void}
          */
-        options = _.extend({
+        var options = _.extend({
             storage: new OAuthLocalStorage(),
             autoRefresh : true
         }, opts);

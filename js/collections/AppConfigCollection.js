@@ -16,7 +16,7 @@ define([
     
     initialize: function(models, options) {
      
-      var legacyConfig = null;
+      var legacyConfig = null,
           legacyLastFmModel = null;
 
       try {

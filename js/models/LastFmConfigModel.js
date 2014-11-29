@@ -48,6 +48,10 @@ define([
       },
       isPlayScrobbleEnabled: function() {
         return (this.get("playScrobbleEnabled") && this.hasAuthorization());
+      },
+      getApiConfig: function() {
+        var self = this;
+        return _.pick(self.toJSON(), "apiKey", "apiSecret", "sessionKey");
       }
   });
 

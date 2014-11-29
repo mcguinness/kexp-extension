@@ -35,6 +35,8 @@ require([
       controller: {
         showOptions: function() {
           var optionsView = new OptionsView({
+            vent: self.vent,
+            appConfig: self.appConfig,
             collection: self.appConfig
           });
           self.main.show(optionsView);

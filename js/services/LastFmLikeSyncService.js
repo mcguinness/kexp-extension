@@ -9,14 +9,13 @@ define([
 
   var LastFmLikeSyncService = Service.extend({
     onStart: function(options) {
-      _.bindAll(this, "enableSync", "disableSync", "handleSyncChange");
       var self = this;
       this._lastFmConfig = this.appConfig.getLastFm();
       this._lastFmApi = options.lastFmApi;
 
-      this.bindTo(this._lastFmConfig, "change:sessionKey", this.handleSyncChange);
-      this.bindTo(this._lastFmConfig, "change:likeShareEnabled", this.handleSyncChange);
-      this.bindTo(this._lastFmConfig, "change:likeScrobbleEnabled", this.handleSyncChange);
+      this.bindTo(this._lastFmConfig, "change:sessionKey", this.handleSyncChange, this);
+      this.bindTo(this._lastFmConfig, "change:likeShareEnabled", this.handleSyncChange, this);
+      this.bindTo(this._lastFmConfig, "change:likeScrobbleEnabled", this.handleSyncChange, this);
 
       this.handleSyncChange(this._lastFmConfig);
     },

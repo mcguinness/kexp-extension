@@ -23,7 +23,7 @@ define([
         }
       },
       onStop: function() {
-
+        $('#btn-popout').remove();
       },
       bindPopout: function() {
         var $containerPopout,
@@ -33,7 +33,7 @@ define([
           top,
           self = this;
 
-        $containerPopout = $('<div class="container-footer-popout"><i class="fa fa-arrows-alt"></i> Popout</span></div>');
+        $containerPopout = $('<div id="btn-popout" class="container-footer-popout"><i class="fa fa-arrows-alt"></i> Popout</span></div>');
         $containerPopout.click(function() {
           width = window.outerWidth;
           height = window.outerHeight;

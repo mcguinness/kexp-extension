@@ -75,7 +75,7 @@ require([
       this.addService(new AnalyticsService(), options);
     });
 
-    backgroundApp.start({});
+    backgroundApp.start({background: true});
     console.log("background page loaded.");
   });
 });

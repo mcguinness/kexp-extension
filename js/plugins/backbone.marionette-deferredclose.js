@@ -8,7 +8,7 @@ define([
     var that = this;
     this.ensureEl();
 
-    $.when(this.close())
+    return $.when(this.close())
       .then(function() {
         that.open(view, appendMethod);
         that.currentView = view;

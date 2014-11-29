@@ -10,7 +10,7 @@ define([
   var NowPlayingFsm = function(nowPlayingModel) {
 
     var nowPlayingFsm = new Machina.Fsm({
-
+      model: nowPlayingModel,
       initialState: "uninitialized",
       events: ["initialized", "resolve:liked", "resolve:lastfm", "reconciled", "error"],
       states: {
@@ -19,7 +19,7 @@ define([
             console.debug("[Now Playing: uninitialized]");
           },
           "initialize": function() {
-            if (!_.isObject(nowPlayingModel)) {
+            if (!_.isObject(this.model)) {
               this.transition("error");
             } else {
               this.transition("initialized");
@@ -32,14 +32,14 @@ define([
             console.debug("[Now Playing: initialized]");
             
             var fsm = this,
-              songTitle = nowPlayingModel.get("songTitle"),
-              artistName = nowPlayingModel.get("artist"),
-              albumName = nowPlayingModel.get("album"),
-              songCollection = new LikedSongCollection();
+                songTitle = this.model.get("songTitle"),
+                artistName = this.model.get("artist"),
+                albumName = this.model.get("album"),
+                songCollection = new LikedSongCollection();
 
-            this.fireEvent("initialized", nowPlayingModel);
+            this.fireEvent("initialized", this.model);
 
-            if (nowPlayingModel.get("airBreak") || nowPlayingModel.hasLikedSong()) {
+            if (this.model.get("airBreak") || this.model.hasLikedSong()) {
               fsm.transition("likeResolved");
 
             } else {
@@ -47,14 +47,14 @@ define([
                 success: function(collection, resp) {
                   var likedSong = collection.first();
                   if (likedSong) {
-                    console.debug("Resolved %s for %s", likedSong.toDebugString(), nowPlayingModel.toDebugString());
-                    nowPlayingModel.likedSong = likedSong;
+                    console.debug("Resolved %s for %s", likedSong.toDebugString(), fsm.model.toDebugString());
+                    fsm.model.likedSong = likedSong;
                   }
                   fsm.transition("likeResolved");
                 },
                 error: function(collection, error, options) {
                   // No Cursor Error if Artist & Album are empty
-                  console.log("Error {%s} resolving liked song for %s", error, nowPlayingModel.toDebugString(), collection, error, options);
+                  console.log("Error {%s} resolving liked song for %s", error, fsm.toDebugString(), collection, error, options);
                   fsm.transition("likeResolved");
                 }
               });
@@ -64,15 +64,15 @@ define([
         "likeResolved": {
           _onEnter: function() {
             console.debug("[Now Playing: likeResolved]");
-            this.fireEvent("resolve:liked", nowPlayingModel);
+            this.fireEvent("resolve:liked", this.model);
 
-            if (_.isUndefined(nowPlayingModel.lastFmMeta)) {
-              nowPlayingModel.lastFmMeta = new LastFmCollection();
+            if (_.isUndefined(this.model.lastFmMeta)) {
+              this.model.lastFmMeta = new LastFmCollection();
             }
 
-            if (nowPlayingModel.get("airBreak")) {
+            if (this.model.get("airBreak")) {
 
-              nowPlayingModel.lastFmMeta.add(
+              this.model.lastFmMeta.add(
               {
                   "mbid": "",
                   "url": "http://www.kexp.org/",
@@ -91,9 +91,9 @@ define([
             }
             
             var fsm = this,
-              artistName = nowPlayingModel.get("artist"),
-              albumName = nowPlayingModel.get("album"),
-              metaCollection = nowPlayingModel.lastFmMeta,
+              artistName = this.model.get("artist"),
+              albumName = this.model.get("album"),
+              metaCollection = this.model.lastFmMeta,
               albumPromise = metaCollection.getOrFetchAlbum(artistName, albumName),
               artistPromise = metaCollection.getOrFetchArtist(artistName);
 
@@ -117,20 +117,20 @@ define([
         "lastfmResolved": {
           _onEnter: function() {
             console.debug("[Now Playing: lastfmResolved]");
-            this.fireEvent("resolve:lastfm", nowPlayingModel);
+            this.fireEvent("resolve:lastfm", this.model);
             this.transition("reconciled");
           }
         },
         "reconciled": {
           _onEnter: function() {
             console.debug("[Now Playing: reconciled]");
-            this.fireEvent("reconciled", nowPlayingModel);
+            this.fireEvent("reconciled", this.model);
           }
         },
         "error": {
           _onEnter: function() {
             console.debug("[Now Playing: error]");
-            this.fireEvent("error", nowPlayingModel);
+            this.fireEvent("error", this.model);
           }
         }
       }

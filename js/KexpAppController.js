@@ -3,12 +3,13 @@ define([
   "underscore",
   "models/ShowModel",
   "collections/NowPlayingCollection",
+  "views/NavView",
   "views/PlayerView",
   "views/NowPlayingLayout",
   "views/LikedSongListView",
   "moment"
   ], function($, _, ShowModel, NowPlayingCollection,
-    PlayerView, NowPlayingLayout, LikedSongListView, moment) {
+    NavView, PlayerView, NowPlayingLayout, LikedSongListView, moment) {
 
   var KexpAppController = function(application, options) {
     options || (options = {});
@@ -22,14 +23,22 @@ define([
     this.models = {
       show: new ShowModel()
     };
-    // Player Region is static across all routers
+
+    // Nav & Player Region is static across all routers
     this.views = {
+      nav: new NavView({
+        vent: options.vent,
+        appConfig: options.appConfig
+      }),
       player: new PlayerView({
+        vent: options.vent,
+        appConfig: options.appConfig,
         liveStreamEl: options.liveStreamEl,
         showModel: this.models.show
       })
     };
-    application.footer.show(this.views.player);
+    this.app.nav.show(this.views.nav);
+    this.app.footer.show(this.views.player);
 
     _.bindAll(this, "handleFetchShowPoll");
     this.handleFetchShowPoll();
@@ -38,7 +47,10 @@ define([
   _.extend(KexpAppController.prototype, {
     handleLikesRoute: function() {
       var self = this;
-      var likedSongsView = new LikedSongListView();
+      var likedSongsView = new LikedSongListView({
+        vent: this.app.vent,
+        appConfig: this.app.appConfig
+      });
       //console.log("[Fetch LikedSongListView Collection]");
       likedSongsView.collection.fetch()
         .then(function(collection, resp) {
@@ -61,6 +73,8 @@ define([
     },
     showNowPlaying: function() {
       var layout = new NowPlayingLayout({
+        vent: this.app.vent,
+        appConfig: this.app.appConfig,
         collection: this.collections.nowPlaying,
         lastFmApi: this.app.lastFmApi
       });
@@ -99,15 +113,12 @@ define([
     },
     close: function() {
       Backbone.history.stop();
+      Backbone.history.handlers = [];
       this.disableFetchShowPoll();
 
       _.each(this.views, function(view) {
         view.close();
-        delete this.views;
       });
-
-      delete this.models;
-      delete this.collections;
     }
   });
 

@@ -20,7 +20,7 @@ var require = {
     "jquery.dataTables.sort": "plugins/jquery.dataTables.sort",
     "linkify": "util/ba-linkify",
     "machina": "libs/machina.min",
-    "marionette": "libs/backbone.marionette.min",
+    "marionette": "libs/backbone.marionette",
     "marionette-deferredclose": "plugins/backbone.marionette-deferredclose",
     "marionette-kexp": "plugins/backbone.marionette-kexp",
     "md5": "util/md5",

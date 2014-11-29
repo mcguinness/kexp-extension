@@ -21,8 +21,14 @@ define([
 
   // Add Services & Close to Application
   _.extend(Marionette.Application.prototype, {
-    services: [],
-    routers: [],
+    constructor: function(options) {
+      this.services = [];
+      this.routers = [];
+
+      if (this.initialize) {
+        this.initialize.apply(this, arguments);
+      }
+    },
     addService: function(service, options) {
       if (_.isObject(service)) {
         this.services.push(service);
@@ -39,24 +45,26 @@ define([
 
       _.each(_.values(this), function(region) {
         if (region instanceof Marionette.Region && _.isFunction(region.close)) {
-          console.debug("Closing region {%s}", region.el);
+          console.log("Closing region {%s}", region.el);
           region.close();
         }
       });
 
       _.each(this.services, function(service) {
-        console.debug("Stopping service {%s}", service.toString());
+        console.log("Stopping service {%s}", service.toString());
         service.stop();
       });
 
       _.each(this.routers, function(router) {
-        console.debug("Closing router");
+        console.log("Closing router");
         if (_.isObject(router.controller) && _.isFunction(router.controller.close)) {
           router.controller.close();
         }
       });
 
+      console.log("Closing event handlers");
       this.vent.unbindAll();
+      this.unbindAll();
 
       if (_.isFunction(this.onClose)) { this.onClose(); }
       this.trigger("close");
@@ -65,9 +73,23 @@ define([
     }
   });
 
+  // Add vent and config from options
+  _.extend(Marionette.View.prototype, {
+    constructor: function(options) {
+      if (!options) options = {};
+      this.vent = options.vent;
+      this.appConfig = options.appConfig;
+
+      Marionette.View.apply(this, arguments);
+    },
+    onClose: function() {
+      this.vent = null;
+      this.appConfig =  null;
+    }
+  });
+
   // Add pipe to EventAggregator
   _.extend(Marionette.EventAggregator.prototype, {
-
     pipe: function(target, events) {
       var self = this;
       return Marionette.BindTo.bindTo.call(this, target, events, function() {

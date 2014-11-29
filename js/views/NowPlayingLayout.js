@@ -36,8 +36,8 @@ define([
       if (this.collection === undefined) {
         this.collection = new NowPlayingCollection();
       }
+
       this.popoverEl = options.popoverEl || "#navbar-top";
-      this._currentNowPlaying = null;
     },
     initialEvents: function() {
       var layout = this;
@@ -57,40 +57,35 @@ define([
       var self = this,
           mostRecentModel = this.collection.last();
 
-      this.showNowPlaying(mostRecentModel, ShowType.Reset).always(function() {
-        console.debug("[NowPlaying: Reset Complete] - %s", mostRecentModel.toDebugString());
-        self.vent.trigger("nowplaying:cycle", mostRecentModel);
-      });
+      this.showNowPlaying(mostRecentModel, ShowType.Reset);
       // Bind collection events here incase a fetch is in progress during initialize
       self._bindCollection();
     },
     showNowPlaying: function(nowPlayingModel, showType) {
+
       if (this._currentLoader) {
         delete this._currentLoader;
       }
 
+      var layout = this,
+          loader = new NowPlayingFsm(nowPlayingModel);
+
       showType || (showType = ShowType.New);
 
       // Skip New or Changed models if Manual page is activated and current page is not the model
-      if (showType > ShowType.Page && this.hasManualPageEnabled() && this._currentNowPlaying !== nowPlayingModel) {
+      if (showType > ShowType.Page && this.hasManualPageEnabled() && this.song.model !== nowPlayingModel) {
         return;
       }
 
       // Shortcut for Updates
-      if (showType === ShowType.Update && this._currentNowPlaying === nowPlayingModel) {
+      if (showType === ShowType.Update && this.song.model === nowPlayingModel) {
         this.showSongView(nowPlayingModel);
         return;
       }
-
-      var layout = this,
-        loader = this._currentLoader = new NowPlayingFsm(nowPlayingModel),
-        loaderDfr = $.Deferred().always(function() {
-          //delete layout._currentLoader;
-        });
+      
+      this._currentLoader = loader;
 
       loader.on("initialized", function(model) {
-        // Set Now Playing Current State
-        layout._currentNowPlaying = model;
         layout.showSongView(model);
       });
       loader.on("resolve:liked", function(model) {
@@ -100,16 +95,17 @@ define([
         layout.showMetaView(model);
       });
       loader.on("reconciled", function(model) {
-        console.log("[Loaded NowPlaying] %s", model.toDebugString());
-        loaderDfr.resolve(model);
+        console.log("[NowPlaying: Resolved] %s", model.toDebugString());
+        layout.vent.trigger("nowplaying:cycle", model);
+        //loaderDfr.resolve(model);
       });
       loader.on("error", function(model, error) {
-        layout._currentNowPlaying = null;
         layout.vent.trigger("analytics:trackevent", "NowPlaying", "Error",
           _.isObject(model) && _.isFunction(model.toDebugString) ?
             model.toDebugString() : "");
         layout.showErrorView();
-        loaderDfr.reject(model, error);
+        layout.vent.trigger("nowplaying:cycle", model);
+        //loaderDfr.reject(model, error);
       });
       // Wait for fade out transitions
       $.when(
@@ -120,10 +116,12 @@ define([
           loader.handle("initialize");
         });
 
-      return loaderDfr.promise();
+      //return loaderDfr.promise();
     },
     showSongView: function(nowPlayingModel) {
       var songView = new NowPlayingSongView({
+        vent: this.vent,
+        appConfig: this.appConfig,
         model: nowPlayingModel
       });
       return this.song.show(songView, "append");
@@ -131,6 +129,8 @@ define([
     showFooterView: function(nowPlayingModel) {
       var songIndex = this.collection.indexOf(nowPlayingModel);
       var footerView = new NowPlayingFooterView({
+        vent: this.vent,
+        appConfig: this.appConfig,
         model: nowPlayingModel,
         pager: {
           canPagePrev: songIndex > 0,
@@ -146,6 +146,8 @@ define([
     },
     showMetaView: function(nowPlayingModel) {
       var metaView = new LastFmMetaView({
+        vent: this.vent,
+        appConfig: this.appConfig,
         model: nowPlayingModel,
         popoverEl: this.popoverEl
       });
@@ -156,6 +158,8 @@ define([
       $(this.footer.el).toggleClass("hide", true);
       
       var errorView = new NowPlayingErrorView({
+        vent: this.vent,
+        appConfig: this.appConfig,
         model: new Backbone.Model({
           canPagePrev: this.collection.size() > 0
         })
@@ -211,7 +215,7 @@ define([
     handleManualPageReset: function() {
       this.disableManualPage();
       var mostRecentNowPlaying = this.collection.last();
-      if (this._currentNowPlaying !== mostRecentNowPlaying) {
+      if (this.song.model !== mostRecentNowPlaying) {
         this.showNowPlaying(mostRecentNowPlaying, ShowType.Reset);
       }
     },
@@ -232,11 +236,9 @@ define([
       }
     },
     beforeClose: function() {
-      // Song "could" be loading during close.  This should kill any event handlers
-      if (this._currentLoader) {
-        this._currentLoader.eventListeners = {};
-      }
       this.disableManualPage();
+      // Song "could" be loading during close.  This should kill any event handlers
+      delete this._currentLoader;
     }
   });
 

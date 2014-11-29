@@ -25,12 +25,16 @@ define([
       switch (item.id.toLowerCase()) {
         case "lastfm" :
           view = new LastFmOptionsItemView({
+            vent: this.vent,
+            appConfig: this.appConfig,
             model: item,
             collection: this.collection
           });
           break;
         case "spotify" :
           view = new SpotifyOptionsItemView({
+            vent: this.vent,
+            appConfig: this.appConfig,
             model: item,
             collection: this.collection
           });

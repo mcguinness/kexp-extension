@@ -8,11 +8,6 @@ define([
   var PopoverView = Marionette.ItemView.extend({
     popoverPlacement: "bottom",
     hideOnClose: false,
-    constructor: function(options) {
-      options || (options = {});
-      _.extend(this, options);
-      Marionette.ItemView.prototype.constructor.apply(this, arguments);
-    },
     tooltips: {
       "this": "popover"
     },

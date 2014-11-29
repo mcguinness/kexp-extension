@@ -36,7 +36,8 @@ define([
         this.popoverView = new LastFmPopoverView({
           el: this.popoverEl,
           model: this.model,
-          vent: this.vent
+          vent: this.vent,
+          appConfig: this.appConfig
         });
         this.popoverView.render();
       }
@@ -52,20 +53,25 @@ define([
       var $image = $("img", this.$el),
         beforeCloseDfr = $.Deferred();
 
-      if (this.popoverView) {
-        this.popoverView.close();
-        delete this.popoverView;
-      }
+      /* 
+       * Temp disable to troubleshoot memory leaks
+       *
 
-      if ($image.length > 0) {
-        $image.fadeOut(function() {
-          beforeCloseDfr.resolve();
-        });
-      } else {
-        beforeCloseDfr.resolve();
-      }
+      $.when(this.popoverView ? this.popoverView.close(): true)
+        .then(function() {
+          if ($image.length > 0) {
+            $image.fadeOut(400, function() {
+              console.log('image fade done');
+              beforeCloseDfr.resolve();
+            });
+          } else {
+            beforeCloseDfr.resolve();
+          }
+        })
 
       return beforeCloseDfr.promise();
+
+      */
     }
   });
   return LastFmMetaView;

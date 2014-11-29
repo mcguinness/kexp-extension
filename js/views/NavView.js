@@ -1,19 +1,24 @@
 define([
   "jquery",
   "underscore",
-  "marionette-kexp"
-  ], function($, _, Marionette) {
+  "marionette-kexp",
+  "text!templates/nav.html",
+  ], function($, _, Marionette, ViewTemplate) {
   
-  var NavRegionView = Marionette.Region.extend({
+  var NavView = Marionette.ItemView.extend({
     el: '#navbar-top',
+    tagName: "div",
+    className: "navbar-inner",
+    template: ViewTemplate,
     initialize: function(options) {
       // Bind before adding hashchange event handler
       _.bindAll(this, 'updateNav');
       
-      // Initialize
-      this.updateNav();
       // Listen for changes for future routes...
       $(window).on('hashchange', this.updateNav);
+    },
+    onRender: function() {
+      this.updateNav();
     },
     updateNav: function() {
       
@@ -37,5 +42,5 @@ define([
     }
   });
   
-  return NavRegionView;
+  return NavView;
 });

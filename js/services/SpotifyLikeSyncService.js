@@ -95,8 +95,6 @@ define([
           }
         });
       }
-
-
     },
     toString: function() {
       return "SpotifyLikeSyncService";

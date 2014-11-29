@@ -668,6 +668,11 @@
     this.initCallbacks = new Marionette.Callbacks();
     this.vent = new Marionette.EventAggregator();
     _.extend(this, options);
+
+	/*
+	 * Modified source to add constructor call - mcguinness 11/28/14
+ 	 */
+    Marionette.Application.prototype.constructor.apply(this, arguments);
   };
 
   _.extend(Marionette.Application.prototype, Backbone.Events, {

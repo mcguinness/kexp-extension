@@ -129,7 +129,9 @@ define([
         function() {
           view.popoverView = new LikedSongPopoverView({
               el: view.popoverEl,
-              model: model
+              model: model,
+              vent: view.vent,
+              appConfig: view.appConfig
             });
           view.popoverView.render();
           view.popoverView.toggle();
@@ -179,14 +181,12 @@ define([
     beforeClose: function() {
       if (this.popoverView) {
         this.popoverView.close();
-        delete this.popoverView;
       }
       // Datatable jquery plugin seems to cache a bunch of stuff
       // This should force clear everything
       if (this.dataTable) {
         this.dataTable.fnDestroy(true);
         $("#table-liked", this.el).empty().remove();
-        delete this.dataTable;
       }
     }
   });

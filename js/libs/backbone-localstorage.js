@@ -4,6 +4,11 @@
  *
  * https://github.com/jeromegn/Backbone.localStorage
  */
+
+/*
+  Removed window.Store && window.Store.sync - mcguinness 11/24/14
+*/
+
 (function (root, factory) {
   if (typeof exports === 'object' && typeof require === 'function') {
     module.exports = factory(require("backbone"));
@@ -55,7 +60,7 @@ function result(object, property) {
 // Our Store is represented by a single JS object in *localStorage*. Create it
 // with a meaningful name, like the name you'd give a table.
 // window.Store is deprectated, use Backbone.LocalStorage instead
-Backbone.LocalStorage = window.Store = function(name, serializer) {
+Backbone.LocalStorage = function(name, serializer) {
   if( !this.localStorage ) {
     throw "Backbone.localStorage: Environment does not support localStorage."
   }
@@ -169,7 +174,7 @@ extend(Backbone.LocalStorage.prototype, {
 // localSync delegate to the model or collection's
 // *localStorage* property, which should be an instance of `Store`.
 // window.Store.sync and Backbone.localSync is deprecated, use Backbone.LocalStorage.sync instead
-Backbone.LocalStorage.sync = window.Store.sync = Backbone.localSync = function(method, model, options) {
+Backbone.LocalStorage.sync =  Backbone.localSync = function(method, model, options) {
   var store = result(model, 'localStorage') || result(model.collection, 'localStorage');
 
   var resp, errorMessage;
