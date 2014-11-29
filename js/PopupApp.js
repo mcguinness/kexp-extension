@@ -88,12 +88,6 @@ define([
         Backbone.history.start();
       });
 
-    },
-    onClose: function() {
-      delete this.nav;
-      delete this.main;
-      delete this.footer;
-      KexpApp.prototype.onClose.apply(this, arguments);
     }
   });
 

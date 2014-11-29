@@ -5,10 +5,10 @@ require(["jquery", "underscore", "PopupApp", "gaq"], function($, _, PopupApp) {
       handleStart;
 
   if (options.chromeExtension) {
-    backgroundApp = chrome.extension.getBackgroundPage().KexpBackgroundApp;
+    backgroundApp = window.chrome.extension.getBackgroundPage().KexpBackgroundApp;
     //window.console = chrome.extension.getBackgroundPage().console;
     options.liveStreamEl = backgroundApp.liveStreamEl;
-    options.appUrl = chrome.extension.getURL("popup.html");
+    options.appUrl = window.chrome.extension.getURL("popup.html");
 
     if(window.location.search.indexOf('popout=true') > 0) {
       $("body").addClass("popout");
@@ -20,14 +20,14 @@ require(["jquery", "underscore", "PopupApp", "gaq"], function($, _, PopupApp) {
   }
 
   window.KexpApp = new PopupApp();
-  
+
   window.addEventListener("unload", function(e) {
 
     window.removeEventListener(e.type, arguments.callee);
 
     console.log("closing popup");
-    window.KexpApp.close();
     options = null;
+    window.KexpApp.close();
     delete window.KexpApp;
 
     // Brute-force (aka hacky shit) memory leak cleanup
@@ -38,16 +38,19 @@ require(["jquery", "underscore", "PopupApp", "gaq"], function($, _, PopupApp) {
     window._ = null;
     window.Backbone = null;
     window.$ = null;
+    window.IDBCursor = null;
     window.jQuery = null
     window.moment = null;
     window.machina = null;
     window._gat = null;
     window._gaq = null;
     window.gaGlobal = null;
+    window.document.innerHTML = '<html></html>';
 
   });
 
   $(document).ready(function() {
+    $(document).unbind();
     options.popout = $("body").hasClass("popout");
     window.KexpApp.start(options);
   });
