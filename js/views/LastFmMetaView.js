@@ -53,6 +53,26 @@ define([
       var $image = $("img", this.$el),
         beforeCloseDfr = $.Deferred();
 
+        if (this.popoverView) {
+          this.popoverView.close();
+        }
+
+
+/*
+        if ($image.length > 0) {
+          $image.queueTransition(function() {
+              beforeCloseDfr.resolve();
+            }).removeClass("in");
+        } else {
+          beforeCloseDfr.resolve();
+        }
+
+
+
+      return beforeCloseDfr.promise();
+      */
+        
+
       /* 
        * Temp disable to troubleshoot memory leaks
        *
