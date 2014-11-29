@@ -91,7 +91,7 @@ define([
 
 			_.delay(function() {
 				$('#player').addClass('in');
-			}, 600);
+			}, 100);
 
 		},
 		makeStatusEl: function(id, message) {

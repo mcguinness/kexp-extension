@@ -101,6 +101,9 @@
     &:hover .fa-lastfm:before {
       color: @kexpDark;
     }
+    &.fade {
+      .transition(opacity .75s ease);
+    }
   }
   .kexp-icon-button-group {
     height: 28px;
@@ -108,9 +111,5 @@
   }
   &.fade {
     .transition(opacity .75s ease);
-    // opacity: 0;
-    // &.in {
-    //   opacity: 1;
-    // }
   }
 }

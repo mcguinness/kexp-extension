@@ -66,7 +66,7 @@ define([
         // Wait for Fetch (Success or Error)
         self.collections.nowPlaying.fetch({upsert: true})
           .always(function() {
-            _.delay(_.bind(self.showNowPlaying, self), 250);
+            _.delay(_.bind(self.showNowPlaying, self), 100);
     
           });
       }

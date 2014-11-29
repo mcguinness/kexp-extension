@@ -61,7 +61,7 @@ define([
       // Bind collection events here incase a fetch is in progress during initialize
       self._bindCollection();
     },
-    showNowPlaying: function(nowPlayingModel, showType) {
+    showNowPlaying: _.debounce(function(nowPlayingModel, showType) {
 
       if (this._currentLoader) {
         delete this._currentLoader;
@@ -117,7 +117,7 @@ define([
         });
 
       //return loaderDfr.promise();
-    },
+    }, 200, true),
     showSongView: function(nowPlayingModel) {
       var songView = new NowPlayingSongView({
         vent: this.vent,

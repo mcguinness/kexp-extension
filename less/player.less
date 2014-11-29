@@ -11,6 +11,10 @@
   .center-block();
   #gradient > .vertical-three-colors(@kexpOrange, @kexpOrange, 33%, darken(@kexpOrange, 8%));
 
+  &.fade {
+    .transition(opacity .4s cubic-bezier(0.6, 0.04, 0.98, 0.335));
+  }
+
   .btn-play {
     width: 70px; // 1 px border inherited
     i:before {

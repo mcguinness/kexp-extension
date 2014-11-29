@@ -4175,6 +4175,13 @@ body {
   background-repeat: no-repeat;
   filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#feac31', endColorstr='#fe9c08', GradientType=0);
 }
+.player.fade {
+  -webkit-transition: opacity 0.4s cubic-bezier(0.6, 0.04, 0.98, 0.335);
+  -moz-transition: opacity 0.4s cubic-bezier(0.6, 0.04, 0.98, 0.335);
+  -ms-transition: opacity 0.4s cubic-bezier(0.6, 0.04, 0.98, 0.335);
+  -o-transition: opacity 0.4s cubic-bezier(0.6, 0.04, 0.98, 0.335);
+  transition: opacity 0.4s cubic-bezier(0.6, 0.04, 0.98, 0.335);
+}
 .player .btn-play {
   width: 70px;
 }
@@ -4374,6 +4381,13 @@ body {
 }
 .song-footer .btn-lastfm:hover .fa-lastfm:before {
   color: #934e1e;
+}
+.song-footer .btn-lastfm.fade {
+  -webkit-transition: opacity 0.75s ease;
+  -moz-transition: opacity 0.75s ease;
+  -ms-transition: opacity 0.75s ease;
+  -o-transition: opacity 0.75s ease;
+  transition: opacity 0.75s ease;
 }
 .song-footer .kexp-icon-button-group {
   height: 28px;
