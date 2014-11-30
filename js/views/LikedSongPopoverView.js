@@ -51,6 +51,10 @@ define([
             placement: "right",
             title: function() {
               return '<i class="fa fa-clock-o"></i> ' + moment(view.model.get("timeLastLike")).format("MMM Do, YYYY @ hh:mm A");
+            },
+            delay: {
+              show: 600,
+              hide: 200
             }
           });
 
@@ -64,6 +68,10 @@ define([
                 (view.model.get("lastFmTrackScrobbleCount") > 0 ?
                   '<strong><i class="fa fa-lastfm"></i> Last.fm Scrobble Disabled</strong><br>Previous Last.fm Track Scrobbles (Listens)' :
                   '<strong><i class="fa fa-lastfm"></i> Last.fm Scrobble Disabled</strong><br>Scrobble listens with your Last.fm profile (See Options)');
+            },
+            delay: {
+              show: 600,
+              hide: 200
             }
           });
 
@@ -77,6 +85,10 @@ define([
                 (view.lastFmConfig.isLikeShareEnabled() ?
                   '<strong><i class="fa fa-lastfm"></i> Last.fm Sharing Enabled</strong><br>Share this song to your Last.fm profile (Love)' :
                   '<strong><i class="fa fa-lastfm"></i> Last.fm Sharing Disabled</strong><br>Share likes with your Last.fm profile (See Options)');
+            },
+            delay: {
+              show: 600,
+              hide: 200
             }
           });
 

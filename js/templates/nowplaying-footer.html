@@ -4,7 +4,7 @@
     <div class="pull-left">
       <button id="button-like" class="btn btn-like btn-inverse btn-kexp-inverse" type="button" data-id="<%= model.id %>">
         <span class="prefix-accent">\\\</span> LIKE
-        <span class="<%= (model.likeCount > 0) ? 'badge' : 'badge badge-zero' %> "><%= model.likeCount %></span>
+        <span id="badge-like" class="<%= (model.likeCount > 0) ? 'badge' : 'badge badge-zero' %> "><%= model.likeCount %></span>
       </button>
       <button id="button-lastfm" class="btn btn-lastfm btn-inverse btn-kexp-inverse hide" type="button">
         <i class="fa fa-lastfm"></i> Song Info

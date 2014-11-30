@@ -4383,22 +4383,22 @@ body {
   color: #934e1e;
 }
 .song-footer .btn-lastfm.fade {
-  -webkit-transition: opacity 0.75s ease;
-  -moz-transition: opacity 0.75s ease;
-  -ms-transition: opacity 0.75s ease;
-  -o-transition: opacity 0.75s ease;
-  transition: opacity 0.75s ease;
+  -webkit-transition: opacity 0.5s ease;
+  -moz-transition: opacity 0.5s ease;
+  -ms-transition: opacity 0.5s ease;
+  -o-transition: opacity 0.5s ease;
+  transition: opacity 0.5s ease;
 }
 .song-footer .kexp-icon-button-group {
   height: 28px;
   margin-top: 5px;
 }
 .song-footer.fade {
-  -webkit-transition: opacity 0.75s ease;
-  -moz-transition: opacity 0.75s ease;
-  -ms-transition: opacity 0.75s ease;
-  -o-transition: opacity 0.75s ease;
-  transition: opacity 0.75s ease;
+  -webkit-transition: opacity 0.6s ease;
+  -moz-transition: opacity 0.6s ease;
+  -ms-transition: opacity 0.6s ease;
+  -o-transition: opacity 0.6s ease;
+  transition: opacity 0.6s ease;
 }
 .container-nowplaying-meta {
   margin-top: 12px;
@@ -4408,6 +4408,13 @@ body {
   max-height: 174px;
   max-width: 174px;
   margin: 0 auto 0 auto;
+}
+.container-nowplaying-meta img.fade {
+  -webkit-transition: opacity 0.6s ease;
+  -moz-transition: opacity 0.6s ease;
+  -ms-transition: opacity 0.6s ease;
+  -o-transition: opacity 0.6s ease;
+  transition: opacity 0.6s ease;
 }
 @media all and (-webkit-transform-3d) {
   /* Use the media query to determine if 3D transforms are supported */

@@ -10,7 +10,7 @@ define(["jquery", "underscore"], function($, _) {
       var img = new Image();
       var $el = $(this);
       var $img = $(img)
-        .addClass(cssClass || "")
+        .addClass(cssClass || "fade")
         .appendTo($el)
         .hide();
 
@@ -21,7 +21,7 @@ define(["jquery", "underscore"], function($, _) {
       }
 
       $img.load(function() {
-        $img.fadeIn();
+        $img.show().addClass("in");
       });
       $img.attr("src", src);
     });

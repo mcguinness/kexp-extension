@@ -9,6 +9,7 @@ define(["jquery"], function($) {
       var 
           defaults = {
               tapToDismiss: true,
+              hoverAwayDismiss: false,
               toastClass: 'toast',
               containerId: 'toast-container',
               debug: false,
@@ -125,7 +126,10 @@ define(["jquery"], function($) {
                   intervalId = setTimeout(fadeAway, options.timeOut)
               }
 
-              $toastElement.hover(stickAround, fadeAway)
+              if (options.hoverAwayDismiss) {
+                $toastElement.hover(stickAround, fadeAway)
+              }
+              
 
               if (options.tapToDismiss) {
                   $toastElement.click(fadeAway)

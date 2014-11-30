@@ -62,6 +62,10 @@ define([
               placement: "top",
               title: function() {
                 return "Last Update: " + moment.utc(view.model.get("timeLastUpdate")).local().format("M/D/YYYY h:mm:ss A");
+              },
+              delay: {
+                show: 600,
+                hide: 200
               }
             });
       }
@@ -79,6 +83,10 @@ define([
               } else {
                 return '<strong><i class="fa fa-lastfm"></i> Last.fm & <i class="fa fa-spotify"></i> Spotify Sharing Disabled<br>Likes will only be stored locally and not shared with your Last.fm profile or Spotify playlist (See Options)';
               }
+            },
+            delay: {
+              show: 600,
+              hide: 200
             }
           });
     },
@@ -119,6 +127,7 @@ define([
       likedSong.setLastFmAttributes(targetModel.lastFmMeta);
 
       if (likedSong.isNew()) {
+        console.debug('adding song [%s] to liked collection', likedSong.toDebugString());
         likedSong.save();
         targetModel.likedSong = likedSong;
       } else {
@@ -126,10 +135,11 @@ define([
       }
 
       if (!_.isEmpty(likedSong.get("trackDownloadUrl"))) {
-        this.vent.trigger("notification:info", "You can find the download link in the song info popover in your liked song collection.",
-          "This song has a free download!");
+        this.vent.trigger('notification:info', 'You can find the download link in your <i class="fa fa-star"></i> Likes collection.',
+          'This song has a free download!');
       }
 
+      console.debug('[Like Event] => %s', likedSong.toDebugString());
       this.vent.trigger("analytics:trackevent", "NowPlaying", "Like", targetModel.toDebugString(), likedSong.get("likeCount"));
       targetModel.trigger("change:like", targetModel, likedSong);
       this.vent.trigger("nowplaying:like", targetModel);
@@ -146,7 +156,11 @@ define([
       this.vent.trigger("nowplaying:refresh:manual");
     },
     handleLikeCountChange: function(model, value) {
-      $(".badge", this.$el).toggleClass("badge-zero", false).text(value.get("likeCount"));
+      var $badge = $("#badge-like", this.$el);
+      _.delay(function() {
+        $badge.toggleClass("badge-zero", false)
+        $badge.text(value.get("likeCount"));
+      });
     },
     handleLastFmPopoverToggle: function() {
       this.vent.trigger("nowplaying:lastfm:popover:toggle", this.model);

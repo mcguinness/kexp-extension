@@ -10,19 +10,19 @@
             <div class="info-icon-group pull-right">
               <% if (!_.isEmpty(model.trackKexpUrl)) { %>
                 <a class="btn-kexp-favicon" href="<%= model.trackKexpUrl %>" 
-                  rel="tooltip" title="Search KEXP for Track" data-chrometab="active"></a>
+                  rel="tooltip" title="Search KEXP for Track" data-delay='{ "show": 600, "hide": 200 }' data-chrometab="active"></a>
               <% } %>
               <% if (!_.isEmpty(model.trackLastFmUrl)) { %>
                 <a href="<%= model.trackLastFmUrl %>" 
-                  rel="tooltip" title="Last.fm Track Page" data-chrometab="active"></a>
+                  rel="tooltip" title="Last.fm Track Page" data-delay='{ "show": 600, "hide": 200 }' data-chrometab="active"></a>
               <% } %>
               <% if (!_.isEmpty(model.trackSpotifyUrl)) { %>
                 <a class="btn-spotify-favicon" href="<%= model.trackSpotifyUrl %>" 
-                  rel="tooltip" title="Search Spotify for Track" data-chrometab="temp"></a>
+                  rel="tooltip" title="Search Spotify for Track" data-delay='{ "show": 600, "hide": 200 }' data-chrometab="temp"></a>
               <% } %>
               <% if (!_.isEmpty(model.trackDownloadUrl)) { %>
                 <a class="btn-download" href="<%= model.trackDownloadUrl %>" 
-                  rel="tooltip" title="Track Download" data-chrometab="active">
+                  rel="tooltip" title="Track Download" data-delay='{ "show": 600, "hide": 200 }' data-chrometab="active">
                   <i class="fa fa-cloud-download"></i>
                 </a>
               <% } %>
@@ -38,15 +38,15 @@
             <div class="info-icon-group pull-right">
               <% if (!_.isEmpty(model.artistKexpUrl)) { %>
                 <a class="btn-kexp-favicon" href="<%= model.artistKexpUrl %>" 
-                  rel="tooltip" title="Search KEXP for Artist" data-chrometab="active"></a>
+                  rel="tooltip" title="Search KEXP for Artist" data-delay='{ "show": 600, "hide": 200 }' data-chrometab="active"></a>
               <% } %>
               <% if (!_.isEmpty(model.artistLastFmUrl)) { %>
                 <a class="btn-lastfm-favicon" href="<%= model.artistLastFmUrl %>" 
-                  rel="tooltip" title="Last.fm Artist Page" data-chrometab="active"></a>
+                  rel="tooltip" title="Last.fm Artist Page" data-delay='{ "show": 600, "hide": 200 }' data-chrometab="active"></a>
               <% } %>
               <% if (!_.isEmpty(model.artistSpotifyUrl)) { %>
                 <a class="btn-spotify-favicon" href="<%= model.artistSpotifyUrl %>" 
-                  rel="tooltip" title="Search Spotify for Artist" data-chrometab="temp"></a>
+                  rel="tooltip" title="Search Spotify for Artist" data-delay='{ "show": 600, "hide": 200 }' data-chrometab="temp"></a>
               <% } %>
             </div>
           </td>
@@ -60,15 +60,15 @@
             <div class="info-icon-group pull-right">
               <% if (!_.isEmpty(model.albumKexpUrl)) { %>
                 <a class="btn-kexp-favicon" href="<%= model.albumKexpUrl %>" 
-                  rel="tooltip" title="Search KEXP for Album" data-chrometab="active"></a>
+                  rel="tooltip" title="Search KEXP for Album" data-delay='{ "show": 600, "hide": 200 }' data-chrometab="active"></a>
               <% } %>
               <% if (!_.isEmpty(model.albumLastFmUrl)) { %>
                 <a class="btn-lastfm-favicon" href="<%= model.albumLastFmUrl %>" 
-                  rel="tooltip" title="Last.fm Album Page" data-chrometab="active"></a>
+                  rel="tooltip" title="Last.fm Album Page" data-delay='{ "show": 600, "hide": 200 }' data-chrometab="active"></a>
               <% } %>
               <% if (!_.isEmpty(model.albumSpotifyUrl)) { %>
                 <a class="btn-spotify-favicon" href="<%= model.albumSpotifyUrl %>" 
-                  rel="tooltip" title="Search Spotify for Album" data-chrometab="temp"></a>
+                  rel="tooltip" title="Search Spotify for Album" data-delay='{ "show": 600, "hide": 200 }' data-chrometab="temp"></a>
               <% } %>
             </div>
           </td>

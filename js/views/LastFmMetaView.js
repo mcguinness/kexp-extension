@@ -43,7 +43,7 @@ define([
       }
 
       if (lastFmImageModel) {
-        this.$el.loadImage(lastFmImageModel.image.url, "kexp-box-small nowplaying-image", {
+        this.$el.loadImage(lastFmImageModel.image.url, "kexp-box-small nowplaying-image fade", {
           "title": lastFmImageModel.model.get("name"),
           "alt": lastFmImageModel.model.get("name")
         });
@@ -57,8 +57,6 @@ define([
           this.popoverView.close();
         }
 
-
-/*
         if ($image.length > 0) {
           $image.queueTransition(function() {
               beforeCloseDfr.resolve();
@@ -67,10 +65,8 @@ define([
           beforeCloseDfr.resolve();
         }
 
-
-
-      return beforeCloseDfr.promise();
-      */
+        return beforeCloseDfr.promise();
+    
         
 
       /* 

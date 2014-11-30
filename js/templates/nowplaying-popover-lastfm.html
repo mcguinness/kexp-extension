@@ -5,7 +5,7 @@
       <a href="<%= element.url %>" title="<%= element.name %>" data-chrometab="active">
         <% if (element.image && element.image.url) { %>
           <div class="entity-type btn-kexp-nohover"><span class="prefix-accent">\\\</span> <%= element.entity.toUpperCase() %></div>
-          <img class="kexp-box-small" src="<%= element.image.url %>">
+          <img class="kexp-box-small fade in" src="<%= element.image.url %>">
           <% if (element.name) { %><span class="entity-name"><%= element.name %></span><% } %>
         <% } else { %>
           <div class="entity-type btn-kexp-nohover"><span class="prefix-accent">\\\</span> <%= element.entity.toUpperCase() %></div>
