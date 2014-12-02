@@ -35,8 +35,8 @@ define([
 
         $containerPopout = $('<div id="btn-popout" class="container-footer-popout"><i class="fa fa-arrows-alt"></i> Popout</span></div>');
         $containerPopout.click(function() {
-          width = window.outerWidth;
-          height = window.outerHeight;
+          width = window.outerWidth + (window.navigator.platform === "Win32" ? 5 : 0);
+          height = window.outerHeight + (window.navigator.platform === "Win32" ? 37 : 5);
           // TODO: Resolve why multi-monitor doesn't work for left offsets...
           left = Math.round((screen.width / 2) - (width / 2));
           top = Math.round((screen.height / 2) - (height / 2));

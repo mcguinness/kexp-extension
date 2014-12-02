@@ -13,7 +13,7 @@ define([
       this._spotifyConfig = this.appConfig.getSpotify();
       this._spotifySync = this._spotifyConfig.getSync();
 
-      //this.bindTo(this._spotifyConfig, "change:sessionKey", this.handleSyncChange);
+      this.bindTo(this._spotifyConfig, "change:refreshToken", this.handleSyncChange);
       this.bindTo(this._spotifyConfig, "change:likeShareEnabled", this.handleSyncChange);
       this.handleSyncChange(this._spotifyConfig);
     },
@@ -64,7 +64,10 @@ define([
             var track;
             if (collection.models.length > 0) {
               track = collection.at(0);
-              console.log("[SpotifyLikeSyncService] adding Spotify track %s to playlist", JSON.stringify(track));
+              console.log("[SpotifyLikeSyncService] adding track [%s] to playlist [%s] for user [%s]", 
+                JSON.stringify(track),
+                self._spotifyConfig.get('playListId'),
+                self._spotifyConfig.get('userId'));
               $.ajax({
                 url: self._spotifyConfig.get('apiUrl') + 
                   '/users/' + 
@@ -80,10 +83,17 @@ define([
                 }),
                 headers: self._spotifyConfig.getAuthorizationHeader(),
                 success: function(response) {
-                  console.log("[SpotifyLikeSyncService] successfully added track %s to playlist", track.get('uri'));
+                  console.log("[SpotifyLikeSyncService] successfully added track [%s] to playlist", track.get('uri'));
                 },
                 error: function(xhr, ajaxOptions, thrownError) {
-                  console.log("[SpotifyLikeSyncService] unable to add track due to error: " + xhr.statusText);
+                  console.warn("[SpotifyLikeSyncService Error] unable to add track [%s] to playlist [%s] for user [%s] due to error [%s]", 
+                      track.get('uri'),
+                      self._spotifyConfig.get('playListId'),
+                      self._spotifyConfig.get('userId'),
+                      xhr.statusText);
+                  
+                  self.vent.trigger("spotify:playlist:add:fail", JSON.parse(xhr.statusText), track, ajaxOptions);
+                  self.vent.trigger("analytics:trackevent", "Spotify", "Playlist", "Error", xhr.statusText);
                 }
               });
             } else {
@@ -91,7 +101,9 @@ define([
             }
           },
           error : function(collection, error, options) {
-            console.log(error);
+            console.warn("[SpotifyLikeSyncService Error] %s", error);
+            self.vent.trigger("spotify:track:search:fail", JSON.parse(error), likedSong, options);
+            self.vent.trigger("analytics:trackevent", "Spotify", "Search", "Error", error);
           }
         });
       }

@@ -73,6 +73,7 @@ define([
       this.vent.trigger("analytics:trackevent", "Feature", "SpotifyAuthorization", "Disabled");
     },
     handleAuthorizationToggle: function(event) {
+      event.preventDefault();
       event.stopPropagation();
       $(this.el).find("div.alert").remove();
       this.model.hasAuthorization() ? this.removeAuthorization() : this.requestAuthorization();
@@ -102,6 +103,9 @@ define([
       }).always(function() {
         $btn.removeAttr("disabled");
       });
+    },
+    beforeClose: function() {
+      this._modelBinder.unbind();
     }
   });
 

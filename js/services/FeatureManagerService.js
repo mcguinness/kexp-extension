@@ -15,6 +15,8 @@ define([
         this.bindTo(this.vent, "lastfm:api:error:sessionkey:invalid", this.handleInvalidSessionKey, this);
         this.bindTo(this.vent, "lastfm:track:love:fail", this.handleLoveFail, this);
         this.bindTo(this.vent, "lastfm:track:scrobble:fail", this.handleScrobbleFail, this);
+        this.bindTo(this.vent, "spotify:track:search:fail", this.handleSpotifySearchFail, this);
+        this.bindTo(this.vent, "spotify:playlist:add:fail", this.handleSpotifyPlaylistFail, this);
       },
       handleLike: function() {
         if (!this._featuresConfig.get("hasClickedLike")) {
@@ -51,6 +53,16 @@ define([
           'Last.fm error "' + resp.message + '"',
           "Unable to scrobble like to your Last.fm profile!");
       },
+      handleSpotifySearchFail: function(resp) {
+        this.vent.trigger("notification:error",
+          'Spotify error "' + resp.error.message + '"',
+          "Unable to search for your like in Spotify");
+      },
+      handleSpotifyPlaylistFail: function(resp) {
+         this.vent.trigger("notification:error",
+          'Spotify error "' + resp.error.message + '"',
+          "Unable to add track to your Spotify playlist");       
+       },
       toString: function() {
         return "FeatureManagerService";
       }
