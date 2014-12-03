@@ -3742,7 +3742,7 @@ i.enabled {
   filter: alpha(opacity=100);
 }
 .kexp-error p {
-  margin: 20px 0;
+  margin: 10px 0;
   font-size: 15px;
 }
 .kexp-icon-button-group {
