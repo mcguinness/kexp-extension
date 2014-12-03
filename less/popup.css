@@ -4161,7 +4161,7 @@ body {
   padding: 10px 0px 10px 0px;
 }
 .player {
-  width: 215px;
+  width: 220px;
   display: block;
   margin-left: auto;
   margin-right: auto;
@@ -4183,7 +4183,7 @@ body {
   transition: opacity 0.4s cubic-bezier(0.6, 0.04, 0.98, 0.335);
 }
 .player .btn-play {
-  width: 70px;
+  width: 75px;
 }
 .player .btn-play i:before {
   margin-right: 3px;
@@ -4209,7 +4209,7 @@ body {
 }
 .player .slider-volume {
   -webkit-appearance: none !important;
-  width: 103px;
+  width: 104px;
   height: 7px;
   margin-bottom: 0;
   padding: 0 0 0 0;

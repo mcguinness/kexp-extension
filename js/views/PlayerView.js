@@ -56,8 +56,8 @@ define([
 				},
 				convertPause = function(direction, value, attribute, model) {
 					return value ?
-						'<i class="fa fa-play"></i> Play' :
-						'<i class="fa fa-pause"></i> Pause';
+						'<i class="fa fa-play"></i> PLAY' :
+						'<i class="fa fa-pause"></i> PAUSE';
 				},
 				convertMuted = function(direction, value) {
 					return value ? "fa fa-volume-off" : "fa fa-volume-up";
