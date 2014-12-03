@@ -361,7 +361,7 @@ h4,
 h5,
 h6 {
   margin: 0;
-  font-family: 'Helvetica Neue', 'Segoe UI';
+  font-family: 'Helvetica Neue', 'Segoe UI', Helvetica, Arial, sans-serif;
   font-weight: bold;
   color: inherit;
   text-rendering: optimizelegibility;
@@ -4496,7 +4496,7 @@ body {
 }
 .table-liked thead {
   font-size: 14px;
-  font-family: 'Helvetica Neue', 'Segoe UI';
+  font-family: 'Helvetica Neue', 'Segoe UI', Helvetica, Arial, sans-serif;
 }
 .table-liked th i {
   margin-right: 2px;
