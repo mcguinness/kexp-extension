@@ -1,5 +1,6 @@
 {
-  "name": "KEXP Streaming Player (Unsanctioned)",
+  "name": "KEXP Streaming Player (Listener Developed)",
+  "short_name": "KEXP Player",
   "version": "2.0.0",
   "minimum_chrome_version": "33",
   "description": "background kexp.org streaming audio player with now playing info and likes.",
